@@ -83,7 +83,7 @@ describe("jota-guard CLI", () => {
       try {
         await body(dir);
       } finally {
-        await rm(dir, { recursive: true, force: true });
+        await rm(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
       }
     };
     const sample = 'export const a = <img src="/a.jpg" alt="x" />;';

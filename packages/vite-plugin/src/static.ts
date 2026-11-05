@@ -131,6 +131,8 @@ async function generateImageVariants(
   let sharp: typeof import("sharp");
   try {
     sharp = (await import("sharp")).default;
+    // sharp caches open files by default, which makes Windows refuse to delete them afterwards.
+    sharp.cache(false);
   } catch {
     warn("jota static: `images` is on but the optional package `sharp` is not installed, so images were left as they are.");
     return variants;

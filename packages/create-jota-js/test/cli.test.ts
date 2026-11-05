@@ -13,7 +13,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await rm(cwd, { recursive: true, force: true });
+  await rm(cwd, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
 });
 
 const read = (...parts: string[]) => readFile(join(cwd, ...parts), "utf8");

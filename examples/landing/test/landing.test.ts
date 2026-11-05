@@ -16,7 +16,7 @@ beforeAll(async () => {
 }, 60_000);
 
 afterAll(async () => {
-  await rm(outDir, { recursive: true, force: true });
+  await rm(outDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
 });
 
 describe("landing build", () => {

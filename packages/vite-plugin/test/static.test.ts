@@ -20,6 +20,7 @@ const read = (...parts: string[]) => readFileSync(join(outDir, ...parts), "utf8"
 
 beforeAll(async () => {
   outDir = await mkdtemp(join(tmpdir(), "jota-static-"));
+  sharp.cache(false);
   publicDir = await mkdtemp(join(tmpdir(), "jota-public-"));
   for (const name of ["hero", "second"]) {
     await sharp({ create: { width: 16, height: 8, channels: 3, background: "#6f3af8" } })
@@ -46,8 +47,8 @@ beforeAll(async () => {
 }, 60_000);
 
 afterAll(async () => {
-  await rm(publicDir, { recursive: true, force: true });
-  await rm(outDir, { recursive: true, force: true });
+  await rm(publicDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+  await rm(outDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
 });
 
 describe("static generation", () => {
@@ -178,7 +179,7 @@ describe("critical CSS for large stylesheets", () => {
   }, 60_000);
 
   afterAll(async () => {
-    await rm(largeOut, { recursive: true, force: true });
+    await rm(largeOut, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
   });
 
   it("inlines only the CSS the page uses and loads the full file without blocking", () => {
