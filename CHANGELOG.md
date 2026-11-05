@@ -40,7 +40,11 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - Examples: `blog`, `landing` and `dashboard`, each with tests and Guard.
 - Lighthouse results for the docs site (100 in all four categories on four pages, local).
 
+- Typed JSX for every standard HTML element and common SVG elements, with typed events and `data-*` / `aria-*` attributes.
+- Rendering benchmark in a real browser against Solid (`bench/browser`).
+
 ### Fixed
+- List reconciliation moved almost every node when two rows were swapped; it now uses a longest-increasing-subsequence diff (swap in a 1,000-row list: 22 ms to 1.7 ms).
 - SVG templates created a second wrapper element, so dynamic attributes of SVG children were applied to the wrapper.
 - `Show` with a function child did not update when the value changed while it stayed truthy.
 - `render` rebuilt the root component whenever the accessor it returned changed.

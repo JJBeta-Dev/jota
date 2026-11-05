@@ -34,8 +34,10 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - [x] `Show`, `For`, `mergeProps`, `splitProps`, `render`
 - [x] Pruebas de extremo a extremo (11): el contador actualiza solo su nodo de texto, el componente corre una vez, las listas reutilizan nodos
 - [x] App de ejemplo `examples/hello` (todo-app): 4 tests, pasa Jota Guard y compila a 6.18 kB de JS (2.65 kB gzip) incluyendo runtime y CSS
-- [x] Benchmarks de reactividad contra Solid y Preact Signals (`bench/`, resultados en `bench/RESULTS.md`): Jota queda en el rango de Solid (más rápido en 2 de 6 escenarios, hasta 2x más lento en otros) y más lento que Preact Signals. Son micro-benchmarks en Node, sin DOM; no hay comparación en navegador ni contra React
-- **Puerta:** benchmarks razonables frente a Solid; tests en verde. Cumplida para la reactividad pura; falta medir páginas reales en un navegador.
+- [x] Benchmarks de reactividad contra Solid y Preact Signals (`bench/`, resultados en `bench/RESULTS.md`): Jota queda en el rango de Solid (más rápido en 2 de 6 escenarios, hasta 2x más lento en otros) y más lento que Preact Signals. Son micro-benchmarks en Node, sin DOM. La comparación de renderizado en navegador real está en `bench/browser/RESULTS.md`: a menos de ~10% de Solid en casi todo y con un bundle menor (2.9 vs 4.6 kB gzip); no hay comparación contra React
+- [x] Tipos de JSX por elemento (HTML estándar y SVG común, eventos con `currentTarget` tipado, `data-*`/`aria-*`, elementos personalizados), verificados con `@ts-expect-error` en `packages/vite-plugin/test/jsx-types.check.tsx`
+- [x] Reconciliación de listas con subsecuencia creciente más larga (intercambiar dos filas pasó de 22 ms a 1.7 ms en el navegador; 200 reordenamientos aleatorios en las pruebas)
+- **Puerta:** benchmarks razonables frente a Solid; tests en verde. Cumplida, también en un navegador real (Edge).
 
 ### Etapa 3 — Router + SSG + islas + CSS (6-8 semanas)
 - [x] Rutas por archivos (`src/routes`): `createRoutes`, `matchRoute`, `buildPath`, `startRouter` con navegación en el cliente (33 tests en core) y SSG con `vite-plugin-jota/static` (9 tests: páginas estáticas sin JS, rutas `client`, rutas dinámicas con `paths`, `head`, 404, sitemap)

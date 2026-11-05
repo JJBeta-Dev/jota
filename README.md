@@ -120,6 +120,7 @@ If a route goes over budget, the build fails and tells you which asset caused it
 - The todo example (`examples/hello`) compiles to 6.18 kB of JavaScript (2.65 kB gzip), runtime and CSS included.
 - The docs site (`site/`) renders 8 pages with **no JavaScript**, around 6 kB of HTML each.
 - Lighthouse on four pages of the docs site (local, mobile emulation): 100 in performance, accessibility, best practices and SEO ([bench/lighthouse/RESULTS.md](bench/lighthouse/RESULTS.md)). A small static site, not a field measurement.
+- Rendering in a real browser (Edge), same table app in Jota and Solid: within roughly 10% of Solid on most operations, with a smaller bundle (2.9 kB gzip against 4.6 kB) ([bench/browser/RESULTS.md](bench/browser/RESULTS.md)). One machine, one browser, not the official js-framework-benchmark.
 - Reactivity micro-benchmarks against Solid and Preact Signals are in [bench/RESULTS.md](bench/RESULTS.md): Jota is in Solid's range and slower than Preact Signals. They measure the reactive graph in Node, not real pages in a browser.
 
 ## Project layout

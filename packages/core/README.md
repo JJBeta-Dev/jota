@@ -81,7 +81,7 @@ For static pages with no JavaScript use `vite-plugin-jota/static` (see [vite-plu
 
 ## TypeScript
 
-Set `"jsx": "preserve"` and `"jsxImportSource": "jota-js"` in `tsconfig.json`. JSX intrinsic elements are typed loosely for now; stricter per-element types are planned.
+Set `"jsx": "preserve"` and `"jsxImportSource": "jota-js"` in `tsconfig.json`. Every standard HTML element and the common SVG elements are typed: attributes, `class`/`classList`/`style`, `ref`, and event handlers with a typed `currentTarget`. `data-*` and `aria-*` attributes are always allowed, and elements with a hyphen in the name (custom elements) accept any attribute.
 
 Compile JSX with [`vite-plugin-jota`](../vite-plugin). `jota-js/web` is the runtime that compiled code imports; application code should not import it directly.
 

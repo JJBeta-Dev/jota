@@ -1,6 +1,22 @@
 // Type-only entry used by TypeScript when `jsxImportSource` is "jota-js" and `jsx` is "preserve".
 // Jota's compiler removes all JSX at build time, so no runtime functions are needed here.
+import type { CustomElements, IntrinsicElementMap } from "./jsx-types.js";
 import type { JSXElement } from "./types.js";
+
+export type {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  CSSProperties,
+  EventHandler,
+  FormHTMLAttributes,
+  HTMLAttributes,
+  ImgHTMLAttributes,
+  InputHTMLAttributes,
+  LabelHTMLAttributes,
+  SVGAttributes,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "./jsx-types.js";
 
 export namespace JSX {
   export type Element = JSXElement;
@@ -9,13 +25,12 @@ export namespace JSX {
     children: unknown;
   }
 
-  /**
-   * Intrinsic elements are typed loosely for now: any tag with any props.
-   * Stricter per-element types are planned (see PLAN.md).
-   */
-  export interface IntrinsicElements {
-    [tag: string]: Record<string, unknown>;
+  /** Attributes accepted by every element and component. */
+  export interface IntrinsicAttributes {
+    key?: string | number | undefined;
   }
+
+  export interface IntrinsicElements extends IntrinsicElementMap, CustomElements {}
 }
 
 const unsupported = (): never => {

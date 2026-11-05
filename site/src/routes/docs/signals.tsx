@@ -76,7 +76,10 @@ batch(() => {
 
       <h2>Known limits</h2>
       <ul>
-        <li>JSX element types are loose for now: any tag accepts any props.</li>
+        <li>
+          Event handlers receive typed events (<code>event.currentTarget</code> is the element), but SVG attributes are typed
+          loosely on purpose.
+        </li>
         <li>There is no hydration: client routes mount again instead of resuming server HTML.</li>
       </ul>
     </Layout>

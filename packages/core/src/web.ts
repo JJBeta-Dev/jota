@@ -64,17 +64,69 @@ function normalize(value: unknown, out: Node[]): void {
   out.push(document.createTextNode(String(value)));
 }
 
+/**
+ * Indexes (into `values`) of one longest strictly increasing subsequence. Nodes in this subsequence
+ * are already in the right relative order, so only the others have to move: swapping two rows of a
+ * long list moves two nodes instead of all of them.
+ */
+function longestIncreasingSubsequence(values: number[]): number[] {
+  const previous = new Array<number>(values.length);
+  const tails: number[] = []; // tails[k] = index of the smallest tail of an increasing run of length k + 1
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i] as number;
+    let low = 0;
+    let high = tails.length;
+    while (low < high) {
+      const middle = (low + high) >> 1;
+      if ((values[tails[middle] as number] as number) < value) low = middle + 1;
+      else high = middle;
+    }
+    previous[i] = low > 0 ? (tails[low - 1] as number) : -1;
+    tails[low] = i;
+  }
+  const result: number[] = [];
+  for (let i = tails.length > 0 ? (tails[tails.length - 1] as number) : -1; i >= 0; i = previous[i] as number) {
+    result.push(i);
+  }
+  return result.reverse();
+}
+
 function reconcile(parent: Node, current: Node[], next: Node[], marker: Node | null): Node[] {
   if (current.length === next.length && current.every((node, i) => node === next[i])) return current;
+
+  // First render of this spot: insert everything in one go.
+  if (current.length === 0) {
+    if (next.length === 0) return next;
+    const fragment = document.createDocumentFragment();
+    for (const node of next) fragment.appendChild(node);
+    parent.insertBefore(fragment, marker);
+    return next;
+  }
 
   const keep = new Set(next);
   for (const old of current) {
     if (!keep.has(old) && old.parentNode === parent) parent.removeChild(old);
   }
+
+  // Nodes that were already here keep their place if they are part of a longest increasing run of
+  // old positions; every other node is inserted before its successor.
+  const oldPosition = new Map<Node, number>();
+  current.forEach((node, index) => oldPosition.set(node, index));
+  const positions: number[] = [];
+  const nextIndexOf: number[] = [];
+  next.forEach((node, index) => {
+    const old = oldPosition.get(node);
+    if (old !== undefined && node.parentNode === parent) {
+      positions.push(old);
+      nextIndexOf.push(index);
+    }
+  });
+  const stable = new Set(longestIncreasingSubsequence(positions).map((position) => nextIndexOf[position] as number));
+
   let reference: Node | null = marker;
   for (let i = next.length - 1; i >= 0; i--) {
     const node = next[i] as Node;
-    if (node.parentNode !== parent || node.nextSibling !== reference) parent.insertBefore(node, reference);
+    if (!stable.has(i)) parent.insertBefore(node, reference);
     reference = node;
   }
   return next;

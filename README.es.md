@@ -120,6 +120,7 @@ Si una ruta supera el presupuesto, el build falla e indica qué recurso lo caus�
 - El ejemplo de tareas (`examples/hello`) compila a 6.18 kB de JavaScript (2.65 kB con gzip), con runtime y CSS incluidos.
 - El sitio de documentación (`site/`) genera 8 páginas **sin JavaScript**, de unos 6 kB de HTML cada una.
 - Lighthouse en cuatro páginas del sitio de documentación (local, emulación móvil): 100 en rendimiento, accesibilidad, buenas prácticas y SEO ([bench/lighthouse/RESULTS.md](bench/lighthouse/RESULTS.md)). Es un sitio estático pequeño, no una medición de campo.
+- Renderizado en un navegador real (Edge), la misma tabla en Jota y en Solid: a menos de un 10% de Solid en casi todas las operaciones y con un bundle menor (2.9 kB con gzip contra 4.6 kB) ([bench/browser/RESULTS.md](bench/browser/RESULTS.md)). Una máquina, un navegador, no es el js-framework-benchmark oficial.
 - Los micro-benchmarks de reactividad contra Solid y Preact Signals están en [bench/RESULTS.md](bench/RESULTS.md): Jota está en el rango de Solid y es más lento que Preact Signals. Miden el grafo reactivo en Node, no páginas reales en un navegador.
 
 ## Estructura del proyecto

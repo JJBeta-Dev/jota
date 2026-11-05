@@ -81,7 +81,7 @@ Para generar páginas estáticas sin JavaScript usa `vite-plugin-jota/static` (v
 
 ## TypeScript
 
-Pon `"jsx": "preserve"` y `"jsxImportSource": "jota-js"` en `tsconfig.json`. Los elementos intrínsecos de JSX están tipados de forma laxa por ahora.
+Pon `"jsx": "preserve"` y `"jsxImportSource": "jota-js"` en `tsconfig.json`. Todos los elementos HTML estándar y los SVG comunes están tipados: atributos, `class`/`classList`/`style`, `ref` y manejadores de eventos con `currentTarget` tipado. Los atributos `data-*` y `aria-*` siempre se permiten y los elementos con guion en el nombre (elementos personalizados) aceptan cualquier atributo.
 
 ## Licencia
 
