@@ -28,7 +28,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./static": {
+      "types": "./dist/static.d.ts",
+      "import": "./dist/static.js"
+    }
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -38,15 +42,16 @@
   "dependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-typescript": "^7.29.0",
-    "babel-plugin-jsx-dom-expressions": "^0.40.11"
+    "babel-plugin-jsx-dom-expressions": "^0.40.11",
+    "happy-dom": "^20.0.0"
   },
   "peerDependencies": {
-    "vite": ">=5"
+    "vite": ">=5",
+    "jota-js": ">=0.0.1"
   },
   "devDependencies": {
     "@types/babel__core": "^7.20.5",
     "@types/node": "^22.9.0",
-    "happy-dom": "^20.0.0",
     "jota-js": "workspace:*",
     "typescript": "^5.6.3",
     "vite": "^5.4.11",

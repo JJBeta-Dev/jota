@@ -38,10 +38,10 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - **Puerta:** benchmarks razonables frente a Solid; tests en verde (los tests están; faltan los benchmarks).
 
 ### Etapa 3 — Router + SSG + islas + CSS (6-8 semanas)
-- [ ] Rutas por archivos (`routes/`), SSG y SPA
-- [ ] CSS con alcance local, utilidades atómicas opcionales, CSS crítico en el build
-- [ ] Islas (JS solo donde hay interactividad)
-- [ ] Plugin de medios (`sharp`, `width/height`, `fetchpriority`, `lazy`)
+- [x] Rutas por archivos (`src/routes`): `createRoutes`, `matchRoute`, `buildPath`, `startRouter` con navegación en el cliente (33 tests en core) y SSG con `vite-plugin-jota/static` (9 tests: páginas estáticas sin JS, rutas `client`, rutas dinámicas con `paths`, `head`, 404, sitemap)
+- [~] CSS: las hojas pequeñas (hasta 20 kB) se incrustan en cada página; faltan CSS con alcance local, utilidades atómicas y extracción real de CSS crítico
+- [~] Islas: las páginas son estáticas sin JS y las rutas `client` cargan JS; no hay islas dentro de una misma página ni hidratación
+- [~] Medios: `fetchpriority="high"` en la primera imagen y `loading="lazy"` en el resto; falta la conversión a WebP/AVIF con `sharp`
 - [x] `create-jota-js` con plantillas TS (por defecto) y JS: 10 tests; verificado a mano que un proyecto generado compila (4.90 kB JS, 2.11 kB gzip), pasa el chequeo de tipos y pasa Guard. Su `npm install` real espera al primer lanzamiento (`^1.0.0`)
 - **Puerta:** sitio demo con 95+ en Lighthouse móvil y menos de 10 KB de JS en páginas de contenido.
 

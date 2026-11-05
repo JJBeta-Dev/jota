@@ -76,11 +76,11 @@ function specificity(pattern: string): number[] {
 }
 
 /** Build the route table from a map of file path -> loader (for example `import.meta.glob`). */
-export function createRoutes(modules: Record<string, RouteLoader>, root = "/src/routes"): Route[] {
+export function createRoutes(modules: Record<string, () => unknown>, root = "/src/routes"): Route[] {
   const routes: Route[] = [];
   for (const [file, load] of Object.entries(modules)) {
     const pattern = filePathToPattern(file, root);
-    if (pattern !== null) routes.push({ pattern, file, load });
+    if (pattern !== null) routes.push({ pattern, file, load: load as RouteLoader });
   }
   return routes.sort((a, b) => {
     if (a.pattern === "/" || b.pattern === "/") return a.pattern === b.pattern ? 0 : a.pattern === "/" ? -1 : 1;

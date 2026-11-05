@@ -113,7 +113,7 @@ describe("startRouter", () => {
       head: { title: "About page" },
     }),
     "/src/routes/user/[id].tsx": () => ({
-      default: ({ params }) => {
+      default: ({ params }: { params: Record<string, string> }) => {
         const p = document.createElement("p");
         p.textContent = `user ${params.id}`;
         return p;

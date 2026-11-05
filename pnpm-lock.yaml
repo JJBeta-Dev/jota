@@ -93,6 +93,9 @@ importers:
       babel-plugin-jsx-dom-expressions:
         specifier: ^0.40.11
         version: 0.40.11(@babel/core@7.29.13)
+      happy-dom:
+        specifier: ^20.0.0
+        version: 20.14.6
     devDependencies:
       '@types/babel__core':
         specifier: ^7.20.5
@@ -100,9 +103,6 @@ importers:
       '@types/node':
         specifier: ^22.9.0
         version: 22.20.5
-      happy-dom:
-        specifier: ^20.0.0
-        version: 20.14.6
       jota-js:
         specifier: workspace:*
         version: link:../core
