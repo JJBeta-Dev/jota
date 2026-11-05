@@ -28,8 +28,8 @@ Jota no promete "100% en todas las métricas". Promete un **presupuesto de rendi
 |---|---|---|
 | 1 | **Jota Guard**: plugin de ESLint + CLI que audita cualquier proyecto JSX/TSX | ✅ construido y probado, aún sin lanzar |
 | 2 | Runtime de signals + plugin de Vite con JSX compilado | ✅ construido y probado, aún sin lanzar |
-| 3 | Rutas por archivos, generación estática, islas, CSS con alcance local, plugin de medios | 🚧 generador de proyectos listo; el resto planeado |
-| 4 | Docs en inglés y español, playground, ejemplos | 🚧 planeada |
+| 3 | Rutas por archivos, generación estática, generador de proyectos, sitio de docs | ✅ construido y probado, aún sin lanzar (faltan islas dentro de una página, CSS crítico real y conversión de imágenes) |
+| 4 | Docs en inglés y español, playground, ejemplos | 🚧 sitio de docs y ejemplo de tareas listos (`site/`, `examples/hello`); faltan el playground y más ejemplos |
 
 ## Instalación 🚧
 
@@ -114,6 +114,12 @@ export default defineConfig({
 ```
 
 Si una ruta supera el presupuesto, el build falla e indica qué recurso lo causó.
+
+## Qué está medido hoy
+
+- El ejemplo de tareas (`examples/hello`) compila a 6.18 kB de JavaScript (2.65 kB con gzip), con runtime y CSS incluidos.
+- El sitio de documentación (`site/`) genera 8 páginas **sin JavaScript**, de unos 6 kB de HTML cada una.
+- Los micro-benchmarks de reactividad contra Solid y Preact Signals están en [bench/RESULTS.md](bench/RESULTS.md): Jota está en el rango de Solid y es más lento que Preact Signals. Miden el grafo reactivo en Node, no páginas reales en un navegador.
 
 ## Estructura del proyecto
 

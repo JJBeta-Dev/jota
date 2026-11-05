@@ -29,6 +29,11 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - Guard severity is configurable (`--rule`, `--config`, `jota.config.json`).
 - `create-jota-js`: project scaffolder with TypeScript and JavaScript templates (10 tests).
 
+- Documentation site (`site/`) built with Jota: English docs plus Spanish home and getting started, all static pages without JavaScript.
+- Reactivity benchmarks against Solid and Preact Signals (`bench/`).
+- Core performance: notify loops and the effect queue no longer allocate per update.
+- Spanish README (`README.es.md`) for every package.
+
 ### Planned for 1.0.0
 - Jota Guard: ESLint plugin + CLI for accessibility, semantics and performance-budget rules.
 - Signals core and Vite plugin with compiled JSX.

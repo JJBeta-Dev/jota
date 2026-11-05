@@ -1,0 +1,24 @@
+{
+  "name": "jota-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Jota documentation site, built with Jota (static pages, no JavaScript).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "guard": "jota-guard src --max-warnings 0",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "jota-js": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "jota-guard": "workspace:*",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-plugin-jota": "workspace:*"
+  }
+}

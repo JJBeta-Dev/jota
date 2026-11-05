@@ -1,3 +1,5 @@
+[English](README.md) · [Español](README.es.md)
+
 # vite-plugin-jota
 
 Vite plugin that compiles Jota JSX and TypeScript (`.jsx`, `.tsx`) into direct DOM operations. No Virtual DOM.

@@ -1,0 +1,28 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    "jsx": "preserve",
+    "jsxImportSource": "jota-js",
+    "baseUrl": ".",
+    "paths": {
+      "jota-js": [
+        "../packages/core/src/index.ts"
+      ],
+      "jota-js/web": [
+        "../packages/core/src/web.ts"
+      ],
+      "jota-js/jsx-runtime": [
+        "../packages/core/src/jsx-runtime.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "vite.config.ts"
+  ]
+}

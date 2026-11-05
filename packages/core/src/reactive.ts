@@ -42,6 +42,7 @@ let currentOwner: Owner | null = null;
 let batchDepth = 0;
 let flushing = false;
 let queue: Runnable[] = [];
+let queueHead = 0;
 
 const defaultEquals = <T>(a: T, b: T): boolean => a === b;
 
@@ -63,12 +64,16 @@ class Owner {
 
   /** Dispose children and run cleanups registered with onCleanup (used before a re-run). */
   cleanup(): void {
-    const children = [...this.children];
-    this.children.clear();
-    for (const child of children) child.dispose();
-    const cleanups = this.cleanups;
-    this.cleanups = [];
-    for (const fn of cleanups) fn();
+    if (this.children.size > 0) {
+      const children = [...this.children];
+      this.children.clear();
+      for (const child of children) child.dispose();
+    }
+    if (this.cleanups.length > 0) {
+      const cleanups = this.cleanups;
+      this.cleanups = [];
+      for (const fn of cleanups) fn();
+    }
   }
 
   dispose(): void {
@@ -110,7 +115,8 @@ class Computation<T> extends Owner implements Source, Runnable {
       }
     } else if (!this.stale) {
       this.stale = true;
-      for (const observer of [...this.observers]) observer.mark();
+      // Marking only flags memos and queues effects; it never changes the observer sets.
+      for (const observer of this.observers) observer.mark();
     }
   }
 
@@ -122,7 +128,7 @@ class Computation<T> extends Owner implements Source, Runnable {
   }
 
   sourcesChanged(): boolean {
-    for (const [source, seen] of [...this.sources]) {
+    for (const [source, seen] of this.sources) {
       source.refresh?.();
       if (source.version !== seen) return true;
     }
@@ -184,15 +190,16 @@ function flush(): void {
   flushing = true;
   try {
     let iterations = 0;
-    while (queue.length > 0) {
+    while (queueHead < queue.length) {
       if (++iterations > MAX_FLUSH_ITERATIONS) {
-        queue = [];
         throw new Error("Jota: infinite update loop detected (an effect keeps changing its own sources).");
       }
-      const next = queue.shift() as Runnable;
+      const next = queue[queueHead++] as Runnable;
       next.runIfNeeded();
     }
   } finally {
+    queue = [];
+    queueHead = 0;
     flushing = false;
   }
 }
@@ -212,7 +219,7 @@ export function signal<T>(initial: T, options?: SignalOptions<T>): [Accessor<T>,
     if (equals(node.value, next)) return node.value;
     node.value = next;
     node.version++;
-    for (const observer of [...node.observers]) observer.mark();
+    for (const observer of node.observers) observer.mark();
     if (batchDepth === 0) flush();
     return next;
   };

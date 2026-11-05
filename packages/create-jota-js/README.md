@@ -1,3 +1,5 @@
+[English](README.md) · [Español](README.es.md)
+
 # create-jota-js
 
 Scaffold a new Jota app in TypeScript (default) or JavaScript.

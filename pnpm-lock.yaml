@@ -8,6 +8,18 @@ importers:
 
   .: {}
 
+  bench:
+    dependencies:
+      '@preact/signals-core':
+        specifier: ^1.8.0
+        version: 1.14.5
+      jota-js:
+        specifier: workspace:*
+        version: link:../packages/core
+      solid-js:
+        specifier: ^1.9.0
+        version: 1.9.18
+
   examples/hello:
     dependencies:
       jota-js:
@@ -115,6 +127,28 @@ importers:
       vitest:
         specifier: ^2.1.5
         version: 2.1.9(@types/node@22.20.5)(happy-dom@20.14.6)
+
+  site:
+    dependencies:
+      jota-js:
+        specifier: workspace:*
+        version: link:../packages/core
+    devDependencies:
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.20.5
+      jota-guard:
+        specifier: workspace:*
+        version: link:../packages/guard
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.11
+        version: 5.4.21(@types/node@22.20.5)
+      vite-plugin-jota:
+        specifier: workspace:*
+        version: link:../packages/vite-plugin
 
 packages:
 
@@ -463,6 +497,9 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
+  '@preact/signals-core@1.14.5':
+    resolution: {integrity: sha512-vcRv7Ityz5JVmeiVqIluLFzT/PDS/AlhHUpw3/aUWqcVUs6bDGIPXE/6RSC4evBNWYvnniozg5Syfj33al3gkg==}
+
   '@rollup/rollup-android-arm-eabi@4.67.5':
     resolution: {integrity: sha512-FdWPeulkH+FH+rBzyKBD59tuVN4tRKvmVilSJm0OcnoYsQTpd9UhD78OaPcsYqo2fX6hCwAG0YIjrDLoQ3pR3g==}
     cpu: [arm]
@@ -782,6 +819,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  csstype@3.2.3:
+    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -1106,6 +1146,16 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  seroval-plugins@1.6.12:
+    resolution: {integrity: sha512-+reiwp/lYxiyctSrdvX7OQ1YLrcbWYgBiZrhSFL+V43b0/DGRLNVSDyZINbQe+tWplPOI2fw2dPrdv6hcc09kQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      seroval: ^1.0
+
+  seroval@1.6.12:
+    resolution: {integrity: sha512-CqbIVfk/7GL3ITwZI55lcPbpQbjHZ2DD5cUj4iH7E9YsCfHNJV1mx7yNp86Z84w5IpmkZZS/2s5vPOWmVWSdQg==}
+    engines: {node: '>=10'}
+
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
@@ -1116,6 +1166,9 @@ packages:
 
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
+
+  solid-js@1.9.18:
+    resolution: {integrity: sha512-CHGO5YFk6Y9m/1YSxVtKnXfrW7JD3Tmof8HmR4z6TmCPsS8efo8LnzIR8CQh3cUvffqYm6DWyBFfk8dQw1CNQQ==}
 
   source-map-js@1.2.2:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
@@ -1624,6 +1677,8 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
+  '@preact/signals-core@1.14.5': {}
+
   '@rollup/rollup-android-arm-eabi@4.67.5':
     optional: true
 
@@ -1922,6 +1977,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  csstype@3.2.3: {}
 
   debug@4.4.3:
     dependencies:
@@ -2256,6 +2313,12 @@ snapshots:
 
   semver@7.8.6: {}
 
+  seroval-plugins@1.6.12(seroval@1.6.12):
+    dependencies:
+      seroval: 1.6.12
+
+  seroval@1.6.12: {}
+
   shebang-command@2.0.0:
     dependencies:
       shebang-regex: 3.0.0
@@ -2263,6 +2326,12 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   siginfo@2.0.0: {}
+
+  solid-js@1.9.18:
+    dependencies:
+      csstype: 3.2.3
+      seroval: 1.6.12
+      seroval-plugins: 1.6.12(seroval@1.6.12)
 
   source-map-js@1.2.2: {}
 

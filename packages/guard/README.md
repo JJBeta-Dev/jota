@@ -1,3 +1,5 @@
+[English](README.md) · [Español](README.es.md)
+
 # jota-guard
 
 Accessibility, semantics and performance checks for JSX and TSX files. Works with React, Solid, Preact and Jota. It is an ESLint plugin plus a command line tool.
@@ -30,9 +32,28 @@ Exit codes: `0` nothing to fix, `1` problems found, `2` usage error.
 | Option | Meaning |
 |---|---|
 | `--preset <name>` | `recommended` (default), `strict` (warnings become errors) or `a11y-only` (turns `img-size` off) |
+| `--rule <id>=<level>` | set one rule to `error`, `warn` or `off` (repeatable), e.g. `--rule heading-order=error` |
+| `--config <file>` | read settings from a JSON file (default: `jota.config.json` when present) |
 | `--format <name>` | `stylish` (default) or `json` |
 | `--max-warnings <n>` | fail when there are more than `n` warnings |
 | `--ignore <glob>` | extra glob to ignore, repeatable (`node_modules`, `dist`, `build` are always ignored) |
+
+## Configurable severity
+
+`heading-order` and `img-size` warn by default, and you can make them errors:
+
+```json
+{
+  "guard": {
+    "preset": "recommended",
+    "rules": { "heading-order": "error" },
+    "ignore": ["**/generated/**"],
+    "maxWarnings": 10
+  }
+}
+```
+
+Priority: command line options, then the config file, then the preset.
 
 ## Rules
 

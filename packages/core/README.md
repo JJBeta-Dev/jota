@@ -1,3 +1,5 @@
+[English](README.md) · [Español](README.es.md)
+
 # jota-js
 
 Jota's runtime: fine-grained signals and the DOM runtime used by compiled JSX.
@@ -49,6 +51,19 @@ render(() => <App />, document.getElementById("app")!);
 ```
 
 Built in: `Show`, `For`, `mergeProps`, `splitProps`, `render`.
+
+## Routing
+
+Files in `src/routes` are pages (`index.tsx` -> `/`, `blog/[slug].tsx` -> `/blog/:slug`, `[...rest].tsx` -> catch-all). Files and folders starting with `_` are ignored.
+
+```ts
+import { createRoutes, startRouter } from "jota-js";
+
+const routes = createRoutes(import.meta.glob("/src/routes/**/*.tsx"));
+startRouter(routes, document.getElementById("app")!); // client navigation without page loads
+```
+
+For static pages with no JavaScript use `vite-plugin-jota/static` (see [vite-plugin-jota](../vite-plugin)).
 
 ## TypeScript
 

@@ -34,8 +34,8 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - [x] `Show`, `For`, `mergeProps`, `splitProps`, `render`
 - [x] Pruebas de extremo a extremo (11): el contador actualiza solo su nodo de texto, el componente corre una vez, las listas reutilizan nodos
 - [x] App de ejemplo `examples/hello` (todo-app): 4 tests, pasa Jota Guard y compila a 6.18 kB de JS (2.65 kB gzip) incluyendo runtime y CSS
-- [ ] Benchmarks contra Solid y React (pendiente; el criterio de la puerta no está verificado)
-- **Puerta:** benchmarks razonables frente a Solid; tests en verde (los tests están; faltan los benchmarks).
+- [x] Benchmarks de reactividad contra Solid y Preact Signals (`bench/`, resultados en `bench/RESULTS.md`): Jota queda en el rango de Solid (más rápido en 2 de 6 escenarios, hasta 2x más lento en otros) y más lento que Preact Signals. Son micro-benchmarks en Node, sin DOM; no hay comparación en navegador ni contra React
+- **Puerta:** benchmarks razonables frente a Solid; tests en verde. Cumplida para la reactividad pura; falta medir páginas reales en un navegador.
 
 ### Etapa 3 — Router + SSG + islas + CSS (6-8 semanas)
 - [x] Rutas por archivos (`src/routes`): `createRoutes`, `matchRoute`, `buildPath`, `startRouter` con navegación en el cliente (33 tests en core) y SSG con `vite-plugin-jota/static` (9 tests: páginas estáticas sin JS, rutas `client`, rutas dinámicas con `paths`, `head`, 404, sitemap)
@@ -46,8 +46,8 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - **Puerta:** sitio demo con 95+ en Lighthouse móvil y menos de 10 KB de JS en páginas de contenido.
 
 ### Etapa 4 — Docs y comunidad (3-4 semanas)
-- [ ] Docs en inglés (principal) y español (i18n de Starlight)
-- [ ] Playground (StackBlitz) y 5 ejemplos: blog, landing, dashboard, docs, tienda
+- [x] Sitio de docs `site/` hecho con Jota (inglés completo, español para inicio y primeros pasos): 8 páginas sin JavaScript, Guard sin avisos con `--max-warnings 0`. No usa Starlight; el despliegue a GitHub Pages queda en `.github/workflows/pages.yml` (solo manual, requiere repo público o plan de pago)
+- [~] Ejemplos: todo-app (`examples/hello`) y el propio sitio de docs; faltan playground (StackBlitz) y blog, landing, dashboard y tienda
 - [ ] Capturas/SVG con Playwright si hacen falta
 - **Puerta:** 5 testers externos califican las docs como claras.
 
