@@ -208,4 +208,53 @@ describe("startRouter", () => {
     await new Promise((resolve) => setTimeout(resolve, 60));
     expect(container.textContent).toBe("fast");
   });
+
+  it("awaits load() and passes data to the page and head", async () => {
+    const withData = createRoutes({
+      "/src/routes/index.tsx": () => page("home"),
+      "/src/routes/posts.tsx": () => ({
+        default: ({ data }: { params: Record<string, string>; data?: unknown }) => {
+          const p = document.createElement("p");
+          p.textContent = `posts: ${(data as string[]).join(",")}`;
+          return p;
+        },
+        load: async () => {
+          await new Promise((resolve) => setTimeout(resolve, 5));
+          return ["a", "b"];
+        },
+        head: (_params: Record<string, string>, data?: unknown) => ({ title: `${(data as string[]).length} posts` }),
+      }),
+    });
+    const router = startRouter(withData, container);
+    stop = router.dispose;
+    await flush();
+    router.navigate("/posts");
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    expect(container.textContent).toBe("posts: a,b");
+    expect(document.title).toBe("2 posts");
+  });
+
+  it("shows onError when load() fails", async () => {
+    const failing = createRoutes({
+      "/src/routes/index.tsx": () => page("home"),
+      "/src/routes/bad.tsx": () => ({
+        ...page("never"),
+        load: () => {
+          throw new Error("boom");
+        },
+      }),
+    });
+    const router = startRouter(failing, container, {
+      onError: (error) => {
+        const p = document.createElement("p");
+        p.textContent = `error: ${(error as Error).message}`;
+        return p;
+      },
+    });
+    stop = router.dispose;
+    await flush();
+    router.navigate("/bad");
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(container.textContent).toBe("error: boom");
+  });
 });

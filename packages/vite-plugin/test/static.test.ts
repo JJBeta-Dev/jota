@@ -1,10 +1,11 @@
 // @vitest-environment node
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import sharp from "sharp";
 import { build, createLogger } from "vite";
 import jota from "../src/index.js";
 import jotaStatic from "../src/static.js";
@@ -13,11 +14,18 @@ const site = fileURLToPath(new URL("./site", import.meta.url));
 const core = (file: string) => fileURLToPath(new URL(`../../core/src/${file}`, import.meta.url));
 
 let outDir: string;
+let publicDir: string;
 const warnings: string[] = [];
 const read = (...parts: string[]) => readFileSync(join(outDir, ...parts), "utf8");
 
 beforeAll(async () => {
   outDir = await mkdtemp(join(tmpdir(), "jota-static-"));
+  publicDir = await mkdtemp(join(tmpdir(), "jota-public-"));
+  for (const name of ["hero", "second"]) {
+    await sharp({ create: { width: 16, height: 8, channels: 3, background: "#6f3af8" } })
+      .jpeg()
+      .toFile(join(publicDir, `${name}.jpg`));
+  }
   const logger = createLogger("silent");
   logger.warn = (message) => void warnings.push(message);
 
@@ -25,18 +33,20 @@ beforeAll(async () => {
     root: site,
     configFile: false,
     customLogger: logger,
-    plugins: [jota(), jotaStatic({ site: "https://example.test" })],
+    plugins: [jota(), jotaStatic({ site: "https://example.test", images: true })],
     resolve: {
       alias: [
         { find: /^jota-js\/web$/, replacement: core("web.ts") },
         { find: /^jota-js$/, replacement: core("index.ts") },
       ],
     },
+    publicDir,
     build: { outDir, emptyOutDir: true },
   });
 }, 60_000);
 
 afterAll(async () => {
+  await rm(publicDir, { recursive: true, force: true });
   await rm(outDir, { recursive: true, force: true });
 });
 
@@ -66,11 +76,28 @@ describe("static generation", () => {
     expect(html).toContain("<title>Interactive app</title>");
   });
 
+  it("keeps the script only on a static page that contains an island", () => {
+    const html = read("islands", "index.html");
+    expect(html).toContain('data-jota-island="Counter"');
+    expect(html).toContain('data-jota-load="load"');
+    expect(html).toContain("&quot;start&quot;:5");
+    expect(html).toContain("Count: 5");
+    expect(html).toContain("Static text around the island.");
+    expect(html).toContain('<script type="module"');
+  });
+
   it("renders dynamic routes for every path and fills the head from params", () => {
     expect(read("blog", "first-post", "index.html")).toContain("<h1>Post first-post</h1>");
     expect(read("blog", "second-post", "index.html")).toContain("<h1>Post second-post</h1>");
     expect(read("blog", "first-post", "index.html")).toContain("<title>Post: first-post</title>");
     expect(read("blog", "first-post", "index.html")).toContain('content="Reading first-post"');
+  });
+
+  it("awaits async load() and passes the data to the page and to head", () => {
+    const html = read("data", "index.html");
+    expect(html).toContain("<li>alpha</li>");
+    expect(html).toContain("<li>beta</li>");
+    expect(html).toContain("<title>Data: 2 items</title>");
   });
 
   it("skips dynamic routes without paths and warns about it", () => {
@@ -95,6 +122,21 @@ describe("static generation", () => {
     expect(images[1]).toContain('decoding="async"');
   });
 
+  it("converts images to AVIF and WebP and serves them through <picture>", () => {
+    for (const name of ["hero", "second"]) {
+      expect(existsSync(join(outDir, `${name}.avif`)), `${name}.avif`).toBe(true);
+      expect(existsSync(join(outDir, `${name}.webp`)), `${name}.webp`).toBe(true);
+    }
+    const html = read("index.html");
+    expect(html.match(/<picture>/g)).toHaveLength(2);
+    expect(html).toContain('<source type="image/avif" srcset="/hero.avif">');
+    expect(html).toContain('<source type="image/webp" srcset="/hero.webp">');
+    // The original <img> is still there as the fallback, with its attributes.
+    expect(html).toContain('src="/hero.jpg"');
+    expect(html).toContain('alt="Hero"');
+    expect(html.indexOf("image/avif")).toBeLessThan(html.indexOf("image/webp"));
+  });
+
   it("writes 404.html and a sitemap without the 404 page", () => {
     expect(read("404.html")).toContain("Page not found");
     const sitemap = read("sitemap.xml");
@@ -110,5 +152,47 @@ describe("static generation", () => {
     const src = /src="([^"]+\.js)"/.exec(assets)?.[1];
     expect(src).toBeDefined();
     expect(existsSync(join(outDir, (src as string).replace(/^\//, "")))).toBe(true);
+  });
+});
+
+describe("critical CSS for large stylesheets", () => {
+  let largeOut: string;
+
+  beforeAll(async () => {
+    largeOut = await mkdtemp(join(tmpdir(), "jota-critical-"));
+    const logger = createLogger("silent");
+    await build({
+      root: site,
+      configFile: false,
+      customLogger: logger,
+      // A tiny limit makes the stylesheet count as "large".
+      plugins: [jota(), jotaStatic({ inlineCssLimit: 10 })],
+      resolve: {
+        alias: [
+          { find: /^jota-js\/web$/, replacement: core("web.ts") },
+          { find: /^jota-js$/, replacement: core("index.ts") },
+        ],
+      },
+      build: { outDir: largeOut, emptyOutDir: true },
+    });
+  }, 60_000);
+
+  afterAll(async () => {
+    await rm(largeOut, { recursive: true, force: true });
+  });
+
+  it("inlines only the CSS the page uses and loads the full file without blocking", () => {
+    const html = readFileSync(join(largeOut, "about", "index.html"), "utf8");
+    const inline = /<style>([\s\S]*?)<\/style>/.exec(html)?.[1] ?? "";
+    expect(inline).toContain("letter-spacing");
+    expect(inline).not.toContain("never-used-anywhere");
+    expect(html).toMatch(/<link rel="stylesheet"[^>]*href="\/assets\/[^"]+\.css"[^>]*media="print"/);
+    expect(html).toContain("<noscript>");
+    expect(html).not.toContain("data-beasties-container");
+  });
+
+  it("keeps the full stylesheet as a file, with the unused rule", () => {
+    const asset = readdirSync(join(largeOut, "assets")).find((file) => file.endsWith(".css")) as string;
+    expect(readFileSync(join(largeOut, "assets", asset), "utf8")).toContain("never-used-anywhere");
   });
 });

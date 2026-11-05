@@ -24,6 +24,7 @@ export {
   resolveHead,
   startRouter,
   type Head,
+  type LoadContext,
   type Params,
   type Route,
   type RouteConfig,
@@ -33,3 +34,4 @@ export {
   type Router,
   type RouterOptions,
 } from "./router.js";
+export { Island, startIslands, type IslandLoad, type IslandProps, type IslandRegistry } from "./island.js";

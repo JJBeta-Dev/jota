@@ -1,5 +1,8 @@
-import { createRoutes, startRouter } from "jota-js";
+import { createRoutes, startIslands, startRouter } from "jota-js";
 import "./style.css";
 
-const routes = createRoutes(import.meta.glob("/src/routes/**/*.tsx"));
-startRouter(routes, document.getElementById("app") as HTMLElement);
+// Pages with islands mount just those; every other page is handled by the client router.
+if (!startIslands(import.meta.glob("/src/islands/*.tsx"))) {
+  const routes = createRoutes(import.meta.glob("/src/routes/**/*.tsx"));
+  startRouter(routes, document.getElementById("app") as HTMLElement);
+}

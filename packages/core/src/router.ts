@@ -29,10 +29,16 @@ export interface RouteConfig {
   render?: "static" | "client";
 }
 
+export interface LoadContext {
+  params: Params;
+}
+
 export interface RouteModule {
-  default: (props: { params: Params }) => JSXElement;
+  default: (props: { params: Params; data?: unknown }) => JSXElement;
   config?: RouteConfig;
-  head?: Head | ((params: Params) => Head);
+  /** Runs before the page renders (at build time for static pages, before navigation in the browser). */
+  load?: (context: LoadContext) => unknown | Promise<unknown>;
+  head?: Head | ((params: Params, data?: unknown) => Head);
   /** For dynamic routes: the parameter sets to pre-render. */
   paths?: () => Params[] | Promise<Params[]>;
 }
@@ -166,8 +172,8 @@ export function buildPath(pattern: string, params: Params = {}): string {
   return `/${path}`;
 }
 
-export function resolveHead(module: RouteModule, params: Params): Head {
-  return typeof module.head === "function" ? module.head(params) : (module.head ?? {});
+export function resolveHead(module: RouteModule, params: Params, data?: unknown): Head {
+  return typeof module.head === "function" ? module.head(params, data) : (module.head ?? {});
 }
 
 // --- client router -------------------------------------------------------------------------
@@ -175,6 +181,8 @@ export function resolveHead(module: RouteModule, params: Params): Head {
 export interface RouterOptions {
   /** Rendered when no route matches. */
   notFound?: () => JSXElement;
+  /** Rendered when loading a route module or its `load` function fails. */
+  onError?: (error: unknown) => JSXElement;
 }
 
 function isModifiedClick(event: MouseEvent): boolean {
@@ -213,11 +221,19 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
       setView(options.notFound ? () => options.notFound?.() : null);
       return;
     }
-    Promise.resolve(found.route.load()).then((module) => {
+    const render = async (): Promise<void> => {
+      const module = await found.route.load();
       if (current !== token) return; // a newer navigation won
-      const head = resolveHead(module, found.params);
+      const data = module.load ? await module.load({ params: found.params }) : undefined;
+      if (current !== token) return;
+      const head = resolveHead(module, found.params, data);
       if (head.title) document.title = head.title;
-      setView(() => createComponent(module.default, { params: found.params }));
+      setView(() => createComponent(module.default, { params: found.params, data }));
+    };
+    render().catch((error: unknown) => {
+      if (current !== token) return;
+      setView(options.onError ? () => options.onError?.(error) : null);
+      if (!options.onError) console.error(error);
     });
   };
 

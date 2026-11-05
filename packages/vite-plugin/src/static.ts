@@ -24,8 +24,24 @@ export interface StaticOptions {
   site?: string;
   /** Inline stylesheets when their total size is at most this many bytes. Default: 20000. */
   inlineCssLimit?: number;
+  /**
+   * For stylesheets above `inlineCssLimit`: inline only the CSS each page needs and load the full
+   * file without blocking rendering (uses `beasties`). Default: true. The async load adds a small
+   * `onload` attribute to the stylesheet link and a `<noscript>` fallback.
+   */
+  criticalCss?: boolean;
   /** Options for the Jota compiler used while rendering. */
   jota?: JotaOptions;
+  /**
+   * Convert local JPEG and PNG images to AVIF and WebP (needs the optional `sharp` package) and wrap
+   * their `<img>` in a `<picture>`. `true` uses both formats at quality 70.
+   */
+  images?: boolean | ImageOptions;
+}
+
+export interface ImageOptions {
+  formats?: Array<"avif" | "webp">;
+  quality?: number;
 }
 
 interface RouteInfo {
@@ -34,9 +50,10 @@ interface RouteInfo {
 }
 
 interface PageModule {
-  default: (props: { params: Record<string, string> }) => unknown;
+  default: (props: { params: Record<string, string>; data?: unknown }) => unknown;
   config?: { render?: "static" | "client" };
-  head?: Head | ((params: Record<string, string>) => Head);
+  load?: (context: { params: Record<string, string> }) => unknown | Promise<unknown>;
+  head?: Head | ((params: Record<string, string>, data?: unknown) => Head);
   paths?: () => Array<Record<string, string>> | Promise<Array<Record<string, string>>>;
 }
 
@@ -52,7 +69,7 @@ interface Router {
 }
 
 interface WebApi {
-  createComponent: (component: PageModule["default"], props: { params: Record<string, string> }) => unknown;
+  createComponent: (component: PageModule["default"], props: { params: Record<string, string>; data?: unknown }) => unknown;
   mount: (code: () => unknown, element: Element) => () => void;
 }
 
@@ -84,6 +101,80 @@ function optimizeImages(container: Element): void {
     if (!image.hasAttribute("loading")) image.setAttribute("loading", "lazy");
     if (!image.hasAttribute("decoding")) image.setAttribute("decoding", "async");
   });
+}
+
+const RASTER = /\.(?:jpe?g|png)$/i;
+
+function walkFiles(dir: string): string[] {
+  const files: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) files.push(...walkFiles(full));
+    else files.push(full);
+  }
+  return files;
+}
+
+type Variants = Map<string, Array<"avif" | "webp">>;
+
+/** Create AVIF/WebP siblings of every JPEG and PNG in the build output. Returns url -> formats. */
+async function generateImageVariants(
+  outDir: string,
+  images: boolean | ImageOptions,
+  warn: (message: string) => void,
+): Promise<Variants> {
+  const variants: Variants = new Map();
+  const settings: ImageOptions = typeof images === "object" ? images : {};
+  const formats = settings.formats ?? ["avif", "webp"];
+  const quality = settings.quality ?? 70;
+
+  let sharp: typeof import("sharp");
+  try {
+    sharp = (await import("sharp")).default;
+  } catch {
+    warn("jota static: `images` is on but the optional package `sharp` is not installed, so images were left as they are.");
+    return variants;
+  }
+
+  for (const file of walkFiles(outDir)) {
+    if (!RASTER.test(file)) continue;
+    const url = `/${relative(outDir, file).replaceAll("\\", "/")}`;
+    const made: Array<"avif" | "webp"> = [];
+    for (const format of formats) {
+      const target = file.replace(RASTER, `.${format}`);
+      if (!existsSync(target)) {
+        try {
+          const pipeline = sharp(file);
+          await (format === "avif" ? pipeline.avif({ quality }) : pipeline.webp({ quality })).toFile(target);
+        } catch (error) {
+          warn(`jota static: could not convert ${url} to ${format}: ${error instanceof Error ? error.message : String(error)}`);
+          continue;
+        }
+      }
+      made.push(format);
+    }
+    if (made.length > 0) variants.set(url, made);
+  }
+  return variants;
+}
+
+/** Wrap images that have converted variants in <picture>, best format first. */
+function wrapInPicture(container: Element, variants: Variants): void {
+  for (const image of [...container.querySelectorAll("img")]) {
+    const src = image.getAttribute("src");
+    const formats = src ? variants.get(src) : undefined;
+    if (!src || !formats || image.parentElement?.tagName === "PICTURE") continue;
+    const picture = document.createElement("picture");
+    for (const format of ["avif", "webp"] as const) {
+      if (!formats.includes(format)) continue;
+      const source = document.createElement("source");
+      source.setAttribute("type", `image/${format}`);
+      source.setAttribute("srcset", src.replace(RASTER, `.${format}`));
+      picture.appendChild(source);
+    }
+    image.replaceWith(picture);
+    picture.appendChild(image);
+  }
 }
 
 const GLOBAL_NAMES = [
@@ -143,7 +234,13 @@ function stripScripts(html: string): string {
     .replace(/<link\b[^>]*\brel="modulepreload"[^>]*>\s*/g, "");
 }
 
-async function inlineStyles(html: string, outDir: string, limit: number): Promise<string> {
+async function inlineStyles(
+  html: string,
+  outDir: string,
+  limit: number,
+  critical: boolean,
+  base: string,
+): Promise<string> {
   const links = [...html.matchAll(/<link\b[^>]*\brel="stylesheet"[^>]*>/g)];
   const sheets: Array<{ tag: string; css: string }> = [];
   for (const [tag] of links) {
@@ -154,7 +251,13 @@ async function inlineStyles(html: string, outDir: string, limit: number): Promis
     sheets.push({ tag, css: await readFile(file, "utf8") });
   }
   const total = sheets.reduce((sum, sheet) => sum + Buffer.byteLength(sheet.css), 0);
-  if (sheets.length === 0 || total > limit) return html;
+  if (sheets.length === 0) return html;
+  if (total > limit) {
+    if (!critical) return html;
+    const { default: Beasties } = await import("beasties");
+    const beasties = new Beasties({ path: outDir, publicPath: base, preload: "media", logLevel: "silent" });
+    return (await beasties.process(html)).replace(" data-beasties-container", "");
+  }
   let result = html;
   for (const sheet of sheets) result = result.replace(sheet.tag, () => `<style>${sheet.css.trim()}</style>`);
   return result;
@@ -197,6 +300,10 @@ export async function prerender(config: ResolvedConfig, options: StaticOptions =
     ],
   });
 
+  const variants: Variants = options.images
+    ? await generateImageVariants(outDir, options.images, (message) => config.logger.warn(message))
+    : new Map();
+
   const dom = installDom();
   const rendered: string[] = [];
   try {
@@ -224,17 +331,21 @@ export async function prerender(config: ResolvedConfig, options: StaticOptions =
 
       for (const params of paramSets) {
         const url = router.buildPath(route.pattern, params);
+        const data = module.load ? await module.load({ params }) : undefined;
         const container = document.createElement("div");
-        const dispose = web.mount(() => web.createComponent(module.default, { params }), container);
+        const dispose = web.mount(() => web.createComponent(module.default, { params, data }), container);
         optimizeImages(container);
+        wrapInPicture(container, variants);
         const content = container.innerHTML;
         dispose();
 
-        const head = typeof module.head === "function" ? module.head(params) : (module.head ?? {});
+        const head = typeof module.head === "function" ? module.head(params, data) : (module.head ?? {});
         let html = shell.replace(/<div id="app">\s*<\/div>/, () => `<div id="app">${content}</div>`);
         html = applyHead(html, head);
-        if ((module.config?.render ?? "static") !== "client") html = stripScripts(html);
-        html = await inlineStyles(html, outDir, limit);
+        // Static pages ship no script, unless they contain islands that need to be mounted.
+        const hasIslands = content.includes("data-jota-island");
+        if ((module.config?.render ?? "static") !== "client" && !hasIslands) html = stripScripts(html);
+        html = await inlineStyles(html, outDir, limit, options.criticalCss !== false, config.base);
 
         const target = url === "/" ? shellPath : join(outDir, ...url.split("/").filter(Boolean), "index.html");
         await mkdir(dirname(target), { recursive: true });
