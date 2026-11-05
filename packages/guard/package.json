@@ -1,0 +1,61 @@
+{
+  "name": "jota-guard",
+  "version": "0.0.1",
+  "description": "Jota Guard: accessibility and performance checks for JSX/TSX (work in progress)",
+  "license": "MIT",
+  "author": "JJBeta",
+  "homepage": "https://github.com/JJBeta-Dev/jota#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JJBeta-Dev/jota.git",
+    "directory": "packages/guard"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "jota",
+    "frontend",
+    "typescript",
+    "accessibility",
+    "eslint-plugin"
+  ],
+  "peerDependencies": {
+    "eslint": ">=9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "eslint": "^9.14.0",
+    "vitest": "^2.1.5"
+  },
+  "bin": {
+    "jota-guard": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./eslint-plugin": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@typescript-eslint/parser": "^8.14.0",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
