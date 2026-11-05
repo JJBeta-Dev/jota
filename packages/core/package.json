@@ -1,0 +1,15 @@
+{
+  "name": "jota-js",
+  "version": "0.0.1",
+  "description": "Jota runtime (name reserved, work in progress)",
+  "license": "MIT",
+  "author": "JJBeta",
+  "homepage": "https://github.com/JJBeta-Dev/jota#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JJBeta-Dev/jota.git",
+    "directory": "packages/core"
+  },
+  "files": ["README.md"],
+  "keywords": ["jota", "frontend", "typescript", "accessibility"]
+}

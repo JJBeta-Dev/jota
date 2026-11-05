@@ -1,0 +1,22 @@
+{
+  "name": "jota-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jota: English-first, TypeScript-first frontend toolkit with compile-time accessibility and performance guardrails.",
+  "license": "MIT",
+  "author": "JJBeta",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JJBeta-Dev/jota.git"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

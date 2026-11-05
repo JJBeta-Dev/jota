@@ -1,0 +1,15 @@
+{
+  "name": "vite-plugin-jota",
+  "version": "0.0.1",
+  "description": "Vite plugin for Jota (name reserved, work in progress)",
+  "license": "MIT",
+  "author": "JJBeta",
+  "homepage": "https://github.com/JJBeta-Dev/jota#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JJBeta-Dev/jota.git",
+    "directory": "packages/vite-plugin"
+  },
+  "files": ["README.md"],
+  "keywords": ["jota", "frontend", "typescript", "accessibility"]
+}

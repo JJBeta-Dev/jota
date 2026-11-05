@@ -1,0 +1,15 @@
+{
+  "name": "create-jota-js",
+  "version": "0.0.1",
+  "description": "Scaffold a new Jota app (name reserved, work in progress)",
+  "license": "MIT",
+  "author": "JJBeta",
+  "homepage": "https://github.com/JJBeta-Dev/jota#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JJBeta-Dev/jota.git",
+    "directory": "packages/create-jota-js"
+  },
+  "files": ["README.md"],
+  "keywords": ["jota", "frontend", "typescript", "accessibility"]
+}
