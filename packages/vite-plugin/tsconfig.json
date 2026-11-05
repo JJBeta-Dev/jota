@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": [
+      "node"
+    ],
+    "jsxImportSource": "jota-js",
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "jota-js": [
+        "../core/src/index.ts"
+      ],
+      "jota-js/web": [
+        "../core/src/web.ts"
+      ],
+      "jota-js/jsx-runtime": [
+        "../core/src/jsx-runtime.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "test",
+    "*.config.ts"
+  ]
+}

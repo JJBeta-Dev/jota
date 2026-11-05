@@ -20,6 +20,10 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - Jota Guard (`packages/guard`): ESLint plugin with 10 rules (`img-alt`, `img-size`, `clickable-role`, `button-name`, `link-name`, `input-label`, `heading-order`, `html-lang`, `no-positive-tabindex`, `media-captions`), three presets and the `jota-guard` CLI, covered by 130 tests.
 - Demo project `examples/guard-demo` with planted violations.
 
+- `jota-js` runtime: signals (`signal`, `computed`, `effect`, `batch`, `untrack`, `createRoot`, `onCleanup`), `Show`, `For`, `mergeProps`, `splitProps`, `render`, DOM runtime for compiled JSX and type-only `jsx-runtime`.
+- `vite-plugin-jota`: compiles `.jsx` and `.tsx` to direct DOM updates, with end-to-end tests.
+- GitHub Actions CI workflow.
+
 ### Planned for 1.0.0
 - Jota Guard: ESLint plugin + CLI for accessibility, semantics and performance-budget rules.
 - Signals core and Vite plugin with compiled JSX.

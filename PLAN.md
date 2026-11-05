@@ -29,11 +29,13 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - **Puerta:** 100+ estrellas o 500+ descargas semanales a ~6 semanas del lanzamiento, o feedback claro para ajustar. Si no hay tracción, detener o redirigir (~2 meses gastados).
 
 ### Etapa 2 — Runtime + compilador (6-10 semanas)
-- [ ] Núcleo de signals (`signal`, `computed`, `effect`, `batch`), ~2 KB, TS estricto
-- [ ] Plugin de Vite con JSX compilado (reutilizando `dom-expressions` / Babel, MIT)
-- [ ] Apps de ejemplo: contador, lista, todo
-- [ ] Benchmarks contra Solid y React
-- **Puerta:** benchmarks razonables frente a Solid; tests en verde.
+- [x] Núcleo de signals (`signal`, `computed`, `effect`, `batch`, `untrack`, `createRoot`, `onCleanup`), TS estricto: 19 tests
+- [x] Plugin de Vite con JSX compilado (reutilizando `babel-plugin-jsx-dom-expressions`, MIT) y runtime DOM propio (`jota-js/web`)
+- [x] `Show`, `For`, `mergeProps`, `splitProps`, `render`
+- [x] Pruebas de extremo a extremo (11): el contador actualiza solo su nodo de texto, el componente corre una vez, las listas reutilizan nodos
+- [ ] Apps de ejemplo completas (contador y lista están como fixtures de prueba; falta todo-app)
+- [ ] Benchmarks contra Solid y React (pendiente; el criterio de la puerta no está verificado)
+- **Puerta:** benchmarks razonables frente a Solid; tests en verde (los tests están; faltan los benchmarks).
 
 ### Etapa 3 — Router + SSG + islas + CSS (6-8 semanas)
 - [ ] Rutas por archivos (`routes/`), SSG y SPA

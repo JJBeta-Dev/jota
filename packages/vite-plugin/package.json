@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-jota",
   "version": "0.0.1",
-  "description": "Vite plugin for Jota (name reserved, work in progress)",
+  "description": "Vite plugin that compiles Jota JSX to fine-grained DOM updates (work in progress)",
   "license": "MIT",
   "author": "JJBeta",
   "homepage": "https://github.com/JJBeta-Dev/jota#readme",
@@ -10,6 +10,49 @@
     "url": "git+https://github.com/JJBeta-Dev/jota.git",
     "directory": "packages/vite-plugin"
   },
-  "files": ["README.md"],
-  "keywords": ["jota", "frontend", "typescript", "accessibility"]
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "jota",
+    "frontend",
+    "typescript",
+    "accessibility"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-typescript": "^7.29.0",
+    "babel-plugin-jsx-dom-expressions": "^0.40.11"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^22.9.0",
+    "happy-dom": "^15.11.7",
+    "jota-js": "workspace:*",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
 }

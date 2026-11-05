@@ -1,7 +1,7 @@
 {
   "name": "jota-js",
   "version": "0.0.1",
-  "description": "Jota runtime (name reserved, work in progress)",
+  "description": "Jota runtime: fine-grained signals and a compiled-JSX DOM runtime (work in progress)",
   "license": "MIT",
   "author": "JJBeta",
   "homepage": "https://github.com/JJBeta-Dev/jota#readme",
@@ -10,6 +10,51 @@
     "url": "git+https://github.com/JJBeta-Dev/jota.git",
     "directory": "packages/core"
   },
-  "files": ["README.md"],
-  "keywords": ["jota", "frontend", "typescript", "accessibility"]
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "jota",
+    "frontend",
+    "typescript",
+    "accessibility"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./web": {
+      "types": "./dist/web.d.ts",
+      "import": "./dist/web.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "happy-dom": "^15.11.7",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
 }
