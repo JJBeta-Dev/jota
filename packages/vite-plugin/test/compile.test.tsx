@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { render } from "jota-js";
+import { render, signal } from "jota-js";
 import { transformJota } from "../src/index.js";
 import { Counter, calls } from "./fixtures/Counter.js";
 import { Features, controls } from "./fixtures/Features.js";
@@ -146,5 +146,25 @@ describe("features", () => {
     expect(tag.className).toBe("plain");
     controls.setBig(true);
     expect(tag.className).toBe("strong");
+  });
+});
+
+describe("SVG", () => {
+  it("puts dynamic attributes on the SVG element itself, not on a wrapper", () => {
+    const [width, setWidth] = signal(10);
+    unmount = render(
+      () => (
+        <svg viewBox="0 0 100 20" width="100">
+          <rect class="bar" data-label="a" width={width()} height="5" />
+        </svg>
+      ),
+      container,
+    );
+    const rect = container.querySelector("rect") as SVGElement;
+    expect(rect.getAttribute("data-label")).toBe("a");
+    expect(rect.getAttribute("width")).toBe("10");
+    setWidth(40);
+    expect(rect.getAttribute("width")).toBe("40");
+    expect(container.querySelectorAll("svg")).toHaveLength(1);
   });
 });

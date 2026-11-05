@@ -1,0 +1,19 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #ececec; color: #1a0b3b; line-height: 1.6; }
+a { color: #6f3af8; }
+a:hover { color: #e23af8; }
+:focus-visible { outline: 3px solid #e23af8; outline-offset: 3px; }
+header, footer { padding: 1rem clamp(1rem, 5vw, 4rem); }
+header nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+header nav a { color: #1a0b3b; font-weight: 700; text-decoration: none; }
+main { max-width: 52rem; margin: 0 auto; padding: 1rem clamp(1rem, 5vw, 2rem) 4rem; }
+h1 { font-size: clamp(2.4rem, 8vw, 4.5rem); line-height: 0.98; letter-spacing: -0.05em; margin: 1.5rem 0 1rem; }
+h1 em { color: #6f3af8; }
+h2 { letter-spacing: -0.03em; }
+.card { background: #fff; border-radius: 28px; padding: 1.5rem; margin: 1rem 0; box-shadow: 0 24px 40px -24px rgba(26, 11, 59, 0.35); }
+.button, button { padding: 0.7rem 1.4rem; border: 0; border-radius: 999px; background: #6f3af8; color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; text-decoration: none; display: inline-block; }
+.button:hover, button:hover { background: #e23af8; color: #fff; }
+input, select { padding: 0.6rem 0.9rem; border: 1px solid #c9c2d9; border-radius: 999px; font-size: 1rem; }
+.muted { color: #57535c; }
+.error { color: #b00020; }
+.ok { color: #0a6b2d; }

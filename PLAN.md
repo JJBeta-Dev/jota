@@ -16,8 +16,8 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - [x] `LICENSE` MIT, `.gitignore`, `package.json` raíz (1.0.0), `tsconfig.base.json`, logo SVG
 - [x] Verificar nombres en npm / GitHub (paquetes sin scope: `jota-js`, `jota-guard`, `create-jota-js`, `vite-plugin-jota`; repo `JJBeta-Dev/jota`)
 - [x] Nombres reservados en npm el 2026-11-03 (cuenta `jjbeta`, 2FA con Windows Hello): `jota-js`, `jota-guard`, `create-jota-js` y `vite-plugin-jota` tienen `0.0.1` publicada y como `latest` (verificado el 2026-11-05; también existe una versión `0.0.0-stage` que creó npm)
-- [ ] Instalar pnpm (`corepack enable`) y configurar workspace
-- [ ] Escribir manifiesto de 1 página
+- [x] pnpm activado con `corepack` (9.15.0) y workspace configurado (`packages/*`, `examples/*`, `site`, `bench`)
+- [x] Manifiesto: la sección "What is Jota?" del README y la página de inicio del sitio de docs
 - **Puerta:** nombres asegurados y horario semanal definido (sugerido 6-8 h).
 
 ### Etapa 1 — Jota Guard, independiente (3-5 semanas)
@@ -39,16 +39,16 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 
 ### Etapa 3 — Router + SSG + islas + CSS (6-8 semanas)
 - [x] Rutas por archivos (`src/routes`): `createRoutes`, `matchRoute`, `buildPath`, `startRouter` con navegación en el cliente (33 tests en core) y SSG con `vite-plugin-jota/static` (9 tests: páginas estáticas sin JS, rutas `client`, rutas dinámicas con `paths`, `head`, 404, sitemap)
-- [~] CSS: las hojas pequeñas (hasta 20 kB) se incrustan en cada página; faltan CSS con alcance local, utilidades atómicas y extracción real de CSS crítico
-- [~] Islas: las páginas son estáticas sin JS y las rutas `client` cargan JS; no hay islas dentro de una misma página ni hidratación
-- [~] Medios: `fetchpriority="high"` en la primera imagen y `loading="lazy"` en el resto; falta la conversión a WebP/AVIF con `sharp`
+- [x] CSS: hojas de hasta 20 kB incrustadas completas; por encima, CSS crítico real por página con `beasties` y carga del resto sin bloquear (2 tests). Faltan CSS con alcance local por componente y utilidades atómicas (no están en la v1 acordada)
+- [x] Islas: `<Island>` + `startIslands` (`load`, `idle`, `visible`); la página sigue siendo estática y solo conserva su script si contiene una isla (se vuelve a montar, no hidrata). 8 tests en core y 1 de extremo a extremo
+- [x] Medios: `fetchpriority="high"` en la primera imagen, `loading="lazy"` en el resto y conversión a AVIF/WebP con `sharp` (opcional) con `<picture>` (1 test)
 - [x] `create-jota-js` con plantillas TS (por defecto) y JS: 10 tests; verificado a mano que un proyecto generado compila (4.90 kB JS, 2.11 kB gzip), pasa el chequeo de tipos y pasa Guard. Su `npm install` real espera al primer lanzamiento (`^1.0.0`)
 - **Puerta:** sitio demo con 95+ en Lighthouse móvil y menos de 10 KB de JS en páginas de contenido.
 
 ### Etapa 4 — Docs y comunidad (3-4 semanas)
 - [x] Sitio de docs `site/` hecho con Jota (inglés completo, español para inicio y primeros pasos): 8 páginas sin JavaScript, Guard sin avisos con `--max-warnings 0`. No usa Starlight; el despliegue a GitHub Pages queda en `.github/workflows/pages.yml` (solo manual, requiere repo público o plan de pago)
-- [~] Ejemplos: todo-app (`examples/hello`) y el propio sitio de docs; faltan playground (StackBlitz) y blog, landing, dashboard y tienda
-- [ ] Capturas/SVG con Playwright si hacen falta
+- [x] Ejemplos con tests y Guard: `examples/hello` (tareas), `examples/blog` (estático, rutas dinámicas, datos asíncronos), `examples/landing` (isla de newsletter), `examples/dashboard` (signals, For, Show, SVG). Falta el playground (StackBlitz): necesita paquetes publicados y repo público
+- [x] No hicieron falta capturas con Playwright: el logo es un SVG propio y Lighthouse se midió con Edge
 - **Puerta:** 5 testers externos califican las docs como claras.
 
 ### Etapa 5 — Lanzamiento 0.x (1-2 semanas)

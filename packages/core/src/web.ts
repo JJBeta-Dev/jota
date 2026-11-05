@@ -18,7 +18,8 @@ export function template(html: string, isImportNode?: boolean, isSVG?: boolean):
   let node: Node | undefined;
   const create = (): Node => {
     const holder = document.createElement("template");
-    holder.innerHTML = isSVG ? `<svg>${html}</svg>` : html;
+    // For SVG the compiler already wraps the markup in <svg>...</svg>; the node we want is inside it.
+    holder.innerHTML = html;
     const root = holder.content.firstChild as Node;
     return isSVG ? (root.firstChild as Node) : root;
   };
@@ -109,7 +110,10 @@ export function insert(parent: Node, accessor: unknown, marker?: Node | null, in
 /** Mount a component into an element. Returns a function that unmounts it. */
 export function mount(code: () => JSXElement, element: Element): () => void {
   return createRoot((dispose) => {
-    insert(element, code);
+    // Build the root once, without tracking: only the value it returns (a node or an accessor) is
+    // inserted reactively. Calling `code` inside the insert effect would rebuild the whole root
+    // every time something it returns changes.
+    insert(element, untrack(code));
     return () => {
       dispose();
       element.textContent = "";

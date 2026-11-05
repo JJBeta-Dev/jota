@@ -14,6 +14,7 @@ const NAV = {
     { href: "/docs/getting-started", label: "Getting started" },
     { href: "/docs/signals", label: "Signals" },
     { href: "/docs/routing", label: "Routing and static pages" },
+    { href: "/docs/islands", label: "Islands and build options" },
     { href: "/docs/guard", label: "Guard" },
   ],
   es: [

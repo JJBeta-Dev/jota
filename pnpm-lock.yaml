@@ -20,6 +20,65 @@ importers:
         specifier: ^1.9.0
         version: 1.9.18
 
+  examples/blog:
+    dependencies:
+      jota-js:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.20.5
+      happy-dom:
+        specifier: ^20.0.0
+        version: 20.14.6
+      jota-guard:
+        specifier: workspace:*
+        version: link:../../packages/guard
+      sharp:
+        specifier: ^0.33.5
+        version: 0.33.5
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.11
+        version: 5.4.21(@types/node@22.20.5)
+      vite-plugin-jota:
+        specifier: workspace:*
+        version: link:../../packages/vite-plugin
+      vitest:
+        specifier: ^2.1.5
+        version: 2.1.9(@types/node@22.20.5)(happy-dom@20.14.6)
+
+  examples/dashboard:
+    dependencies:
+      jota-js:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.20.5
+      happy-dom:
+        specifier: ^20.0.0
+        version: 20.14.6
+      jota-guard:
+        specifier: workspace:*
+        version: link:../../packages/guard
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.11
+        version: 5.4.21(@types/node@22.20.5)
+      vite-plugin-jota:
+        specifier: workspace:*
+        version: link:../../packages/vite-plugin
+      vitest:
+        specifier: ^2.1.5
+        version: 2.1.9(@types/node@22.20.5)(happy-dom@20.14.6)
+
   examples/hello:
     dependencies:
       jota-js:
@@ -35,6 +94,37 @@ importers:
       jota-guard:
         specifier: workspace:*
         version: link:../../packages/guard
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.11
+        version: 5.4.21(@types/node@22.20.5)
+      vite-plugin-jota:
+        specifier: workspace:*
+        version: link:../../packages/vite-plugin
+      vitest:
+        specifier: ^2.1.5
+        version: 2.1.9(@types/node@22.20.5)(happy-dom@20.14.6)
+
+  examples/landing:
+    dependencies:
+      jota-js:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.20.5
+      happy-dom:
+        specifier: ^20.0.0
+        version: 20.14.6
+      jota-guard:
+        specifier: workspace:*
+        version: link:../../packages/guard
+      sharp:
+        specifier: ^0.33.5
+        version: 0.33.5
       typescript:
         specifier: ^5.6.3
         version: 5.9.3

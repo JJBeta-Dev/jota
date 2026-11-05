@@ -35,7 +35,10 @@ jobs:
         run: pnpm -r typecheck
       - name: Test
         run: pnpm -r test
-      - name: Jota Guard on the example app and the docs site
+      - name: Jota Guard on the examples and the docs site
         run: |
           pnpm --filter hello-jota guard
+          pnpm --filter blog-jota guard
+          pnpm --filter landing-jota guard
+          pnpm --filter dashboard-jota guard
           pnpm --filter jota-site guard

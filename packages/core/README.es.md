@@ -63,6 +63,20 @@ const routes = createRoutes(import.meta.glob("/src/routes/**/*.tsx"));
 startRouter(routes, document.getElementById("app")!); // navegación sin recargar la página
 ```
 
+Una ruta también puede exportar `load` (datos asíncronos, que llegan al componente como `props.data`) y `head`. `startRouter` espera a `load` antes de mostrar la página y acepta las opciones `notFound` y `onError`.
+
+## Islas
+
+```tsx
+import { Island, startIslands } from "jota-js";
+
+// en una página: <Island name="Counter" component={Counter} props={{ start: 1 }} load="visible" />
+// en la entrada del cliente:
+startIslands(import.meta.glob("/src/islands/*.tsx"));
+```
+
+Una isla se renderiza a HTML al compilar y el navegador la monta cuando carga, cuando está inactivo o cuando se vuelve visible. `startIslands` devuelve cuántas islas encontró. La isla reemplaza su HTML del servidor; no lo hidrata.
+
 Para generar páginas estáticas sin JavaScript usa `vite-plugin-jota/static` (ver [vite-plugin-jota](../vite-plugin/README.es.md)).
 
 ## TypeScript

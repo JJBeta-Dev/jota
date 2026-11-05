@@ -34,6 +34,17 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - Core performance: notify loops and the effect queue no longer allocate per update.
 - Spanish README (`README.es.md`) for every package.
 
+- Route `load` (async data) in the router and in the static build, with `notFound` and `onError` options for `startRouter`.
+- Islands: `Island` and `startIslands`; static pages keep their script only when they contain an island.
+- Static build: AVIF/WebP image conversion with `<picture>` (`images`, optional `sharp`) and critical CSS for large stylesheets (`criticalCss`).
+- Examples: `blog`, `landing` and `dashboard`, each with tests and Guard.
+- Lighthouse results for the docs site (100 in all four categories on four pages, local).
+
+### Fixed
+- SVG templates created a second wrapper element, so dynamic attributes of SVG children were applied to the wrapper.
+- `Show` with a function child did not update when the value changed while it stayed truthy.
+- `render` rebuilt the root component whenever the accessor it returned changed.
+
 ### Planned for 1.0.0
 - Jota Guard: ESLint plugin + CLI for accessibility, semantics and performance-budget rules.
 - Signals core and Vite plugin with compiled JSX.

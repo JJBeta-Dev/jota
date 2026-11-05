@@ -68,18 +68,24 @@ export default function Routing(): JSXElement {
         code={`// src/routes/blog/[slug].tsx
 export const paths = () => [{ slug: "first-post" }, { slug: "second-post" }];
 
-export const head = (params) => ({
-  title: "Post: " + params.slug,
-  description: "Reading " + params.slug,
+export const load = async ({ params }) => fetchPost(params.slug); // async data
+
+export const head = (params, post) => ({
+  title: post.title,
+  description: post.summary,
 });
 
 export default function Post(props) {
-  return <h1>{props.params.slug}</h1>;
+  return <h1>{props.data.title}</h1>;
 }`}
       />
       <ul>
         <li>
           <code>default</code>: the component, receives <code>{"{ params }"}</code>.
+        </li>
+        <li>
+          <code>load</code>: async data for the page. It runs at build time for static pages and before navigation in the
+          browser; the result reaches the component as <code>props.data</code> and <code>head</code> as its second argument.
         </li>
         <li>
           <code>head</code>: title, description and lang.
@@ -118,11 +124,17 @@ startRouter(routes, document.getElementById("app")!);`}
       />
       <p>Same-origin links navigate without a page load; back and forward work.</p>
 
+      <p>
+        Interactivity inside a static page, image conversion and critical CSS are covered in{" "}
+        <a href="/docs/islands">Islands and build options</a>.
+      </p>
+
       <h2>Limits</h2>
       <ul>
-        <li>Pages render synchronously: there is no async data loading yet.</li>
-        <li>The inlined stylesheet is the whole file, not only the above-the-fold part.</li>
-        <li>Images are not converted to WebP or AVIF yet.</li>
+        <li>Client routes mount again in the browser; there is no hydration of the server HTML.</li>
+        <li>
+          <code>load</code> runs once per page at build time: pages are not refreshed until the next build.
+        </li>
       </ul>
     </Layout>
   );

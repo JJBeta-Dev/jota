@@ -63,6 +63,20 @@ const routes = createRoutes(import.meta.glob("/src/routes/**/*.tsx"));
 startRouter(routes, document.getElementById("app")!); // client navigation without page loads
 ```
 
+A route can also export `load` (async data, passed to the component as `props.data`) and `head`. `startRouter` awaits `load` before showing the page and accepts `notFound` and `onError` options.
+
+## Islands
+
+```tsx
+import { Island, startIslands } from "jota-js";
+
+// in a page: <Island name="Counter" component={Counter} props={{ start: 1 }} load="visible" />
+// in the client entry:
+startIslands(import.meta.glob("/src/islands/*.tsx"));
+```
+
+An island is rendered to HTML at build time and mounted in the browser when it loads, when the browser is idle, or when it becomes visible. `startIslands` returns how many islands it found. The island replaces its server HTML; it does not hydrate it.
+
 For static pages with no JavaScript use `vite-plugin-jota/static` (see [vite-plugin-jota](../vite-plugin)).
 
 ## TypeScript

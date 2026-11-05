@@ -9,15 +9,26 @@ interface ShowProps<T> {
 
 /** Render `children` while `when` is truthy, otherwise `fallback`. Children are only created when shown. */
 export function Show<T>(props: ShowProps<T>): JSXElement {
-  const truthy = computed(() => Boolean(props.when));
+  // Children written as a function `{(item) => ...}` are "keyed": they are built again whenever the
+  // value changes. Other children are built once and kept while the value stays truthy. The compiler
+  // turns element children into a getter and function children into a plain value, so the property
+  // descriptor tells them apart without building any DOM.
+  const descriptor = Object.getOwnPropertyDescriptor(props, "children");
+  const keyed =
+    descriptor !== undefined &&
+    "value" in descriptor &&
+    typeof descriptor.value === "function" &&
+    (descriptor.value as (item: unknown) => unknown).length > 0;
+
+  const source = keyed ? computed(() => props.when) : computed(() => Boolean(props.when));
   return computed(() => {
-    if (!truthy()) return props.fallback;
-    return untrack(() => {
-      const children = props.children;
-      return typeof children === "function" && children.length > 0
-        ? (children as (item: NonNullable<T>) => JSXElement)(props.when as NonNullable<T>)
-        : (children as JSXElement);
-    });
+    const current = source();
+    if (!current) return props.fallback;
+    return untrack(() =>
+      keyed
+        ? (props.children as (item: NonNullable<T>) => JSXElement)(current as NonNullable<T>)
+        : (props.children as JSXElement),
+    );
   }) as unknown as JSXElement;
 }
 
