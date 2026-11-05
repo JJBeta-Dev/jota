@@ -33,7 +33,7 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - [x] Plugin de Vite con JSX compilado (reutilizando `babel-plugin-jsx-dom-expressions`, MIT) y runtime DOM propio (`jota-js/web`)
 - [x] `Show`, `For`, `mergeProps`, `splitProps`, `render`
 - [x] Pruebas de extremo a extremo (11): el contador actualiza solo su nodo de texto, el componente corre una vez, las listas reutilizan nodos
-- [ ] Apps de ejemplo completas (contador y lista están como fixtures de prueba; falta todo-app)
+- [x] App de ejemplo `examples/hello` (todo-app): 4 tests, pasa Jota Guard y compila a 6.18 kB de JS (2.65 kB gzip) incluyendo runtime y CSS
 - [ ] Benchmarks contra Solid y React (pendiente; el criterio de la puerta no está verificado)
 - **Puerta:** benchmarks razonables frente a Solid; tests en verde (los tests están; faltan los benchmarks).
 

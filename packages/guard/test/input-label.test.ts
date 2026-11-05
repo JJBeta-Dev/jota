@@ -5,6 +5,7 @@ tester.run("jota/input-label", rule, {
   valid: [
     { code: '<><label htmlFor="email">Email</label><input id="email" type="email" /></>' },
     { code: '<><input id="email" type="email" /><label htmlFor="email">Email</label></>' },
+    { code: '<><label for="email">Email</label><input id="email" type="email" /></>' },
     { code: '<label>Email <input type="email" /></label>' },
     { code: '<input type="email" aria-label="Email" />' },
     { code: '<input type="search" aria-labelledby="search-title" />' },

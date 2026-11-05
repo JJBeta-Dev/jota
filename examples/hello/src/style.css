@@ -1,0 +1,43 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  background: #ececec;
+  color: #1a0b3b;
+}
+main {
+  max-width: 32rem;
+  margin: 3rem auto;
+  padding: 0 1rem;
+}
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: -0.04em;
+}
+form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+input[type="text"],
+input:not([type]) {
+  flex: 1;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #c9c2d9;
+  border-radius: 999px;
+}
+button {
+  padding: 0.6rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #6f3af8;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+button:hover {
+  background: #e23af8;
+}
+li.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}

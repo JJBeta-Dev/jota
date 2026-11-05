@@ -43,7 +43,8 @@ export default createRule({
         if (tag === null) return;
 
         if (tag === "label") {
-          const htmlFor = findAttribute(opening, "htmlFor");
+          // React-style `htmlFor` and the HTML-style `for` used by Solid and Jota.
+          const htmlFor = findAttribute(opening, "htmlFor") ?? findAttribute(opening, "for");
           if (htmlFor) {
             const value = staticString(htmlFor);
             if (value === undefined) hasDynamicLabelFor = true;

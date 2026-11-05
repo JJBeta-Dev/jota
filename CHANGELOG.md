@@ -22,7 +22,9 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 
 - `jota-js` runtime: signals (`signal`, `computed`, `effect`, `batch`, `untrack`, `createRoot`, `onCleanup`), `Show`, `For`, `mergeProps`, `splitProps`, `render`, DOM runtime for compiled JSX and type-only `jsx-runtime`.
 - `vite-plugin-jota`: compiles `.jsx` and `.tsx` to direct DOM updates, with end-to-end tests.
-- GitHub Actions CI workflow.
+- GitHub Actions CI workflow (typecheck, build, test, Guard on the example).
+- `examples/hello`: todo app built with Jota (4 tests, passes Guard, 6.18 kB JS / 2.65 kB gzip).
+- Guard: `input-label` accepts the HTML-style `for` attribute.
 
 ### Planned for 1.0.0
 - Jota Guard: ESLint plugin + CLI for accessibility, semantics and performance-budget rules.
