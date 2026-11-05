@@ -153,6 +153,6 @@ ESLint integration: the same rules are exported as `jota-guard/eslint-plugin` wi
 Real color contrast, focus order at runtime, ARIA validity across components, auto-fix, framework-specific component libraries, Vue/Svelte/Angular templates, CSS checks.
 
 ## 9. Owner decisions
-1. Severity of `heading-order` and `img-size`: **pending**. The owner's answer was about the logo, so the draft default (`warn`) stays until they confirm.
+1. Severity of `heading-order` and `img-size`: **`warn` by default, configurable** (decided 2026-11-05). Change it with `--rule heading-order=error`, the `strict` preset, or a `jota.config.json` file: `{ "guard": { "rules": { "heading-order": "error" } } }`. Command line beats config file, which beats the preset.
 2. Rule ID prefix: **`jota/`** (decided 2026-11-03).
 3. Auto-fix: **yes**, planned for v0.2 for safe cases only (for example adding `type="button"`). Not in v0.1.

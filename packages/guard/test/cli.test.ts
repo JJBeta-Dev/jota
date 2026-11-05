@@ -1,3 +1,6 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { run } from "../src/cli.js";
@@ -72,5 +75,61 @@ describe("jota-guard CLI", () => {
     expect((await run(["--format", "xml"], demo)).code).toBe(2);
     expect((await run(["--max-warnings", "x"], demo)).code).toBe(2);
     expect((await run(["--wat"], demo)).code).toBe(2);
+  });
+
+  describe("configurable severity", () => {
+    const withTempDir = async (body: (dir: string) => Promise<void>) => {
+      const dir = await mkdtemp(join(tmpdir(), "guard-config-"));
+      try {
+        await body(dir);
+      } finally {
+        await rm(dir, { recursive: true, force: true });
+      }
+    };
+    const sample = 'export const a = <img src="/a.jpg" alt="x" />;';
+
+    it("--rule turns a warning into an error and an error off", async () => {
+      expect((await run(["warnings-only", "--rule", "img-size=error"], demo)).code).toBe(1);
+      expect((await run(["warnings-only", "--rule", "jota/img-size=off"], demo)).output).not.toContain("img-size");
+      const bad = await run(["bad", "--rule", "heading-order=error"], demo);
+      expect(bad.output).toMatch(/error\s+Heading jumps/);
+    });
+
+    it("rejects unknown rules and levels with exit code 2", async () => {
+      expect((await run(["--rule", "nope=error"], demo)).code).toBe(2);
+      expect((await run(["--rule", "img-size=loud"], demo)).code).toBe(2);
+      expect((await run(["--rule", "img-size"], demo)).code).toBe(2);
+    });
+
+    it("reads jota.config.json and lets the command line override it", () =>
+      withTempDir(async (dir) => {
+        await writeFile(join(dir, "a.tsx"), sample);
+        await writeFile(join(dir, "jota.config.json"), JSON.stringify({ guard: { rules: { "img-size": "error" } } }));
+        expect((await run(["."], dir)).code).toBe(1);
+        expect((await run([".", "--rule", "img-size=warn"], dir)).code).toBe(0);
+        expect((await run([".", "--preset", "a11y-only"], dir)).code).toBe(1); // file rule still applies
+      }));
+
+    it("config can set the preset, ignores and maxWarnings", () =>
+      withTempDir(async (dir) => {
+        await writeFile(join(dir, "a.tsx"), sample);
+        await writeFile(join(dir, "jota.config.json"), JSON.stringify({ guard: { preset: "strict" } }));
+        expect((await run(["."], dir)).code).toBe(1);
+        await writeFile(join(dir, "jota.config.json"), JSON.stringify({ guard: { maxWarnings: 0 } }));
+        expect((await run(["."], dir)).code).toBe(1);
+        await writeFile(join(dir, "jota.config.json"), JSON.stringify({ guard: { ignore: ["a.tsx"] } }));
+        expect((await run(["."], dir)).code).toBe(0);
+      }));
+
+    it("reports invalid config with exit code 2", () =>
+      withTempDir(async (dir) => {
+        await writeFile(join(dir, "jota.config.json"), "{ not json");
+        expect((await run(["."], dir)).code).toBe(2);
+        await writeFile(join(dir, "jota.config.json"), JSON.stringify({ guard: { rules: { "img-size": "loud" } } }));
+        expect((await run(["."], dir)).code).toBe(2);
+        await writeFile(join(dir, "jota.config.json"), JSON.stringify({ guard: { preset: "wild" } }));
+        expect((await run(["."], dir)).code).toBe(2);
+        expect((await run([".", "--config", "missing.json"], dir)).code).toBe(2);
+      }));
   });
 });

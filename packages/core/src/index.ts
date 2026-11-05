@@ -15,3 +15,21 @@ export { For, Show } from "./control.js";
 export { mergeProps, splitProps } from "./props.js";
 export { render } from "./web.js";
 export type { JSXElement, ParentProps } from "./types.js";
+export {
+  buildPath,
+  createRoutes,
+  filePathToPattern,
+  matchRoute,
+  normalizePathname,
+  resolveHead,
+  startRouter,
+  type Head,
+  type Params,
+  type Route,
+  type RouteConfig,
+  type RouteLoader,
+  type RouteMatch,
+  type RouteModule,
+  type Router,
+  type RouterOptions,
+} from "./router.js";
