@@ -26,9 +26,9 @@ Jota does not promise "100% on every metric". It promises a **performance budget
 
 | Stage | What | Status |
 |---|---|---|
-| 1 | **Jota Guard**: ESLint plugin + CLI that audits any JSX/TSX project | 🚧 next |
-| 2 | Signals runtime + Vite plugin with compiled JSX | 🚧 planned |
-| 3 | File routing, static generation, islands, scoped CSS, media plugin | 🚧 planned |
+| 1 | **Jota Guard**: ESLint plugin + CLI that audits any JSX/TSX project | ✅ built and tested, not yet released |
+| 2 | Signals runtime + Vite plugin with compiled JSX | ✅ built and tested, not yet released |
+| 3 | File routing, static generation, islands, scoped CSS, media plugin | 🚧 project scaffolder done; the rest planned |
 | 4 | Docs in English and Spanish, playground, examples | 🚧 planned |
 
 ## Installation 🚧

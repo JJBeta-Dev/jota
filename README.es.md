@@ -26,9 +26,9 @@ Jota no promete "100% en todas las métricas". Promete un **presupuesto de rendi
 
 | Etapa | Qué | Estado |
 |---|---|---|
-| 1 | **Jota Guard**: plugin de ESLint + CLI que audita cualquier proyecto JSX/TSX | 🚧 siguiente |
-| 2 | Runtime de signals + plugin de Vite con JSX compilado | 🚧 planeada |
-| 3 | Rutas por archivos, generación estática, islas, CSS con alcance local, plugin de medios | 🚧 planeada |
+| 1 | **Jota Guard**: plugin de ESLint + CLI que audita cualquier proyecto JSX/TSX | ✅ construido y probado, aún sin lanzar |
+| 2 | Runtime de signals + plugin de Vite con JSX compilado | ✅ construido y probado, aún sin lanzar |
+| 3 | Rutas por archivos, generación estática, islas, CSS con alcance local, plugin de medios | 🚧 generador de proyectos listo; el resto planeado |
 | 4 | Docs en inglés y español, playground, ejemplos | 🚧 planeada |
 
 ## Instalación 🚧

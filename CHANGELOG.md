@@ -25,6 +25,7 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - GitHub Actions CI workflow (typecheck, build, test, Guard on the example).
 - `examples/hello`: todo app built with Jota (4 tests, passes Guard, 6.18 kB JS / 2.65 kB gzip).
 - Guard: `input-label` accepts the HTML-style `for` attribute.
+- `create-jota-js`: project scaffolder with TypeScript and JavaScript templates (10 tests).
 
 ### Planned for 1.0.0
 - Jota Guard: ESLint plugin + CLI for accessibility, semantics and performance-budget rules.

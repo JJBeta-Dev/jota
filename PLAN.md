@@ -42,7 +42,7 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - [ ] CSS con alcance local, utilidades atómicas opcionales, CSS crítico en el build
 - [ ] Islas (JS solo donde hay interactividad)
 - [ ] Plugin de medios (`sharp`, `width/height`, `fetchpriority`, `lazy`)
-- [ ] `npm create jota-js@latest` con plantillas TS (por defecto) y JS
+- [x] `create-jota-js` con plantillas TS (por defecto) y JS: 10 tests; verificado a mano que un proyecto generado compila (4.90 kB JS, 2.11 kB gzip), pasa el chequeo de tipos y pasa Guard. Su `npm install` real espera al primer lanzamiento (`^1.0.0`)
 - **Puerta:** sitio demo con 95+ en Lighthouse móvil y menos de 10 KB de JS en páginas de contenido.
 
 ### Etapa 4 — Docs y comunidad (3-4 semanas)
