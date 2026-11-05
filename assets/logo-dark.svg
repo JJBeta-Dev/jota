@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="190" viewBox="0 0 420 190" role="img" aria-labelledby="t d">
+  <title id="t">Jota</title>
+  <desc id="d">Jota wordmark: the j is a dotted thread topped by a purple sphere, followed by heavy geometric letters.</desc>
+  <defs>
+    <radialGradient id="sphere" cx="30%" cy="26%" r="80%">
+      <stop offset="0" stop-color="#A57AFF"/><stop offset="0.38" stop-color="#7F3AF8"/><stop offset="1" stop-color="#5A12D6"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="200%">
+      <feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#6F3AF8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect width="420" height="190" rx="0" fill="#1A0B3B"/>
+  <path transform="translate(21 0)" d="M26 44 C22 18 52 4 78 10 C104 16 118 40 108 62 C98 84 66 90 44 78 C32 72 27 58 26 44 Z" fill="#2B1660"/>
+  <path d="M85 88 V148 Q85 172 61 172" fill="none" stroke="#A57AFF" stroke-width="22" stroke-linecap="round" stroke-dasharray="0.1 24.5"/>
+  <g fill="none" stroke="#F2ECFF" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="158" cy="116" r="27"/>
+    <path d="M240 50 V120 Q240 143 264 143"/><path d="M220 90 H268"/>
+    <circle cx="338" cy="116" r="27"/><path d="M365 90 V143"/>
+  </g>
+  <circle cx="85" cy="44" r="19" fill="url(#sphere)"/>
+</svg>

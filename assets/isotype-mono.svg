@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" role="img" aria-labelledby="t d">
+  <title id="t">Jota isotype, one color</title>
+  <desc id="d">A j drawn as a dotted thread with a purple sphere as its dot, on a soft organic blob.</desc>
+  <defs>
+    <radialGradient id="sphere" cx="30%" cy="26%" r="80%">
+      <stop offset="0" stop-color="#A57AFF"/><stop offset="0.38" stop-color="#7F3AF8"/><stop offset="1" stop-color="#5A12D6"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="200%">
+      <feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#6F3AF8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <path d="M110 66 V128 Q110 164 66 156" fill="none" stroke="#1A0B3B" stroke-width="9" stroke-linecap="round" stroke-dasharray="0.1 15"/>
+  <circle cx="110" cy="46" r="24" fill="#1A0B3B"/>
+</svg>
