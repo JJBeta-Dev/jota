@@ -28,6 +28,11 @@ export const DEFAULT_LEVELS = {
   "scope-valid": "error",
   "aria-unsupported-elements": "error",
   "anchor-ambiguous-text": "warn",
+  "role-has-required-aria-props": "error",
+  "autocomplete-valid": "error",
+  "no-interactive-element-to-noninteractive-role": "error",
+  "prefer-tag-over-role": "warn",
+  "aria-activedescendant-has-tabindex": "error",
 } as const satisfies Record<string, Level>;
 
 export type RuleId = keyof typeof DEFAULT_LEVELS;

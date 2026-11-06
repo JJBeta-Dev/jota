@@ -26,7 +26,7 @@ Jota no promete "100% en todas las métricas". Te da límites medibles y los com
 
 | Paquete | Qué hace |
 |---|---|
-| [`jota-guard`](packages/guard) | Veintiséis reglas de accesibilidad y semántica, como plugin de ESLint y como comando `jota-guard` |
+| [`jota-guard`](packages/guard) | Treinta y una reglas de accesibilidad y semántica, como plugin de ESLint y como comando `jota-guard` |
 | [`jota-js`](packages/core) | Signals, `Show` y `For`, un router por archivos, islas y el runtime del DOM para el JSX compilado |
 | [`vite-plugin-jota`](packages/vite-plugin) | Compila `.tsx`/`.jsx`; generación de sitios estáticos con datos asíncronos, imágenes AVIF/WebP, CSS crítico y presupuesto de rendimiento |
 | [`create-jota-js`](packages/create-jota-js) | Crea una app nueva en TypeScript o JavaScript |
@@ -163,7 +163,7 @@ Un mapa honesto, no un marcador. Las otras columnas describen cada proyecto en t
 |---|---|---|---|---|---|---|---|
 | Cómo se actualiza la página | Vuelve a ejecutar componentes y compara un DOM virtual | Detección de cambios, signals en versiones recientes | Reactividad fina más un DOM virtual | Compilado, basado en signals (runes), sin DOM virtual | Signals, sin DOM virtual | DOM virtual, pequeño; signals como complemento | Signals, sin DOM virtual; los componentes se ejecutan una vez |
 | Sintaxis | JSX / TSX | Plantillas + clases de TypeScript | Componentes `.vue` | Archivos `.svelte` | JSX / TSX | JSX / TSX | JSX / TSX, sin extensión propia |
-| Revisión de accesibilidad | Plugin de ESLint de la comunidad | Reglas opcionales en plantillas | Plugin de ESLint de la comunidad | **Avisos del compilador incluidos** | Plugin de ESLint de la comunidad | Plugin de ESLint de la comunidad | **Guard: 26 reglas** como plugin de ESLint y CLI, también para JSX que no es de Jota |
+| Revisión de accesibilidad | Plugin de ESLint de la comunidad | Reglas opcionales en plantillas | Plugin de ESLint de la comunidad | **Avisos del compilador incluidos** | Plugin de ESLint de la comunidad | Plugin de ESLint de la comunidad | **Guard: 31 reglas** como plugin de ESLint y CLI, también para JSX que no es de Jota |
 | Presupuesto de rendimiento que rompe el build | No | Presupuestos de bundle en la CLI | No | No | No | No | **Sí**: límites de JS, CSS, HTML e imágenes por página |
 | Rutas y páginas estáticas | Necesita un meta-framework (Next, Remix...) | Router incluido; SSR/prerender en la CLI | vue-router, Nuxt | SvelteKit | SolidStart | Complementos | Router por archivos y generación estática incluidos |
 | Render en servidor | Sí | Sí | Sí | Sí | Sí | Sí | **No** (solo generación estática) |

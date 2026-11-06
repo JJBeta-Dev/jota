@@ -34,6 +34,11 @@ const RULES: Array<[string, string, string]> = [
   ["jota/no-redundant-roles", "warn", "no role the element already has"],
   ["jota/no-noninteractive-tabindex", "warn", "no tabIndex={0} on plain content"],
   ["jota/anchor-ambiguous-text", "warn", "no 'click here' or 'read more' link text"],
+  ["jota/role-has-required-aria-props", "error", "a role comes with the aria-* it needs (checkbox needs aria-checked...)"],
+  ["jota/autocomplete-valid", "error", "autoComplete uses a value from the HTML list"],
+  ["jota/no-interactive-element-to-noninteractive-role", "error", "no role='presentation' on a button, link or input"],
+  ["jota/aria-activedescendant-has-tabindex", "error", "aria-activedescendant on an element that can take focus"],
+  ["jota/prefer-tag-over-role", "warn", "<div role='button'> can be a <button>"],
 ];
 
 export default function Guard(): JSXElement {

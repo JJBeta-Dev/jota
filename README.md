@@ -26,7 +26,7 @@ Jota does not promise "100% on every metric". It gives you measurable limits and
 
 | Package | What it does |
 |---|---|
-| [`jota-guard`](packages/guard) | Twenty-six accessibility and semantics rules, as an ESLint plugin and the `jota-guard` command |
+| [`jota-guard`](packages/guard) | Thirty-one accessibility and semantics rules, as an ESLint plugin and the `jota-guard` command |
 | [`jota-js`](packages/core) | Signals, `Show` and `For`, a file-based router, islands, and the DOM runtime for compiled JSX |
 | [`vite-plugin-jota`](packages/vite-plugin) | Compiles `.tsx`/`.jsx`; static site generation with async data, AVIF/WebP images, critical CSS and a performance budget |
 | [`create-jota-js`](packages/create-jota-js) | Creates a new app in TypeScript or JavaScript |
@@ -163,7 +163,7 @@ An honest map, not a scoreboard. The other columns describe each project in gene
 |---|---|---|---|---|---|---|---|
 | How the page updates | Re-runs components, diffs a virtual DOM | Change detection, signals in recent versions | Fine-grained reactivity plus a virtual DOM | Compiled, signals-based (runes), no virtual DOM | Signals, no virtual DOM | Virtual DOM, small; signals as an add-on | Signals, no virtual DOM; components run once |
 | Syntax | JSX / TSX | Templates + TypeScript classes | `.vue` single-file components | `.svelte` files | JSX / TSX | JSX / TSX | JSX / TSX, no custom extension |
-| Accessibility checks | Community ESLint plugin | Optional template lint rules | Community ESLint plugin | **Built-in compiler warnings** | Community ESLint plugin | Community ESLint plugin | **Guard: 26 rules** as ESLint plugin and CLI, also for non-Jota JSX |
+| Accessibility checks | Community ESLint plugin | Optional template lint rules | Community ESLint plugin | **Built-in compiler warnings** | Community ESLint plugin | Community ESLint plugin | **Guard: 31 rules** as ESLint plugin and CLI, also for non-Jota JSX |
 | Performance budget that fails the build | No | Bundle budgets in the CLI | No | No | No | No | **Yes**: JS, CSS, HTML and image limits per page |
 | Routing and static pages | Needs a meta-framework (Next, Remix...) | Built-in router; SSR/prerender in the CLI | vue-router, Nuxt | SvelteKit | SolidStart | Add-ons | File-based router and static generation built in |
 | Server rendering | Yes | Yes | Yes | Yes | Yes | Yes | **No** (static generation only) |

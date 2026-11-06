@@ -75,6 +75,11 @@ Prioridad: opciones de la línea de comandos, luego el archivo de configuración
 | `jota/no-redundant-roles` | warn | sin un rol que el elemento ya tiene |
 | `jota/no-noninteractive-tabindex` | warn | sin `tabIndex={0}` en contenido que no es interactivo |
 | `jota/anchor-ambiguous-text` | warn | sin enlaces "click here" ni "read more" |
+| `jota/role-has-required-aria-props` | error | un rol trae los `aria-*` que necesita (`checkbox` necesita `aria-checked`...) |
+| `jota/autocomplete-valid` | error | `autoComplete` usa un valor de la lista de HTML |
+| `jota/no-interactive-element-to-noninteractive-role` | error | sin `role="presentation"` en un botón, enlace o input |
+| `jota/aria-activedescendant-has-tabindex` | error | `aria-activedescendant` en un elemento que puede recibir foco |
+| `jota/prefer-tag-over-role` | warn | `<div role="button">` puede ser un `<button>` |
 
 Cuando una regla no puede estar segura (props con spread, componentes, valores dinámicos), se calla en vez de adivinar. Los mensajes del producto están en inglés. Detalles: [docs/guard-rules.md](https://github.com/JJBeta-Dev/jota/blob/main/docs/guard-rules.md).
 

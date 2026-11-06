@@ -1,6 +1,6 @@
 # Jota Guard — Rule specification (draft v0.1)
 
-Status: **v0.1 implemented** (2026-11-05) in `packages/guard`: twenty-six rules (the first ten on 2026-11-05, sixteen more on 2026-11-06), three presets and the CLI, with 305 passing tests. This document is the specification they follow. Anything not listed here is out of scope for the first release.
+Status: **v0.1 implemented** (2026-11-05) in `packages/guard`: thirty-one rules (the first ten on 2026-11-05, twenty-one more on 2026-11-06), three presets and the CLI, with 369 passing tests. This document is the specification they follow. Anything not listed here is out of scope for the first release.
 
 Guard is an ESLint plugin plus a CLI (`npx jota-guard`) that audits JSX/TSX files (React, Solid, Preact, Jota). Rules are static checks on the syntax tree. Guard never claims a page is "100% accessible": static analysis catches a known subset of problems and says so.
 
@@ -166,6 +166,26 @@ Message: `<div> is not interactive, so tabIndex={0} puts a stop in the tab order
 ### `jota/anchor-ambiguous-text` · warn
 A link whose only text is "click here", "here", "read more", "more", "learn more", "link" or "this" means nothing when screen readers list links on their own. Links with expressions or child elements are not judged.
 Message: `The link text "Read more" means nothing out of context (screen readers list links on their own). Say where the link goes.`
+
+### `jota/role-has-required-aria-props` · error
+A static `role` must come with the `aria-*` attributes it needs: `checkbox`, `radio`, `switch`, `menuitemcheckbox` and `menuitemradio` need `aria-checked`; `slider` and `scrollbar` need `aria-valuenow`; `heading` needs `aria-level`. Native `<input>` elements and `<h1>` to `<h6>` already expose that state and are accepted.
+Message: `role="checkbox" needs aria-checked. Without it, screen readers cannot tell the state.`
+
+### `jota/autocomplete-valid` · error
+A static `autoComplete` must be one of the HTML autofill values (`email`, `given-name`, `current-password`, `postal-code`...), optionally with `section-*`, `shipping`/`billing`, a contact type (`home`, `work`...) and `webauthn`.
+Message: `autoComplete="e-mail" is not a valid value. Use one from the HTML list, such as "email", "given-name" or "current-password".`
+
+### `jota/no-interactive-element-to-noninteractive-role` · error
+`<button>`, `<a href>`, `<input>`, `<select>` and `<textarea>` must not get a role that says they are not interactive (`presentation`, `none`, `img`, `heading`, `list`, `article`, `group`...). Roles such as `tab`, `menuitem` or `link` on a button are fine.
+Message: `<button> is interactive, but role="presentation" tells assistive technology it is not. Remove the role or use a different element.`
+
+### `jota/aria-activedescendant-has-tabindex` · error
+An element with `aria-activedescendant` must be able to take focus: a native input, select, textarea or button, a link with `href`, or an element with `tabIndex`.
+Message: `<div> uses aria-activedescendant but cannot take focus. Add tabIndex={0} (or tabIndex={-1} if focus is set by script).`
+
+### `jota/prefer-tag-over-role` · warn
+A `<div>` or `<span>` with a role that has a native element (`button`, `link`, `heading`, `list`, `listitem`, `navigation`, `main`, `banner`, `contentinfo`, `complementary`, `article`, `form`, `checkbox`, `textbox`) is better written with that element. Roles with no single native equivalent (`img`, `dialog`, `tabpanel`...) are not flagged.
+Message: `<div role="button"> can be <button>. The native element brings keyboard support and semantics for free.`
 
 ## 4. Presets
 | Preset | Rules |

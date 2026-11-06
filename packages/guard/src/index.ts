@@ -15,6 +15,11 @@ import noNoninteractiveTabindex from "./rules/no-noninteractive-tabindex.js";
 import scopeValid from "./rules/scope-valid.js";
 import ariaUnsupportedElements from "./rules/aria-unsupported-elements.js";
 import anchorAmbiguousText from "./rules/anchor-ambiguous-text.js";
+import roleHasRequiredAriaProps from "./rules/role-has-required-aria-props.js";
+import autocompleteValid from "./rules/autocomplete-valid.js";
+import noInteractiveElementToNoninteractiveRole from "./rules/no-interactive-element-to-noninteractive-role.js";
+import preferTagOverRole from "./rules/prefer-tag-over-role.js";
+import ariaActivedescendantHasTabindex from "./rules/aria-activedescendant-has-tabindex.js";
 import buttonName from "./rules/button-name.js";
 import clickableRole from "./rules/clickable-role.js";
 import headingOrder from "./rules/heading-order.js";
@@ -54,6 +59,11 @@ export const rules = {
   "scope-valid": scopeValid,
   "aria-unsupported-elements": ariaUnsupportedElements,
   "anchor-ambiguous-text": anchorAmbiguousText,
+  "role-has-required-aria-props": roleHasRequiredAriaProps,
+  "autocomplete-valid": autocompleteValid,
+  "no-interactive-element-to-noninteractive-role": noInteractiveElementToNoninteractiveRole,
+  "prefer-tag-over-role": preferTagOverRole,
+  "aria-activedescendant-has-tabindex": ariaActivedescendantHasTabindex,
 };
 
 const plugin: ESLint.Plugin = { rules };
