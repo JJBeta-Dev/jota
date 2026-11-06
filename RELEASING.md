@@ -44,7 +44,7 @@ git add -A && git commit -m "chore: release 1.0.0"
 git tag v1.0.0 && git push --follow-tags
 ```
 
-The workflow stops early if a tag does not match the package versions. It has not been run yet, so expect to adjust it the first time.
+The workflow stops early if a tag does not match the package versions. Its tag check and the packing (`pnpm publish --dry-run`) were tested locally; the publish step itself has not run on GitHub yet, so expect to adjust it the first time.
 
 ## 4. After publishing
 
