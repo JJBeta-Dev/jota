@@ -107,22 +107,23 @@ Message: `<video> has no captions track. Add <track kind="captions" src="…" sr
 | `strict` | warnings become errors |
 | `a11y-only` | everything except `img-size` |
 
-## 5. Performance budget (config file)
-Static budget checks need build output, so they ship with the Jota Vite plugin (Stage 2/3), not with Guard v0.1. The config shape is fixed now so it does not change later:
+## 5. Performance budget
+
+The budget is not part of Guard. It lives in the static build of `vite-plugin-jota`, because it needs the build output:
 
 ```ts
-// jota.config.ts
-import { defineConfig } from "jota-js/config";
-
-export default defineConfig({
-  guard: { preset: "recommended" },
+// vite.config.ts
+jotaStatic({
   budget: {
-    maxJsPerRoute: "10kb",   // gzip size of JS loaded by a route
-    maxImageWeight: "200kb", // per image after optimization
-    maxCssPerRoute: "20kb",
+    maxJsPerRoute: "10kb",   // gzip size of the scripts and preloaded modules a page loads
+    maxCssPerRoute: "20kb",  // gzip size of the stylesheets a page links
+    maxHtmlPerRoute: "20kb", // size of one HTML page
+    maxImageWeight: "200kb", // size of any single image file
   },
 });
 ```
+
+When a limit is exceeded the build fails and lists each page or file over its limit.
 
 ## 6. CLI behaviour (v0.1)
 ```text

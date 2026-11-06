@@ -6,7 +6,11 @@ import jotaStatic from "vite-plugin-jota/static";
 const file = (path: string) => fileURLToPath(new URL(path, import.meta.url));
 
 export default defineConfig({
-  plugins: [jota(), jotaStatic()],
+  plugins: [
+    jota(),
+    // The docs site keeps itself honest: the build fails if a page grows past these limits.
+    jotaStatic({ budget: { maxJsPerRoute: "12kb", maxCssPerRoute: "20kb", maxHtmlPerRoute: "20kb", maxImageWeight: "200kb" } }),
+  ],
   resolve: {
     // Babel (loaded only by the playground) expects Node's `path` and `assert`; the browser gets small stand-ins.
     alias: [

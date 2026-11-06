@@ -12,6 +12,7 @@
  */
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { gzipSync } from "node:zlib";
 import { dirname, join, relative, resolve } from "node:path";
 import { Window } from "happy-dom";
 import type { Plugin, ResolvedConfig } from "vite";
@@ -37,6 +38,22 @@ export interface StaticOptions {
    * their `<img>` in a `<picture>`. `true` uses both formats at quality 70.
    */
   images?: boolean | ImageOptions;
+  /**
+   * Performance budget. When a limit is exceeded the build fails and says which page or file went over.
+   * Sizes are numbers of bytes or strings such as "10kb" or "1.5 MB".
+   */
+  budget?: Budget;
+}
+
+export interface Budget {
+  /** Largest gzip size of the JavaScript a single page loads (its script tags and preloaded modules). */
+  maxJsPerRoute?: string | number;
+  /** Largest gzip size of the CSS a single page loads through stylesheet links (inlined CSS counts toward the HTML). */
+  maxCssPerRoute?: string | number;
+  /** Largest size of any single image file in the build output. */
+  maxImageWeight?: string | number;
+  /** Largest size of any single HTML page. */
+  maxHtmlPerRoute?: string | number;
 }
 
 export interface ImageOptions {
@@ -177,6 +194,71 @@ function wrapInPicture(container: Element, variants: Variants): void {
     image.replaceWith(picture);
     picture.appendChild(image);
   }
+}
+
+/** Parse "10kb", "1.5 MB" or a number of bytes. */
+export function parseSize(value: string | number): number {
+  if (typeof value === "number") return value;
+  const match = /^\s*(\d+(?:\.\d+)?)\s*(b|kb|kib|mb|mib)?\s*$/i.exec(value);
+  if (!match) throw new Error(`jota static: invalid size "${value}". Use a number of bytes or a string such as "10kb".`);
+  const unit = (match[2] ?? "b").toLowerCase();
+  const factor = unit === "b" ? 1 : unit.startsWith("k") ? 1024 : 1024 * 1024;
+  return Math.round(Number(match[1]) * factor);
+}
+
+const formatSize = (bytes: number): string => (bytes >= 1024 ? `${(bytes / 1024).toFixed(1)} kB` : `${bytes} B`);
+
+/** Check the build output against the budget. Returns one message per violation. */
+export function checkBudget(outDir: string, pages: string[], budget: Budget): string[] {
+  const problems: string[] = [];
+  const limit = (value: string | number | undefined) => (value === undefined ? undefined : parseSize(value));
+  const maxJs = limit(budget.maxJsPerRoute);
+  const maxCss = limit(budget.maxCssPerRoute);
+  const maxImage = limit(budget.maxImageWeight);
+  const maxHtml = limit(budget.maxHtmlPerRoute);
+
+  const assetPath = (reference: string): string => join(outDir, reference.replace(/^\//, "").split("?")[0] as string);
+
+  for (const url of pages) {
+    const file = url === "/" ? join(outDir, "index.html") : join(outDir, ...url.split("/").filter(Boolean), "index.html");
+    const html = readFileSync(file, "utf8");
+
+    if (maxHtml !== undefined && Buffer.byteLength(html) > maxHtml) {
+      problems.push(`${url}: HTML is ${formatSize(Buffer.byteLength(html))}, over the limit of ${formatSize(maxHtml)}.`);
+    }
+
+    const references = (pattern: RegExp): string[] => [...new Set([...html.matchAll(pattern)].map((match) => match[1] as string))];
+    const gzipOf = (references_: string[]): number =>
+      references_.reduce((sum, reference) => {
+        const path = assetPath(reference);
+        return existsSync(path) ? sum + gzipSync(readFileSync(path)).length : sum;
+      }, 0);
+
+    if (maxJs !== undefined) {
+      const scripts = references(/<script\b[^>]*\bsrc="([^"]+)"/g);
+      const preloads = references(/<link\b[^>]*\brel="modulepreload"[^>]*\bhref="([^"]+)"/g);
+      const total = gzipOf([...scripts, ...preloads]);
+      if (total > maxJs) {
+        problems.push(`${url}: JavaScript is ${formatSize(total)} gzip, over the limit of ${formatSize(maxJs)} (${[...scripts, ...preloads].join(", ")}).`);
+      }
+    }
+    if (maxCss !== undefined) {
+      const sheets = references(/<link\b[^>]*\brel="stylesheet"[^>]*\bhref="([^"]+)"/g);
+      const total = gzipOf(sheets);
+      if (total > maxCss) problems.push(`${url}: CSS is ${formatSize(total)} gzip, over the limit of ${formatSize(maxCss)}.`);
+    }
+  }
+
+  if (maxImage !== undefined) {
+    for (const file of walkFiles(outDir)) {
+      if (!/\.(?:jpe?g|png|avif|webp|gif)$/i.test(file)) continue;
+      const size = statSync(file).size;
+      if (size > maxImage) {
+        problems.push(`/${relative(outDir, file).replaceAll("\\", "/")}: image is ${formatSize(size)}, over the limit of ${formatSize(maxImage)}.`);
+      }
+    }
+  }
+  return problems;
 }
 
 const GLOBAL_NAMES = [
@@ -372,6 +454,14 @@ export async function prerender(config: ResolvedConfig, options: StaticOptions =
       `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
       "utf8",
     );
+  }
+
+  if (options.budget) {
+    const problems = checkBudget(outDir, rendered, options.budget);
+    if (problems.length > 0) {
+      throw new Error(`jota static: performance budget exceeded.\n  - ${problems.join("\n  - ")}`);
+    }
+    config.logger.info("jota static: performance budget respected.");
   }
 
   config.logger.info(`jota static: rendered ${rendered.length} page(s).`);

@@ -8,7 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import sharp from "sharp";
 import { build, createLogger } from "vite";
 import jota from "../src/index.js";
-import jotaStatic from "../src/static.js";
+import jotaStatic, { parseSize } from "../src/static.js";
 
 const site = fileURLToPath(new URL("./site", import.meta.url));
 const core = (file: string) => fileURLToPath(new URL(`../../core/src/${file}`, import.meta.url));
@@ -196,4 +196,47 @@ describe("critical CSS for large stylesheets", () => {
     const asset = readdirSync(join(largeOut, "assets")).find((file) => file.endsWith(".css")) as string;
     expect(readFileSync(join(largeOut, "assets", asset), "utf8")).toContain("never-used-anywhere");
   });
+});
+
+describe("performance budget", () => {
+  const buildWith = async (budget: Parameters<typeof jotaStatic>[0] extends infer O ? (O extends { budget?: infer B } ? B : never) : never) => {
+    const dir = await mkdtemp(join(tmpdir(), "jota-budget-"));
+    try {
+      await build({
+        root: site,
+        configFile: false,
+        customLogger: createLogger("silent"),
+        plugins: [jota(), jotaStatic({ budget })],
+        resolve: {
+          alias: [
+            { find: /^jota-js\/web$/, replacement: core("web.ts") },
+            { find: /^jota-js$/, replacement: core("index.ts") },
+          ],
+        },
+        build: { outDir: dir, emptyOutDir: true },
+      });
+    } finally {
+      await rm(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+    }
+  };
+
+  it("parses sizes", () => {
+    expect(parseSize(2048)).toBe(2048);
+    expect(parseSize("10kb")).toBe(10240);
+    expect(parseSize("1.5 MB")).toBe(1572864);
+    expect(parseSize("500b")).toBe(500);
+    expect(() => parseSize("lots")).toThrow(/invalid size/);
+  });
+
+  it("passes with generous limits", async () => {
+    await expect(buildWith({ maxJsPerRoute: "200kb", maxCssPerRoute: "50kb", maxHtmlPerRoute: "100kb", maxImageWeight: "1mb" })).resolves.toBeUndefined();
+  }, 60_000);
+
+  it("fails the build and names the page when JavaScript is over budget", async () => {
+    await expect(buildWith({ maxJsPerRoute: "1b" })).rejects.toThrow(/performance budget exceeded[\s\S]*\/app: JavaScript is/);
+  }, 60_000);
+
+  it("fails on HTML that is too large", async () => {
+    await expect(buildWith({ maxHtmlPerRoute: "10b" })).rejects.toThrow(/HTML is/);
+  }, 60_000);
 });

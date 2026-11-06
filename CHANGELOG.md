@@ -45,6 +45,9 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 
 - In-browser playground on the docs site: compiles TSX with the Jota compiler and runs it in a preview frame; covered by tests in a real browser.
 
+- Performance budget for the static build (`budget`: JavaScript, CSS, HTML and image limits) that fails the build and names what went over.
+- READMEs rewritten to match the actual state of the project.
+
 ### Fixed
 - `startRouter` no longer duplicates pre-rendered HTML when the client takes over, and no longer hijacks clicks on links that are not client routes.
 - List reconciliation moved almost every node when two rows were swapped; it now uses a longest-increasing-subsequence diff (swap in a 1,000-row list: 22 ms to 1.7 ms).

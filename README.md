@@ -2,7 +2,7 @@
 
 <img src="assets/logo.svg" alt="Jota" width="320">
 
-**Write normal JSX/TSX. Ship fast, accessible, semantic pages. The build fails if you don't.**
+**Write plain JSX/TSX. Ship fast, accessible pages. Fail the build when they are not.**
 
 [English](README.md) · [Español](README.es.md)
 
@@ -10,51 +10,59 @@
 
 </div>
 
-> **Status: pre-alpha, planning stage.** Nothing is published to npm yet. This README describes the target design so contributors and early users know where Jota is going. Sections marked 🚧 are not implemented yet. See [PLAN.md](PLAN.md) for the roadmap (in Spanish) and [IA.md](IA.md) for every technical decision.
+> **Status: pre-alpha.** The code in this repository works and is tested (continuous integration runs on Node 20 and 22, on Linux and Windows), but nothing has been released yet: the packages on npm are empty `0.0.1` placeholders that reserve the names. Until the first release, use Jota from this repository. [PLAN.md](PLAN.md) holds the roadmap (in Spanish) and [IA.md](IA.md) every technical decision.
 
 ## What is Jota?
 
 Jota is a frontend toolkit built on three ideas:
 
-1. **Fine-grained reactivity, no Virtual DOM.** Components run once; only the exact DOM node bound to a changed value updates. No `useMemo`, no `useCallback`, no cascading re-renders.
-2. **Plain JSX and TypeScript.** Files are regular `.tsx` (TypeScript) or `.jsx` (JavaScript). There is no custom file extension, so your editor, ESLint, Prettier and GitHub work with no plugins.
-3. **Guardrails at build time.** Accessibility, semantics and performance budgets are checked by the compiler. A `<div onClick>` without a role or an `<img>` without `alt` fails the build, with a message telling you how to fix it.
+1. **Fine-grained reactivity, no Virtual DOM.** A component runs once; only the DOM node that reads a changed value is updated. There is no `useMemo`, no `useCallback` and no cascade of re-renders.
+2. **Plain JSX and TypeScript.** Files are regular `.tsx` or `.jsx`. There is no custom file extension, so your editor, ESLint, Prettier and GitHub work without plugins.
+3. **Accessibility checks that fail the build.** Jota Guard (an ESLint plugin and a command line tool) rejects a `<div onClick>` without a role or an `<img>` without `alt`, and tells you how to fix it. A performance budget can fail the build too.
 
-Jota does not promise "100% on every metric". It promises a **performance budget verified in CI** that you control.
+Jota does not promise "100% on every metric". It gives you measurable limits and checks them for you.
 
-## Roadmap at a glance
+## What is in this repository
 
-| Stage | What | Status |
-|---|---|---|
-| 1 | **Jota Guard**: ESLint plugin + CLI that audits any JSX/TSX project | ✅ built and tested, not yet released |
-| 2 | Signals runtime + Vite plugin with compiled JSX | ✅ built and tested, not yet released |
-| 3 | File routing, static generation, islands, async data, AVIF/WebP images, critical CSS, scaffolder | ✅ built and tested, not yet released |
-| 4 | Docs in English and Spanish, playground, examples | ✅ docs site, in-browser playground and four examples (`site/`, `examples/*`) |
+| Package | What it does |
+|---|---|
+| [`jota-guard`](packages/guard) | Ten accessibility, semantics and performance rules, as an ESLint plugin and the `jota-guard` command |
+| [`jota-js`](packages/core) | Signals, `Show` and `For`, a file-based router, islands, and the DOM runtime for compiled JSX |
+| [`vite-plugin-jota`](packages/vite-plugin) | Compiles `.tsx`/`.jsx`; static site generation with async data, AVIF/WebP images, critical CSS and a performance budget |
+| [`create-jota-js`](packages/create-jota-js) | Creates a new app in TypeScript or JavaScript |
 
-## Installation 🚧
+Also here: the documentation site with an in-browser playground ([`site/`](site)), four example apps ([`examples/`](examples)) and benchmarks ([`bench/`](bench)).
 
-> These commands will work once the first packages are published. They are shown so the target experience is clear.
+## Installation
 
-**Audit an existing project (Jota Guard, first release):**
-
-```bash
-npx jota-guard
-```
-
-**Create a new Jota app (TypeScript by default):**
+> These commands work after the first release. Until then, see "Try it from this repository" below.
 
 ```bash
-npm create jota-js@latest my-app
+npm create jota-js@latest my-app     # a new app, TypeScript by default
 cd my-app
 npm install
 npm run dev
+
+npx jota-guard src                   # or only audit an existing JSX/TSX project
 ```
 
 Requirements: Node.js 20 or newer.
 
-## Quick example 🚧
+### Try it from this repository
 
-A counter in TypeScript. The component function runs **once**; only the text node updates when `count` changes.
+```bash
+git clone https://github.com/JJBeta-Dev/jota.git
+cd jota
+corepack enable
+pnpm install
+pnpm -r build
+pnpm --filter jota-site dev          # the docs site and the playground
+pnpm --filter hello-jota dev         # the todo example
+```
+
+## A counter
+
+The component function runs **once**; only the text node changes when `count` does.
 
 ```tsx
 // src/Counter.tsx
@@ -75,74 +83,84 @@ export function Counter() {
 }
 ```
 
-The same component in JavaScript is identical without types, in a `.jsx` file.
+The same component in JavaScript is identical without the types, in a `.jsx` file.
 
-## Guardrails example 🚧
+## Guardrails
 
 ```tsx
-// ❌ This fails the build
+// This fails the check
 <div onClick={openMenu}>Open</div>
 <img src="/photo.jpg" />
 
-// ✅ Fix suggested by Jota
+// This passes
 <button type="button" onClick={openMenu}>Open</button>
 <img src="/photo.jpg" alt="Team working at the studio" width="800" height="600" />
 ```
 
-Example message:
+`npx jota-guard src` prints:
 
 ```text
-jota/img-alt  <img> needs an `alt` attribute.
-Describe the image, or use alt="" if it is purely decorative.
-More: https://github.com/JJBeta-Dev/jota/blob/main/docs/guard-rules.md#img-alt
+src/Header.tsx
+  8:3  error  <div> with onClick is not keyboard accessible. Use <button type="button"> (or <a href>) instead  jota/clickable-role
+  9:3  error  <img> needs an `alt` attribute. Describe the image, or use alt="" if it is purely decorative      jota/img-alt
 ```
 
-First batch of rules: clickable `div`/`span` without role, `img` without `alt`, heading order, inputs without label, images without `width`/`height`, `html` without `lang`, buttons without accessible name.
+The rules: clickable `div`/`span` without a role, `img` without `alt`, `img` without `width`/`height`, buttons and links without an accessible name, inputs without a label, heading order, `html` without `lang`, positive `tabIndex`, and `video` without captions. Two of them warn by default and can be made errors. See [packages/guard](packages/guard) and [docs/guard-rules.md](docs/guard-rules.md).
 
-## Performance budget 🚧
+## Static pages and a performance budget
 
 ```ts
-// jota.config.ts
-import { defineConfig } from "jota-js/config";
+// vite.config.ts
+import { defineConfig } from "vite";
+import jota from "vite-plugin-jota";
+import jotaStatic from "vite-plugin-jota/static";
 
 export default defineConfig({
-  budget: {
-    maxJsPerRoute: "10kb",
-    maxImageWeight: "200kb",
-  },
+  plugins: [
+    jota(),
+    jotaStatic({
+      site: "https://example.com",
+      images: true, // AVIF and WebP, with <picture>
+      budget: { maxJsPerRoute: "10kb", maxCssPerRoute: "20kb", maxImageWeight: "200kb" },
+    }),
+  ],
 });
 ```
 
-If a route goes over budget, the build fails and tells you which asset caused it.
+Every file in `src/routes` becomes an HTML page that contains no JavaScript unless the route asks for it. If a page goes over the budget, the build fails and says which page and by how much.
 
-## What is measured today
+## What has been measured
 
 - The todo example (`examples/hello`) compiles to 6.18 kB of JavaScript (2.65 kB gzip), runtime and CSS included.
-- The docs site (`site/`) renders 8 pages with **no JavaScript**, around 6 kB of HTML each.
-- Lighthouse on four pages of the docs site (local, mobile emulation): 100 in performance, accessibility, best practices and SEO ([bench/lighthouse/RESULTS.md](bench/lighthouse/RESULTS.md)). A small static site, not a field measurement.
-- Rendering in a real browser (Edge), same table app in Jota and Solid: within roughly 10% of Solid on most operations, with a smaller bundle (2.9 kB gzip against 4.6 kB) ([bench/browser/RESULTS.md](bench/browser/RESULTS.md)). One machine, one browser, not the official js-framework-benchmark.
-- Reactivity micro-benchmarks against Solid and Preact Signals are in [bench/RESULTS.md](bench/RESULTS.md): Jota is in Solid's range and slower than Preact Signals. They measure the reactive graph in Node, not real pages in a browser.
+- Nine of the ten pages of the docs site contain no JavaScript. Lighthouse (local, mobile emulation) gives 100 in performance, accessibility, best practices and SEO on four of them: [bench/lighthouse/RESULTS.md](bench/lighthouse/RESULTS.md). This is a small static site and a local measurement, not field data.
+- In a real browser (Edge), the same table app in Jota and in Solid is within roughly 10% on most operations, and Jota's bundle is smaller (2.9 kB gzip against 4.6 kB): [bench/browser/RESULTS.md](bench/browser/RESULTS.md). One machine, one browser; it is not the official js-framework-benchmark.
+- Reactivity micro-benchmarks against Solid and Preact Signals are in [bench/RESULTS.md](bench/RESULTS.md): Jota is in Solid's range and slower than Preact Signals. They measure the reactive graph in Node, not real pages.
+
+## Known limits
+
+- Islands and client routes are mounted again in the browser; there is no hydration of the server HTML.
+- Pages are rendered once at build time. There is no server-side rendering on request.
+- There are no scoped component styles or atomic CSS utilities.
 
 ## Project layout
 
 ```text
 jota/
-├─ packages/
-│  ├─ guard/             # ESLint plugin + CLI (Stage 1)
-│  ├─ core/              # signals runtime (Stage 2)
-│  ├─ vite-plugin/       # compiled JSX (Stage 2)
-│  └─ create-jota-js/    # project scaffolder (Stage 3)
-├─ docs/                 # documentation site (Stage 4)
-├─ assets/               # logo and images
-├─ IA.md                 # context and decisions for AI agents
-├─ PLAN.md               # staged plan (Spanish)
+├─ packages/        guard, core (jota-js), vite-plugin, create-jota-js
+├─ site/            documentation site and playground, built with Jota
+├─ examples/        hello (todo), blog, landing, dashboard, guard-demo
+├─ bench/           reactivity and browser benchmarks, Lighthouse results
+├─ docs/            Guard rule specification
+├─ scripts/         release helper (see RELEASING.md)
+├─ IA.md            context and decisions for AI agents
+├─ PLAN.md          staged plan (Spanish)
 └─ CHANGELOG.md
 ```
 
 ## Contributing
 
-The project is in the planning stage. Ideas and rule suggestions are welcome through GitHub issues once the repository is public. Please read [IA.md](IA.md) first: it explains what is in and out of scope for v1.
+Ideas, bug reports and rule suggestions are welcome through GitHub issues once the repository is public. Please read [IA.md](IA.md) first: it explains what is in and out of scope for version 1.
 
 ## License
 
-[MIT](LICENSE) © JJBeta. Jota reuses ideas and, in later stages, MIT-licensed code from the Solid ecosystem (`dom-expressions`), with attribution.
+[MIT](LICENSE) © JJBeta. JSX compilation uses `babel-plugin-jsx-dom-expressions` (MIT), the compiler family behind Solid, and critical CSS uses `beasties` (Apache-2.0).

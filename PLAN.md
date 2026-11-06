@@ -51,6 +51,7 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - [x] Sitio de docs `site/` hecho con Jota (inglés completo, español para inicio y primeros pasos): 8 páginas sin JavaScript, Guard sin avisos con `--max-warnings 0`. No usa Starlight; el despliegue a GitHub Pages queda en `.github/workflows/pages.yml` (solo manual, requiere repo público o plan de pago)
 - [x] Ejemplos con tests y Guard: `examples/hello` (tareas), `examples/blog` (estático, rutas dinámicas, datos asíncronos), `examples/landing` (isla de newsletter), `examples/dashboard` (signals, For, Show, SVG). El playground (abajo) no necesita paquetes publicados
 - [x] Playground en el navegador (`/playground` del sitio de docs): compila TSX con el mismo compilador (Babel en el navegador, ~445 kB gzip, solo se descarga en esa página) y lo ejecuta en un iframe con el runtime del sitio; 8 tests, 5 de ellos en un navegador real. Las demás páginas siguen sin JavaScript
+- [x] Presupuesto de rendimiento: `jotaStatic({ budget: { maxJsPerRoute, maxCssPerRoute, maxHtmlPerRoute, maxImageWeight } })` rompe el build y nombra la página o el archivo que se pasó (4 tests); el sitio de docs lo usa
 - [x] No hicieron falta capturas con Playwright: el logo es un SVG propio y Lighthouse se midió con Edge
 - **Puerta:** 5 testers externos califican las docs como claras.
 

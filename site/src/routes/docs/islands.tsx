@@ -77,6 +77,22 @@ jotaStatic({ images: { formats: ["webp"], quality: 80 } })`}
         <code>noscript</code> fallback.
       </p>
 
+      <h2>Performance budget</h2>
+      <Code
+        code={`jotaStatic({
+  budget: {
+    maxJsPerRoute: "10kb",   // gzip: scripts and preloaded modules of one page
+    maxCssPerRoute: "20kb",  // gzip: stylesheets a page links
+    maxHtmlPerRoute: "20kb", // one HTML page
+    maxImageWeight: "200kb", // any single image
+  },
+})`}
+      />
+      <p>
+        If a page or file goes over a limit the build fails and names it. This site uses a budget of its own, so a page
+        cannot quietly get heavier.
+      </p>
+
       <h2>Also automatic</h2>
       <ul>
         <li>

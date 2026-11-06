@@ -58,6 +58,7 @@ Also done per page: the first `<img>` gets `fetchpriority="high"` and the others
 | `routesDir` | `"src/routes"` | Folder with route files |
 | `inlineCssLimit` | `20000` | Stylesheets up to this many bytes are inlined whole |
 | `criticalCss` | `true` | Above the limit: inline only the CSS the page uses and load the rest without blocking (uses `beasties`; adds a small `onload` attribute and a `<noscript>` fallback) |
+| `budget` | none | `{ maxJsPerRoute, maxCssPerRoute, maxHtmlPerRoute, maxImageWeight }` as bytes or strings such as `"10kb"`. If a page or file goes over, the build fails and names it. JavaScript and CSS are measured gzipped, from the page's script tags, preloaded modules and stylesheet links |
 | `images` | off | `true` or `{ formats, quality }`: convert local JPEG/PNG to AVIF and WebP with the optional `sharp` package and wrap `<img>` in `<picture>` |
 
 ### Islands
