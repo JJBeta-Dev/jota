@@ -214,11 +214,22 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
   const [view, setView] = signal<JSXElement>(null);
   let token = 0;
 
+  // A pre-rendered page already has HTML in `element`. Remove it right before the first client view
+  // is inserted, so the content is not duplicated and nothing blinks while the route module loads.
+  let replacedServerHtml = false;
+  const showView = (view: JSXElement | (() => JSXElement)): void => {
+    if (!replacedServerHtml) {
+      replacedServerHtml = true;
+      element.replaceChildren();
+    }
+    setView(view as JSXElement);
+  };
+
   const show = (path: string): void => {
     const current = ++token;
     const found = matchRoute(routes, path);
     if (!found) {
-      setView(options.notFound ? () => options.notFound?.() : null);
+      showView(options.notFound ? () => options.notFound?.() : null);
       return;
     }
     const render = async (): Promise<void> => {
@@ -228,11 +239,11 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
       if (current !== token) return;
       const head = resolveHead(module, found.params, data);
       if (head.title) document.title = head.title;
-      setView(() => createComponent(module.default, { params: found.params, data }));
+      showView(() => createComponent(module.default, { params: found.params, data }));
     };
     render().catch((error: unknown) => {
       if (current !== token) return;
-      setView(options.onError ? () => options.onError?.(error) : null);
+      showView(options.onError ? () => options.onError?.(error) : null);
       if (!options.onError) console.error(error);
     });
   };
@@ -257,6 +268,8 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
     if (!anchor) return;
     const href = localHref(anchor as HTMLAnchorElement);
     if (href === null) return;
+    // Links to pages that are not client routes (for example static pages) are normal navigations.
+    if (!matchRoute(routes, new URL(href, window.location.href).pathname)) return;
     event.preventDefault();
     navigate(href);
   };

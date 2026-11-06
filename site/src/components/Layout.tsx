@@ -16,6 +16,7 @@ const NAV = {
     { href: "/docs/routing", label: "Routing and static pages" },
     { href: "/docs/islands", label: "Islands and build options" },
     { href: "/docs/guard", label: "Guard" },
+    { href: "/playground", label: "Playground" },
   ],
   es: [
     { href: "/es", label: "Inicio" },

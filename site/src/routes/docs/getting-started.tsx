@@ -16,6 +16,11 @@ export default function GettingStarted(): JSXElement {
         use the repository.
       </p>
 
+      <p>
+        Want to try it first? The <a href="/playground">playground</a> compiles and runs your code in the browser, with
+        nothing to install.
+      </p>
+
       <h2>Create an app</h2>
       <Code
         code={`npm create jota-js@latest my-app

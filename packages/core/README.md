@@ -63,7 +63,7 @@ const routes = createRoutes(import.meta.glob("/src/routes/**/*.tsx"));
 startRouter(routes, document.getElementById("app")!); // client navigation without page loads
 ```
 
-A route can also export `load` (async data, passed to the component as `props.data`) and `head`. `startRouter` awaits `load` before showing the page and accepts `notFound` and `onError` options.
+A route can also export `load` (async data, passed to the component as `props.data`) and `head`. `startRouter` awaits `load` before showing the page and accepts `notFound` and `onError` options. It replaces any pre-rendered HTML in the element when the first client view is ready, and only takes over clicks on links that match a client route; every other link is a normal browser navigation.
 
 ## Islands
 

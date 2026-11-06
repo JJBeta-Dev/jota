@@ -16,6 +16,11 @@ export default function PrimerosPasos(): JSXElement {
         él. Mientras tanto, usa el repositorio.
       </p>
 
+      <p>
+        ¿Quieres probarlo antes? El <a href="/playground">playground</a> (en inglés) compila y ejecuta tu código en el
+        navegador, sin instalar nada.
+      </p>
+
       <h2>Crear una app</h2>
       <Code
         code={`npm create jota-js@latest mi-app

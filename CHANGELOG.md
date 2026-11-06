@@ -43,7 +43,10 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - Typed JSX for every standard HTML element and common SVG elements, with typed events and `data-*` / `aria-*` attributes.
 - Rendering benchmark in a real browser against Solid (`bench/browser`).
 
+- In-browser playground on the docs site: compiles TSX with the Jota compiler and runs it in a preview frame; covered by tests in a real browser.
+
 ### Fixed
+- `startRouter` no longer duplicates pre-rendered HTML when the client takes over, and no longer hijacks clicks on links that are not client routes.
 - List reconciliation moved almost every node when two rows were swapped; it now uses a longest-increasing-subsequence diff (swap in a 1,000-row list: 22 ms to 1.7 ms).
 - SVG templates created a second wrapper element, so dynamic attributes of SVG children were applied to the wrapper.
 - `Show` with a function child did not update when the value changed while it stayed truthy.

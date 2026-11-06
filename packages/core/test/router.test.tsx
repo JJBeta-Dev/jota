@@ -257,4 +257,28 @@ describe("startRouter", () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
     expect(container.textContent).toBe("error: boom");
   });
+
+  it("replaces pre-rendered server HTML instead of adding to it", async () => {
+    container.innerHTML = "<p>server html</p>";
+    const router = startRouter(routes, container);
+    stop = router.dispose;
+    expect(container.textContent).toBe("server html"); // kept until the route is ready
+    await flush();
+    expect(container.textContent).toBe("home");
+    expect(container.querySelectorAll("p")).toHaveLength(1);
+  });
+
+  it("leaves links to pages that are not client routes to the browser", async () => {
+    const router = startRouter(routes, container);
+    stop = router.dispose;
+    await flush();
+    const link = document.createElement("a");
+    link.setAttribute("href", "/static-page");
+    document.body.appendChild(link);
+    const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+    link.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
+    expect(container.textContent).toBe("home"); // the router did not take over
+    link.remove();
+  });
 });

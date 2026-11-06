@@ -232,3 +232,32 @@ th {
   color: var(--ink-soft);
   text-align: left;
 }
+
+label {
+  font-weight: 700;
+}
+
+.playground-code {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #c9c2d9;
+  border-radius: 20px;
+  background: var(--deep);
+  color: #f2ecff;
+  font: 0.95rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  tab-size: 2;
+}
+
+.playground-preview {
+  width: 100%;
+  min-height: 14rem;
+  border: 1px solid #c9c2d9;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.error {
+  color: #b00020;
+}

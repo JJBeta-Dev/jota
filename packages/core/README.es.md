@@ -63,7 +63,7 @@ const routes = createRoutes(import.meta.glob("/src/routes/**/*.tsx"));
 startRouter(routes, document.getElementById("app")!); // navegación sin recargar la página
 ```
 
-Una ruta también puede exportar `load` (datos asíncronos, que llegan al componente como `props.data`) y `head`. `startRouter` espera a `load` antes de mostrar la página y acepta las opciones `notFound` y `onError`.
+Una ruta también puede exportar `load` (datos asíncronos, que llegan al componente como `props.data`) y `head`. `startRouter` espera a `load` antes de mostrar la página y acepta las opciones `notFound` y `onError`. Reemplaza el HTML pre-renderizado del elemento cuando la primera vista del cliente está lista, y solo toma los clics en enlaces que coinciden con una ruta de cliente; cualquier otro enlace es una navegación normal del navegador.
 
 ## Islas
 
