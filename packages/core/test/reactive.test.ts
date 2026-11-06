@@ -364,3 +364,42 @@ describe("dependency tracking when sources change between runs", () => {
     expect(runs).toHaveBeenCalledTimes(2);
   });
 });
+
+describe("ownership of many children", () => {
+  it("disposes children in any order, then the parent, running each cleanup exactly once", () => {
+    const cleanups: number[] = [];
+    const stops: Array<() => void> = [];
+    const dispose = createRoot((dispose) => {
+      for (let i = 0; i < 6; i++) {
+        stops.push(
+          effect(() => {
+            onCleanup(() => void cleanups.push(i));
+          }),
+        );
+      }
+      return dispose;
+    });
+    // Remove from the middle, the end and the start (exercises the swap with the last child).
+    (stops[2] as () => void)();
+    (stops[5] as () => void)();
+    (stops[0] as () => void)();
+    expect(cleanups.sort()).toEqual([0, 2, 5]);
+    dispose();
+    expect(cleanups.sort()).toEqual([0, 1, 2, 3, 4, 5]);
+    dispose();
+    expect(cleanups).toHaveLength(6);
+  });
+
+  it("lets a child dispose itself while its parent re-runs", () => {
+    const [n, setN] = signal(0);
+    const cleaned = vi.fn();
+    effect(() => {
+      n();
+      const stop = effect(() => onCleanup(cleaned));
+      stop();
+    });
+    setN(1);
+    setN(2);
+    expect(cleaned).toHaveBeenCalledTimes(3);
+  });
+});

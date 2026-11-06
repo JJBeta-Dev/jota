@@ -62,22 +62,29 @@ function resolveEquals<T>(equals: Equals<T> | undefined): (a: T, b: T) => boolea
 class Owner {
   parent: Owner | null;
   // Allocated on first use: most computations never own children or cleanups.
-  children: Set<Owner> | null = null;
+  children: Owner[] | null = null;
+  /** Position in the parent's `children`, so removing a child is O(1) (swap with the last one). */
+  index = -1;
   cleanups: Array<() => void> | null = null;
   disposed = false;
 
   constructor(parent: Owner | null) {
     this.parent = parent;
-    if (parent) (parent.children ??= new Set()).add(this);
+    if (parent) {
+      const siblings = (parent.children ??= []);
+      this.index = siblings.length;
+      siblings.push(this);
+    }
   }
 
   /** Dispose children and run cleanups registered with onCleanup (used before a re-run). */
   cleanup(): void {
     const children = this.children;
-    if (children !== null && children.size > 0) {
-      const list = [...children];
-      children.clear();
-      for (const child of list) child.dispose();
+    if (children !== null) {
+      this.children = null;
+      // Detach first: each child would otherwise try to remove itself from the list we are walking.
+      for (let i = 0; i < children.length; i++) (children[i] as Owner).parent = null;
+      for (let i = 0; i < children.length; i++) (children[i] as Owner).dispose();
     }
     const cleanups = this.cleanups;
     if (cleanups !== null && cleanups.length > 0) {
@@ -90,7 +97,15 @@ class Owner {
     if (this.disposed) return;
     this.disposed = true;
     this.cleanup();
-    this.parent?.children?.delete(this);
+    const parent = this.parent;
+    const siblings = parent?.children;
+    if (siblings) {
+      const last = siblings.pop() as Owner;
+      if (last !== this) {
+        siblings[this.index] = last;
+        last.index = this.index;
+      }
+    }
   }
 }
 
