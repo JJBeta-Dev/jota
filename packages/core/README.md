@@ -75,7 +75,7 @@ import { Island, startIslands } from "jota-js";
 startIslands(import.meta.glob("/src/islands/*.tsx"));
 ```
 
-An island is rendered to HTML at build time and mounted in the browser when it loads, when the browser is idle, or when it becomes visible. `startIslands` returns how many islands it found. The island replaces its server HTML; it does not hydrate it.
+An island is rendered to HTML at build time and mounted in the browser when it loads, when the browser is idle, or when it becomes visible. `startIslands` returns how many islands it found. The island hydrates its server HTML: the elements are kept and only behaviour is attached. If the HTML does not match what the component builds, the island is mounted from scratch.
 
 For static pages with no JavaScript use `vite-plugin-jota/static` (see [vite-plugin-jota](../vite-plugin)).
 

@@ -1,4 +1,4 @@
-// @vitest-environment node
+/** @vitest-environment node */
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -82,9 +82,26 @@ describe("static generation", () => {
     expect(html).toContain('data-jota-island="Counter"');
     expect(html).toContain('data-jota-load="load"');
     expect(html).toContain("&quot;start&quot;:5");
-    expect(html).toContain("Count: 5");
+    expect(html.replace(/<!--.*?-->/g, "")).toContain("Count: 5");
     expect(html).toContain("Static text around the island.");
     expect(html).toContain('<script type="module"');
+  });
+
+  it("marks pages for hydration only where the browser needs it", () => {
+    /* A static page without islands ships no script, so it carries no hydration marks either. */
+    for (const file of ["index.html", "about/index.html", "404.html"]) {
+      expect(read(file), file).not.toContain("data-hk");
+      expect(read(file), file).not.toContain("<!--[");
+    }
+    /* A client page is numbered as a whole. */
+    const client = read("app", "index.html");
+    expect(client).toMatch(/data-hk="\d+\.[a-z0-9]+"/);
+    expect(client).toContain("<!--[0-->");
+    /* A static page with an island is marked inside the island and nowhere else. */
+    const islands = read("islands", "index.html");
+    expect(islands).toMatch(/data-hk="0\.[a-z0-9]+"/);
+    expect(islands.indexOf("data-hk")).toBeGreaterThan(islands.indexOf("data-jota-island"));
+    expect(islands.slice(0, islands.indexOf("data-jota-island"))).not.toContain("data-hk");
   });
 
   it("renders dynamic routes for every path and fills the head from params", () => {
@@ -132,7 +149,7 @@ describe("static generation", () => {
     expect(html.match(/<picture>/g)).toHaveLength(2);
     expect(html).toContain('<source type="image/avif" srcset="/hero.avif">');
     expect(html).toContain('<source type="image/webp" srcset="/hero.webp">');
-    // The original <img> is still there as the fallback, with its attributes.
+    /* The original <img> is still there as the fallback, with its attributes. */
     expect(html).toContain('src="/hero.jpg"');
     expect(html).toContain('alt="Hero"');
     expect(html.indexOf("image/avif")).toBeLessThan(html.indexOf("image/webp"));
@@ -166,7 +183,7 @@ describe("critical CSS for large stylesheets", () => {
       root: site,
       configFile: false,
       customLogger: logger,
-      // A tiny limit makes the stylesheet count as "large".
+      /* A tiny limit makes the stylesheet count as "large". */
       plugins: [jota(), jotaStatic({ inlineCssLimit: 10 })],
       resolve: {
         alias: [

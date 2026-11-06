@@ -13,7 +13,7 @@
  * `startRouter` adds client-side navigation on top.
  */
 import { signal } from "./reactive.js";
-import { createComponent, mount } from "./web.js";
+import { createComponent, hydrate, isHydratable, mount } from "./web.js";
 import type { JSXElement } from "./types.js";
 
 export type Params = Record<string, string>;
@@ -135,7 +135,7 @@ export function matchRoute(routes: Route[], pathname: string): RouteMatch | null
         } else {
           params[segment.slice(1)] = rest.map(safeDecode).join("/");
         }
-        // A catch-all consumes everything that is left.
+        /* A catch-all consumes everything that is left. */
         if (matched) return { route, params };
         break;
       }
@@ -176,7 +176,7 @@ export function resolveHead(module: RouteModule, params: Params, data?: unknown)
   return typeof module.head === "function" ? module.head(params, data) : (module.head ?? {});
 }
 
-// --- client router -------------------------------------------------------------------------
+/* --- client router ------------------------------------------------------------------------- */
 
 export interface RouterOptions {
   /** Rendered when no route matches. */
@@ -214,15 +214,30 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
   const [view, setView] = signal<JSXElement>(null);
   let token = 0;
 
-  // A pre-rendered page already has HTML in `element`. Remove it right before the first client view
-  // is inserted, so the content is not duplicated and nothing blinks while the route module loads.
-  let replacedServerHtml = false;
-  const showView = (view: JSXElement | (() => JSXElement)): void => {
-    if (!replacedServerHtml) {
-      replacedServerHtml = true;
-      element.replaceChildren();
+  /* A pre-rendered page already has HTML in `element`, and it stays visible while the route module */
+  /* loads. The first client view either hydrates it (the elements are kept) or, when the HTML was not */
+  /* marked at build time or does not match, replaces it, so nothing is duplicated. */
+  let started = false;
+  let unmount: () => void = () => {};
+  const showView = (next: JSXElement | (() => JSXElement)): void => {
+    if (started) {
+      setView(next as JSXElement);
+      return;
     }
-    setView(view as JSXElement);
+    started = true;
+    /* A function given to the setter runs right away, so the page is built here: inside `hydrate` it
+       claims the server elements, inside `mount` it creates new ones. */
+    const build = (): JSXElement => {
+      setView(next as JSXElement);
+      return view;
+    };
+    const hydrated = isHydratable(element) ? hydrate(build, element) : null;
+    if (hydrated) {
+      unmount = hydrated;
+      return;
+    }
+    element.replaceChildren();
+    unmount = mount(build, element);
   };
 
   const show = (path: string): void => {
@@ -234,7 +249,7 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
     }
     const render = async (): Promise<void> => {
       const module = await found.route.load();
-      if (current !== token) return; // a newer navigation won
+      if (current !== token) return; /* a newer navigation won */
       const data = module.load ? await module.load({ params: found.params }) : undefined;
       if (current !== token) return;
       const head = resolveHead(module, found.params, data);
@@ -268,7 +283,7 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
     if (!anchor) return;
     const href = localHref(anchor as HTMLAnchorElement);
     if (href === null) return;
-    // Links to pages that are not client routes (for example static pages) are normal navigations.
+    /* Links to pages that are not client routes (for example static pages) are normal navigations. */
     if (!matchRoute(routes, new URL(href, window.location.href).pathname)) return;
     event.preventDefault();
     navigate(href);
@@ -276,7 +291,6 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
 
   window.addEventListener("popstate", apply);
   document.addEventListener("click", onClick);
-  const unmount = mount(() => view, element);
   show(pathname());
 
   return {

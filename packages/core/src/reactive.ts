@@ -61,7 +61,7 @@ function resolveEquals<T>(equals: Equals<T> | undefined): (a: T, b: T) => boolea
 
 class Owner {
   parent: Owner | null;
-  // Allocated on first use: most computations never own children or cleanups.
+  /* Allocated on first use: most computations never own children or cleanups. */
   children: Owner[] | null = null;
   /** Position in the parent's `children`, so removing a child is O(1) (swap with the last one). */
   index = -1;
@@ -82,7 +82,7 @@ class Owner {
     const children = this.children;
     if (children !== null) {
       this.children = null;
-      // Detach first: each child would otherwise try to remove itself from the list we are walking.
+      /* Detach first: each child would otherwise try to remove itself from the list we are walking. */
       for (let i = 0; i < children.length; i++) (children[i] as Owner).parent = null;
       for (let i = 0; i < children.length; i++) (children[i] as Owner).dispose();
     }
@@ -144,7 +144,7 @@ class Computation<T> extends Owner implements Source, Runnable {
       }
     } else if (!this.stale) {
       this.stale = true;
-      // Marking only flags memos and queues effects; it never changes the observer sets.
+      /* Marking only flags memos and queues effects; it never changes the observer sets. */
       const observers = this.observers;
       if (observers !== null) for (const observer of observers) observer.mark();
     }
@@ -177,8 +177,8 @@ class Computation<T> extends Owner implements Source, Runnable {
 
   execute(): void {
     this.cleanup();
-    // The subscriptions of the last run stay in place. A run that reads the same sources in the same
-    // order (the usual case) changes nothing; only a different source costs a subscription change.
+    /* The subscriptions of the last run stay in place. A run that reads the same sources in the same */
+    /* order (the usual case) changes nothing; only a different source costs a subscription change. */
     this.previousCount = this.sources.length;
     this.count = 0;
     this.evicted = null;
@@ -218,7 +218,7 @@ class Computation<T> extends Owner implements Source, Runnable {
       return;
     }
     if (count < this.previousCount || evicted !== null) {
-      // Candidates: old sources past the end of this run, and old sources replaced in place.
+      /* Candidates: old sources past the end of this run, and old sources replaced in place. */
       const stillRead = count > 16 ? new Set(list.slice(0, count)) : null;
       const isRead = (source: Source): boolean => {
         if (stillRead !== null) return stillRead.has(source);
@@ -254,11 +254,11 @@ function track(source: Source): void {
   if (!observer || observer.disposed) return;
   const n = observer.count;
   const list = observer.sources;
-  // Reading the same source twice in a row costs nothing.
+  /* Reading the same source twice in a row costs nothing. */
   if (n > 0 && list[n - 1] === source) return;
   const old = n < observer.previousCount ? list[n] : undefined;
   if (old === source) {
-    // Same source at the same position as the last run: already subscribed.
+    /* Same source at the same position as the last run: already subscribed. */
     observer.seen[n] = source.version;
     observer.count = n + 1;
     return;

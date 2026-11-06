@@ -10,7 +10,7 @@
 
 </div>
 
-> **Status: 1.0.0, young.** The four packages are on npm and the code is tested (continuous integration runs on Node 20 and 22, on Linux and Windows), but Jota is new, has no outside users yet, and its API may still change. It has no hydration (islands re-mount instead). [PLAN.md](PLAN.md) holds the roadmap (in Spanish) and [IA.md](IA.md) every technical decision.
+> **Status: 1.0.0, young.** The four packages are on npm and the code is tested (continuous integration runs on Node 20 and 22, on Linux and Windows), but Jota is new, has no outside users yet, and its API may still change. Islands and client pages hydrate their server HTML; there is no server rendering at request time. [PLAN.md](PLAN.md) holds the roadmap (in Spanish) and [IA.md](IA.md) every technical decision.
 
 ## What is Jota?
 
@@ -136,7 +136,7 @@ Every file in `src/routes` becomes an HTML page that contains no JavaScript unle
 
 ## Known limits
 
-- Islands and client routes are mounted again in the browser; there is no hydration of the server HTML. An island keeps what the user already typed, checked or focused inside it, but listeners and effects are created from scratch.
+- Islands and client pages are hydrated: the browser keeps the server elements (focus, typed text and scroll position inside them survive) and attaches listeners and effects. The build marks that HTML with `data-hk` attributes and comments, and the browser removes them. If the HTML does not match what the component builds, Jota mounts it from scratch instead. While attaching, the dynamic parts of a page are taken out of the DOM and put back once, so an iframe inside them reloads and a video or audio there stops. Not built: server rendering at request time, streaming, hydrating only some components of a page.
 - Pages are rendered once at build time. There is no server-side rendering on request.
 - There are no scoped component styles or atomic CSS utilities.
 
@@ -167,7 +167,7 @@ An honest map, not a scoreboard. The other columns describe each project in gene
 | Performance budget that fails the build | No | Bundle budgets in the CLI | No | No | No | No | **Yes**: JS, CSS, HTML and image limits per page |
 | Routing and static pages | Needs a meta-framework (Next, Remix...) | Built-in router; SSR/prerender in the CLI | vue-router, Nuxt | SvelteKit | SolidStart | Add-ons | File-based router and static generation built in |
 | Server rendering | Yes | Yes | Yes | Yes | Yes | Yes | **No** (static generation only) |
-| Hydration | Yes | Yes | Yes | Yes | Yes | Yes | **No** (islands and routes re-mount) |
+| Hydration | Yes | Yes | Yes | Yes | Yes | Yes | **Partial**: islands and client pages, whole at once; a mismatch re-mounts |
 | JS on a plain content page | A runtime is shipped | A runtime is shipped | A runtime is shipped | Small runtime | A runtime is shipped | A runtime is shipped | **0 kB** unless the page has an island |
 | Ecosystem, hiring, answers online | Huge | Large | Large | Medium | Small | Medium | **None yet** |
 | Maturity | Years in production | Years in production | Years in production | Years in production | Years in production | Years in production | **1.0.0 released 2026-11-06, no outside users** |
@@ -181,7 +181,7 @@ An honest map, not a scoreboard. The other columns describe each project in gene
 
 ### Where something else is the better choice
 
-- You need **server rendering, streaming or hydration**: use Next, Nuxt, SvelteKit, SolidStart or Angular.
+- You need **server rendering at request time, streaming or partial hydration**: use Next, Nuxt, SvelteKit, SolidStart or Angular.
 - You need **a large ecosystem** (component libraries, tutorials, hiring): React, Vue or Angular.
 - You want the **fastest raw reactivity**: in our micro-benchmarks Preact Signals is still roughly 10-20% faster than Jota in most rows and about 4x faster at creating nodes ([numbers](bench/RESULTS.md)), and Solid is on par with Jota in the browser table benchmark ([numbers](bench/browser/RESULTS.md)).
 - You want **compile-time accessibility warnings with zero setup** inside a framework with years of use: Svelte already has them.

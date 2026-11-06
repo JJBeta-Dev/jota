@@ -2,11 +2,13 @@
  * Islands: interactive components inside otherwise static pages.
  *
  * `<Island>` renders a component into HTML at build time, wrapped in an element that records which
- * component it is and its props. In the browser, `startIslands` finds those wrappers and mounts the
- * component again (it replaces the server HTML, it does not hydrate; what the user already typed, checked or focused inside the island is carried over), when the island loads, the
- * browser is idle, or the island scrolls into view. Pages without islands keep shipping no JavaScript.
+ * component it is and its props. In the browser, `startIslands` finds those wrappers and hydrates
+ * each one when the island loads, the browser is idle, or the island scrolls into view: the server
+ * elements are kept and only behaviour is attached. If the HTML does not match what the component
+ * builds, the island is mounted from scratch and what the user already typed, checked or focused
+ * inside it is carried over. Pages without islands keep shipping no JavaScript.
  */
-import { createComponent, insert, mount } from "./web.js";
+import { createComponent, hydrate, insert, markIsland, mount } from "./web.js";
 import type { JSXElement } from "./types.js";
 
 export type IslandLoad = "load" | "idle" | "visible";
@@ -28,8 +30,11 @@ export function Island<P extends object>(props: IslandProps<P>): JSXElement {
   wrapper.setAttribute("data-jota-load", props.load ?? "visible");
   wrapper.setAttribute("data-jota-props", JSON.stringify(props.props ?? {}));
   wrapper.style.display = "contents";
-  insert(wrapper, () =>
-    createComponent(props.component as (p: Record<string, unknown>) => JSXElement, (props.props ?? {}) as Record<string, unknown>),
+  /* At build time the island's content is numbered on its own, so the browser can hydrate it alone. */
+  markIsland(() =>
+    insert(wrapper, () =>
+      createComponent(props.component as (p: Record<string, unknown>) => JSXElement, (props.props ?? {}) as Record<string, unknown>),
+    ),
   );
   return wrapper;
 }
@@ -93,7 +98,7 @@ function restore(element: HTMLElement, state: Snapshot): void {
       if (control.value === change.value) continue;
       control.value = change.value;
     }
-    // Components that read the value from an event handler learn about it this way.
+    /* Components that read the value from an event handler learn about it this way. */
     control.dispatchEvent(new Event("input", { bubbles: true }));
     control.dispatchEvent(new Event("change", { bubbles: true }));
   }
@@ -105,7 +110,7 @@ function restore(element: HTMLElement, state: Snapshot): void {
         try {
           target.setSelectionRange(state.selection[0], state.selection[1]);
         } catch {
-          // Some input types do not support selection.
+          /* Some input types do not support selection. */
         }
       }
     }
@@ -123,6 +128,9 @@ async function mountIsland(element: HTMLElement, name: string, loader: Loader): 
   }
   const props = JSON.parse(element.getAttribute("data-jota-props") ?? "{}") as Record<string, unknown>;
   const state = snapshot(element);
+  /* Hydrate: keep the server elements and attach behaviour to them. */
+  if (hydrate(() => createComponent(component, props), element)) return;
+  /* The HTML did not match what the component builds (or it was not marked): mount from scratch. */
   element.textContent = "";
   mount(() => createComponent(component, props), element);
   restore(element, state);

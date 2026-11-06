@@ -40,7 +40,7 @@ describe("previewDocument", () => {
     expect(html).toContain('"jota-js":"https://example.test/runtime/jota.js"');
     expect(html).toContain('"jota-js/web":"https://example.test/runtime/web.js"');
     expect(html).toContain("<\\/script><b>");
-    expect(html.match(/<\/script>/g)).toHaveLength(3); // importmap, error handler, module
+    expect(html.match(/<\/script>/g)).toHaveLength(3); /* importmap, error handler, module */
   });
 });
 
@@ -55,7 +55,7 @@ const BROWSERS = [
 ].filter((path): path is string => Boolean(path));
 const executablePath = BROWSERS.find((path) => existsSync(path));
 
-// End to end in a real browser. Skipped when no Chromium-based browser is installed.
+/* End to end in a real browser. Skipped when no Chromium-based browser is installed. */
 describe.skipIf(!executablePath)("playground in a browser", () => {
   let outDir: string;
   let server: Server;
@@ -124,6 +124,36 @@ describe.skipIf(!executablePath)("playground in a browser", () => {
     const page = await open();
     expect(await page.$$eval("h1", (headings) => headings.length)).toBe(1);
     expect(await page.$$eval("#playground-code", (nodes) => nodes.length)).toBe(1);
+    await page.close();
+  });
+
+  it("hydrates the pre-rendered page: the server elements stay in the page", async () => {
+    const page = await browser.newPage();
+    await page.evaluateOnNewDocument(() => {
+      document.addEventListener("DOMContentLoaded", () => {
+        Object.assign(window, { serverElements: Array.from(document.querySelectorAll("#app *")) });
+      });
+    });
+    await page.goto(`${origin}/playground/`);
+    await page.waitForSelector("#playground-code");
+    /* The marks are removed as the elements are claimed, so none left means hydration finished. */
+    await page.waitForFunction("document.querySelectorAll('[data-hk]').length === 0");
+    const result = await page.evaluate(() => {
+      const server = (window as unknown as { serverElements: Element[] }).serverElements;
+      const app = document.getElementById("app") as HTMLElement;
+      return {
+        server: server.length,
+        kept: server.filter((element) => app.contains(element)).length,
+        comments: document.createTreeWalker(app, NodeFilter.SHOW_COMMENT).nextNode() === null,
+      };
+    });
+    expect(result.server).toBeGreaterThan(10);
+    expect(result.kept).toBe(result.server);
+    expect(result.comments).toBe(true);
+    /* And it still works: typing updates the component, running the code shows its output. */
+    await page.click(".actions button");
+    const frame = await frameOf(page);
+    await frame.waitForFunction("document.querySelector('p')?.textContent === 'Count: 0'");
     await page.close();
   });
 

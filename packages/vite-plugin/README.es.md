@@ -36,7 +36,7 @@ Después de `vite build`, cada archivo de `src/routes` se convierte en HTML. Las
 |---|---|
 | `default` | El componente de la página; recibe `{ params }` |
 | `head` | `{ title, description, lang }` o una función de `params` |
-| `config` | `{ render: "client" }` conserva el script para que la página sea interactiva (el cliente vuelve a montarla, no hidrata) |
+| `config` | `{ render: "client" }` conserva el script para que la página sea interactiva (el cliente hidrata el HTML pre-renderizado) |
 | `load` | Datos asíncronos: `({ params }) => datos`. Se ejecuta al compilar; el resultado llega al componente como `props.data` y a `head` como segundo argumento |
 | `paths` | En rutas dinámicas: los parámetros a pre-renderizar. Sin él la ruta se omite con una advertencia |
 
@@ -55,9 +55,9 @@ Además, por página: la primera `<img>` recibe `fetchpriority="high"` y las dem
 
 ### Islas
 
-Una página estática puede contener islas interactivas: `<Island name="Newsletter" component={Newsletter} load="visible" />` se renderiza a HTML al compilar y el navegador la monta (`load`, `idle` o `visible`) con `startIslands(import.meta.glob("/src/islands/*.tsx"))` en tu entrada del cliente. Una página estática con una isla conserva su etiqueta de script; las páginas sin islas siguen sin ninguna. La isla se monta de nuevo en el navegador, no se hidrata.
+Una página estática puede contener islas interactivas: `<Island name="Newsletter" component={Newsletter} load="visible" />` se renderiza a HTML al compilar y el navegador la monta (`load`, `idle` o `visible`) con `startIslands(import.meta.glob("/src/islands/*.tsx"))` en tu entrada del cliente. Una página estática con una isla conserva su etiqueta de script; las páginas sin islas siguen sin ninguna. La isla se hidrata en el navegador: el build numera sus plantillas y huecos dinámicos, y el cliente reclama esos elementos en vez de crear nuevos.
 
-Límites: `load` se ejecuta una vez por compilación; las rutas de cliente se montan de nuevo en vez de hidratarse.
+Límites: `load` se ejecuta una vez por compilación; una página de cliente que no coincide con su HTML pre-renderizado se monta desde cero.
 
 ## Licencia
 

@@ -75,7 +75,7 @@ import { Island, startIslands } from "jota-js";
 startIslands(import.meta.glob("/src/islands/*.tsx"));
 ```
 
-Una isla se renderiza a HTML al compilar y el navegador la monta cuando carga, cuando está inactivo o cuando se vuelve visible. `startIslands` devuelve cuántas islas encontró. La isla reemplaza su HTML del servidor; no lo hidrata.
+Una isla se renderiza a HTML al compilar y el navegador la monta cuando carga, cuando está inactivo o cuando se vuelve visible. `startIslands` devuelve cuántas islas encontró. La isla hidrata su HTML del servidor: se conservan los elementos y solo se conecta el comportamiento. Si el HTML no coincide con lo que construye el componente, la isla se monta desde cero.
 
 Para generar páginas estáticas sin JavaScript usa `vite-plugin-jota/static` (ver [vite-plugin-jota](../vite-plugin/README.es.md)).
 

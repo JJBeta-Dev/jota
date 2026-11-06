@@ -52,14 +52,14 @@ startIslands(import.meta.glob("/src/islands/*.tsx"));`}
           A static page that contains an island keeps its script tag. Pages without islands still have none.
         </li>
         <li>
-          The browser replaces the server HTML of the island with the live component; it does not hydrate it. Text the user already typed, boxes they checked and the focused element (with its caret) are carried over to the new elements.
+          The browser hydrates the island: it keeps the server elements and attaches the live component to them, so focus, typed text and scroll position survive. If the HTML does not match what the component builds, the island is mounted from scratch and what the user typed, checked or focused is carried over.
         </li>
       </ul>
 
       <h2>Images in AVIF and WebP</h2>
       <Code
         code={`// vite.config.ts
-jotaStatic({ images: true })               // avif + webp, quality 70
+jotaStatic({ images: true }) /* avif + webp, quality 70 */
 jotaStatic({ images: { formats: ["webp"], quality: 80 } })`}
       />
       <p>
@@ -81,10 +81,10 @@ jotaStatic({ images: { formats: ["webp"], quality: 80 } })`}
       <Code
         code={`jotaStatic({
   budget: {
-    maxJsPerRoute: "10kb",   // gzip: scripts and preloaded modules of one page
-    maxCssPerRoute: "20kb",  // gzip: stylesheets a page links
-    maxHtmlPerRoute: "20kb", // one HTML page
-    maxImageWeight: "200kb", // any single image
+    maxJsPerRoute: "10kb", /* gzip: scripts and preloaded modules of one page */
+    maxCssPerRoute: "20kb", /* gzip: stylesheets a page links */
+    maxHtmlPerRoute: "20kb", /* one HTML page */
+    maxImageWeight: "200kb", /* any single image */
   },
 })`}
       />
