@@ -10,7 +10,7 @@
 
 </div>
 
-> **Status: pre-alpha.** The code in this repository works and is tested (continuous integration runs on Node 20 and 22, on Linux and Windows), but nothing has been released yet: the packages on npm are empty `0.0.1` placeholders that reserve the names. Until the first release, use Jota from this repository. [PLAN.md](PLAN.md) holds the roadmap (in Spanish) and [IA.md](IA.md) every technical decision.
+> **Status: 1.0.0, young.** The four packages are on npm and the code is tested (continuous integration runs on Node 20 and 22, on Linux and Windows), but Jota is new, has no outside users yet, and its API may still change. It has no hydration (islands re-mount instead). [PLAN.md](PLAN.md) holds the roadmap (in Spanish) and [IA.md](IA.md) every technical decision.
 
 ## What is Jota?
 
@@ -35,8 +35,6 @@ Also here: the documentation site with an in-browser playground ([`site/`](site)
 
 ## Installation
 
-> These commands work after the first release. Until then, see "Try it from this repository" below.
-
 ```bash
 npm create jota-js@latest my-app     # a new app, TypeScript by default
 cd my-app
@@ -48,7 +46,7 @@ npx jota-guard src                   # or only audit an existing JSX/TSX project
 
 Requirements: Node.js 20 or newer.
 
-### Try it from this repository
+### Work on Jota itself (from this repository)
 
 ```bash
 git clone https://github.com/JJBeta-Dev/jota.git
@@ -134,7 +132,7 @@ Every file in `src/routes` becomes an HTML page that contains no JavaScript unle
 - The todo example (`examples/hello`) compiles to 6.18 kB of JavaScript (2.65 kB gzip), runtime and CSS included.
 - Nine of the ten pages of the docs site contain no JavaScript. Lighthouse (local, mobile emulation) gives 100 in performance, accessibility, best practices and SEO on four of them: [bench/lighthouse/RESULTS.md](bench/lighthouse/RESULTS.md). This is a small static site and a local measurement, not field data.
 - In a real browser (Edge), the same table app in Jota and in Solid is within roughly 10% on most operations, and Jota's bundle is smaller (2.9 kB gzip against 4.6 kB): [bench/browser/RESULTS.md](bench/browser/RESULTS.md). One machine, one browser; it is not the official js-framework-benchmark.
-- Reactivity micro-benchmarks against Solid and Preact Signals are in [bench/RESULTS.md](bench/RESULTS.md): Jota is in Solid's range and slower than Preact Signals. They measure the reactive graph in Node, not real pages.
+- Reactivity micro-benchmarks against Solid and Preact Signals are in [bench/RESULTS.md](bench/RESULTS.md): Jota beats Solid in four of six scenarios and is still slower than Preact Signals. They measure the reactive graph in Node, not real pages.
 
 ## Known limits
 

@@ -2,10 +2,15 @@
 
 All notable changes to Jota are documented here. Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [Semantic Versioning](https://semver.org/).
 
-> The version number stays at **1.0.0** and will not change until the first release is ready.
-> Todos los cambios relevantes de Jota se documentan aquí. La versión se mantiene en **1.0.0** hasta que el primer lanzamiento esté listo.
+> 1.0.0 was released on 2026-11-06. / 1.0.0 se publicó el 2026-11-06.
 
-## [1.0.0] - In development / En desarrollo
+## [Unreleased] / [Sin publicar]
+
+### Changed
+- Reactivity core: effects and computeds keep their subscriptions between runs and only drop the sources they stopped reading; owners allocate children and cleanups lazily. Jota now beats Solid in 4 of 6 micro-benchmarks (see `bench/RESULTS.md`).
+- README and README.es describe the published 1.0.0 instead of the pre-release state.
+
+## [1.0.0] - 2026-11-06
 
 ### Added
 - Project skeleton: monorepo layout (`packages/guard`, `packages/core`, `packages/vite-plugin`, `packages/create-jota-js`, `docs`).
@@ -54,9 +59,3 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - SVG templates created a second wrapper element, so dynamic attributes of SVG children were applied to the wrapper.
 - `Show` with a function child did not update when the value changed while it stayed truthy.
 - `render` rebuilt the root component whenever the accessor it returned changed.
-
-### Planned for 1.0.0
-- Jota Guard: ESLint plugin + CLI for accessibility, semantics and performance-budget rules.
-- Signals core and Vite plugin with compiled JSX.
-- File-based routing (SSG and SPA), scoped CSS with critical CSS, islands, media plugin.
-- `create-jota-js` with TypeScript (default) and JavaScript templates.

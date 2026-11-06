@@ -28,6 +28,8 @@ interface Source {
 interface Observer {
   disposed: boolean;
   sources: Map<Source, number>;
+  /** Sources of the previous run while a run is in progress (used to skip re-subscribing). */
+  previous: Map<Source, number> | null;
   mark(): void;
 }
 
@@ -53,25 +55,27 @@ function resolveEquals<T>(equals: Equals<T> | undefined): (a: T, b: T) => boolea
 
 class Owner {
   parent: Owner | null;
-  children = new Set<Owner>();
-  cleanups: Array<() => void> = [];
+  // Allocated on first use: most computations never own children or cleanups.
+  children: Set<Owner> | null = null;
+  cleanups: Array<() => void> | null = null;
   disposed = false;
 
   constructor(parent: Owner | null) {
     this.parent = parent;
-    parent?.children.add(this);
+    if (parent) (parent.children ??= new Set()).add(this);
   }
 
   /** Dispose children and run cleanups registered with onCleanup (used before a re-run). */
   cleanup(): void {
-    if (this.children.size > 0) {
-      const children = [...this.children];
-      this.children.clear();
-      for (const child of children) child.dispose();
+    const children = this.children;
+    if (children !== null && children.size > 0) {
+      const list = [...children];
+      children.clear();
+      for (const child of list) child.dispose();
     }
-    if (this.cleanups.length > 0) {
-      const cleanups = this.cleanups;
-      this.cleanups = [];
+    const cleanups = this.cleanups;
+    if (cleanups !== null && cleanups.length > 0) {
+      this.cleanups = null;
       for (const fn of cleanups) fn();
     }
   }
@@ -80,13 +84,15 @@ class Owner {
     if (this.disposed) return;
     this.disposed = true;
     this.cleanup();
-    this.parent?.children.delete(this);
+    this.parent?.children?.delete(this);
   }
 }
 
 class Computation<T> extends Owner implements Source, Runnable {
   observers = new Set<Observer>();
   sources = new Map<Source, number>();
+  previous: Map<Source, number> | null = null;
+  private spare: Map<Source, number> | null = null;
   version = 0;
   value: T | undefined;
   stale = false;
@@ -145,8 +151,11 @@ class Computation<T> extends Owner implements Source, Runnable {
 
   execute(): void {
     this.cleanup();
-    for (const source of this.sources.keys()) source.observers.delete(this);
-    this.sources.clear();
+    // Keep the old subscriptions: only sources that are no longer read get unsubscribed afterwards.
+    const previous = this.sources;
+    this.sources = this.spare ?? new Map();
+    this.spare = null;
+    this.previous = previous;
 
     const previousObserver = currentObserver;
     const previousOwner = currentOwner;
@@ -166,6 +175,12 @@ class Computation<T> extends Owner implements Source, Runnable {
       currentObserver = previousObserver;
       currentOwner = previousOwner;
       this.hasRun = true;
+      this.previous = null;
+      for (const source of previous.keys()) {
+        if (this.disposed || !this.sources.has(source)) source.observers.delete(this);
+      }
+      previous.clear();
+      this.spare = previous;
     }
   }
 
@@ -181,7 +196,8 @@ class Computation<T> extends Owner implements Source, Runnable {
 function track(source: Source): void {
   const observer = currentObserver;
   if (!observer || observer.disposed) return;
-  source.observers.add(observer);
+  const previous = observer.previous;
+  if (previous === null || !previous.has(source)) source.observers.add(observer);
   observer.sources.set(source, source.version);
 }
 
@@ -284,5 +300,5 @@ export function createRoot<T>(fn: (dispose: () => void) => T): T {
 
 /** Register a function to run when the current effect re-runs or its scope is disposed. */
 export function onCleanup(fn: () => void): void {
-  currentOwner?.cleanups.push(fn);
+  if (currentOwner) (currentOwner.cleanups ??= []).push(fn);
 }
