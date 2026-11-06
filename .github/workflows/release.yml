@@ -1,0 +1,46 @@
+name: Release
+
+# Runs when a version tag is pushed (for example v1.0.0). It builds, tests, packs the four packages and
+# publishes them with provenance. It needs one of these set up once on npmjs.com:
+#   - trusted publishing for each package (recommended: no token), or
+#   - a repository secret NPM_TOKEN with a granular access token that can publish these packages.
+# See RELEASING.md. This workflow has not been run yet.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: corepack enable
+      - name: Check that the tag matches the package versions
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          for dir in core vite-plugin guard create-jota-js; do
+            version=$(node -p "require('./packages/$dir/package.json').version")
+            if [ "$version" != "$tag" ]; then
+              echo "packages/$dir is at $version but the tag is v$tag"; exit 1
+            fi
+          done
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r typecheck
+      - run: pnpm -r test
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for dir in core vite-plugin guard create-jota-js; do
+            (cd packages/$dir && pnpm publish --access public --provenance --no-git-checks)
+          done

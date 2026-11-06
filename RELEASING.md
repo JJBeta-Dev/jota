@@ -34,6 +34,18 @@ node scripts/release.mjs publish
 
 It publishes the tarballs in order (runtime, plugin, guard, scaffolder). Each one opens the browser for confirmation. If one fails, fix it and run `publish` again: packages already published report that the version exists and can be skipped by publishing the rest by hand with `npm publish release/<file>.tgz --access public`.
 
+## Alternative: publish from GitHub Actions
+
+`.github/workflows/release.yml` publishes the four packages, with provenance, whenever a tag such as `v1.0.0` is pushed. It needs one setup on npmjs.com, once: either **trusted publishing** for each of the four packages (Settings, Trusted publisher, GitHub Actions, repository `JJBeta-Dev/jota`, workflow `release.yml`), or a repository secret `NPM_TOKEN` holding a granular access token allowed to publish them. Then:
+
+```bash
+node scripts/release.mjs prepare 1.0.0   # sets the versions and checks the tarballs
+git add -A && git commit -m "chore: release 1.0.0"
+git tag v1.0.0 && git push --follow-tags
+```
+
+The workflow stops early if a tag does not match the package versions. It has not been run yet, so expect to adjust it the first time.
+
 ## 4. After publishing
 
 ```bash
