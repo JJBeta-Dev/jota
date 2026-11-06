@@ -69,6 +69,14 @@ Priority: command line options, then the config file, then the preset.
 | `jota/html-lang` | error | `<html>` has `lang` |
 | `jota/no-positive-tabindex` | warn | no `tabIndex` greater than 0 |
 | `jota/media-captions` | warn | `<video>` has a captions track |
+| `jota/iframe-title` | error | `<iframe>` has a title |
+| `jota/aria-role-valid` | error | `role` is a real ARIA role |
+| `jota/aria-hidden-focusable` | error | no `aria-hidden` on focusable elements |
+| `jota/no-distracting-elements` | error | no `<marquee>` or `<blink>` |
+| `jota/valid-lang` | error | `lang` looks like a language tag |
+| `jota/no-autofocus` | warn | no `autoFocus` |
+| `jota/no-access-key` | warn | no `accessKey` |
+| `jota/no-redundant-alt` | warn | no "image" or "photo" in `alt` |
 
 Full details, examples and edge cases: [docs/guard-rules.md](https://github.com/JJBeta-Dev/jota/blob/main/docs/guard-rules.md). When a rule cannot be sure (spread props, components, dynamic values), it stays silent instead of guessing.
 

@@ -1,4 +1,12 @@
 import type { ESLint, Linter } from "eslint";
+import iframeTitle from "./rules/iframe-title.js";
+import noAutofocus from "./rules/no-autofocus.js";
+import noRedundantAlt from "./rules/no-redundant-alt.js";
+import ariaHiddenFocusable from "./rules/aria-hidden-focusable.js";
+import noDistractingElements from "./rules/no-distracting-elements.js";
+import noAccessKey from "./rules/no-access-key.js";
+import validLang from "./rules/valid-lang.js";
+import ariaRoleValid from "./rules/aria-role-valid.js";
 import buttonName from "./rules/button-name.js";
 import clickableRole from "./rules/clickable-role.js";
 import headingOrder from "./rules/heading-order.js";
@@ -22,6 +30,14 @@ export const rules = {
   "html-lang": htmlLang,
   "no-positive-tabindex": noPositiveTabindex,
   "media-captions": mediaCaptions,
+  "iframe-title": iframeTitle,
+  "no-autofocus": noAutofocus,
+  "no-redundant-alt": noRedundantAlt,
+  "aria-hidden-focusable": ariaHiddenFocusable,
+  "no-distracting-elements": noDistractingElements,
+  "no-access-key": noAccessKey,
+  "valid-lang": validLang,
+  "aria-role-valid": ariaRoleValid,
 };
 
 const plugin: ESLint.Plugin = { rules };

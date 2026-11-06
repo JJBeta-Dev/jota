@@ -1,6 +1,6 @@
 # Jota Guard — Rule specification (draft v0.1)
 
-Status: **v0.1 implemented** (2026-11-05) in `packages/guard`: all ten rules, three presets and the CLI, with 130 passing tests. This document is the specification they follow. Anything not listed here is out of scope for the first release.
+Status: **v0.1 implemented** (2026-11-05) in `packages/guard`: eighteen rules (the first ten on 2026-11-05, eight more on 2026-11-06), three presets and the CLI, with 220 passing tests. This document is the specification they follow. Anything not listed here is out of scope for the first release.
 
 Guard is an ESLint plugin plus a CLI (`npx jota-guard`) that audits JSX/TSX files (React, Solid, Preact, Jota). Rules are static checks on the syntax tree. Guard never claims a page is "100% accessible": static analysis catches a known subset of problems and says so.
 
@@ -20,7 +20,7 @@ Guard is an ESLint plugin plus a CLI (`npx jota-guard`) that audits JSX/TSX file
 
 `--max-warnings <n>` turns warnings into failures after `n`. Default config: the `recommended` preset below.
 
-## 3. First batch of rules (v0.1)
+## 3. Rules
 
 Format: **id** · default level · what it checks · bad / good · message · edge cases.
 
@@ -99,6 +99,41 @@ Message: `tabIndex={n} with n > 0 changes the natural tab order. Use 0 or -1.`
 ### `jota/media-captions` · warn
 `<video>` should include a `<track kind="captions">` unless it is `muted` with no audio content declared.
 Message: `<video> has no captions track. Add <track kind="captions" src="…" srclang="en">.`
+
+### `jota/iframe-title` · error
+`<iframe>` needs a `title` (or `aria-label`/`aria-labelledby`) so screen reader users know what it holds.
+Message: `<iframe> needs a title that says what it contains. Screen readers announce it.`
+Edge cases: a dynamic `title={name}` passes; spread props → silent; components are not checked.
+
+### `jota/aria-role-valid` · error
+A static `role` on a DOM element must contain at least one real ARIA role (the WAI-ARIA 1.2 list, `doc-*` and `graphics-*`). A list is a fallback chain, so `role="foo button"` passes.
+Message: `role="buton" is not a valid ARIA role. Check the spelling, or remove the role and use the native element.`
+Edge cases: `role={expr}` passes; components are not checked.
+
+### `jota/aria-hidden-focusable` · error
+`aria-hidden="true"` must not be set on an element a keyboard user can focus: `button`, `select`, `textarea`, `summary`, `a` with `href`, `input` (not `type="hidden"`), or anything with `tabIndex >= 0`. `tabIndex={-1}` is accepted.
+Message: `<button> is hidden from screen readers (aria-hidden) but a keyboard user can still focus it. Remove aria-hidden or add tabIndex={-1}.`
+
+### `jota/no-distracting-elements` · error
+`<marquee>` and `<blink>` move or flash and cannot be paused.
+Message: `<marquee> moves or flashes and cannot be paused. Remove it and use CSS animation that respects prefers-reduced-motion.`
+
+### `jota/valid-lang` · error
+A static `lang` on a DOM element must look like a BCP 47 tag (`en`, `es-CO`, `zh-Hant-TW`). It checks the form, not the language registry. The empty string and dynamic values are not judged.
+Message: `lang="english" is not a language tag. Use a code such as "en", "es" or "es-CO".`
+
+### `jota/no-autofocus` · warn
+`autoFocus` on a DOM element moves focus without being asked. `autoFocus={false}` passes.
+Message: `autoFocus moves focus without the user asking, which disorients screen reader and keyboard users. Remove it.`
+
+### `jota/no-access-key` · warn
+`accessKey` shortcuts clash with screen reader and browser shortcuts.
+Message: `accessKey shortcuts clash with screen reader and browser shortcuts. Remove it and let users reach the control with Tab.`
+
+### `jota/no-redundant-alt` · warn
+`alt` text on `<img>` should not contain the words image, photo, picture, graphic, img or icon, because screen readers already say "image".
+Message: `Screen readers already say "image". Remove the word "photo" from the alt text and describe what the image shows.`
+Edge cases: dynamic `alt={expr}` passes; whole words only (`Imagery` passes).
 
 ## 4. Presets
 | Preset | Rules |

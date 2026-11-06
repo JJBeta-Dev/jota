@@ -26,7 +26,7 @@ Jota no promete "100% en todas las métricas". Te da límites medibles y los com
 
 | Paquete | Qué hace |
 |---|---|
-| [`jota-guard`](packages/guard) | Diez reglas de accesibilidad, semántica y rendimiento, como plugin de ESLint y como comando `jota-guard` |
+| [`jota-guard`](packages/guard) | Dieciocho reglas de accesibilidad y semántica, como plugin de ESLint y como comando `jota-guard` |
 | [`jota-js`](packages/core) | Signals, `Show` y `For`, un router por archivos, islas y el runtime del DOM para el JSX compilado |
 | [`vite-plugin-jota`](packages/vite-plugin) | Compila `.tsx`/`.jsx`; generación de sitios estáticos con datos asíncronos, imágenes AVIF/WebP, CSS crítico y presupuesto de rendimiento |
 | [`create-jota-js`](packages/create-jota-js) | Crea una app nueva en TypeScript o JavaScript |

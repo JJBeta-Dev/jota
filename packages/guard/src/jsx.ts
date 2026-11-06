@@ -8,6 +8,8 @@ export interface ValueNode {
     type: string;
     value?: unknown;
     expressions?: unknown[];
+    operator?: string;
+    argument?: { type: string; value?: unknown };
     quasis?: Array<{ value: { cooked?: string | null } }>;
     properties?: Array<{
       type: string;
@@ -112,12 +114,22 @@ export function staticString(attr: JSXAttributeNode | undefined): string | undef
 export function staticNumber(attr: JSXAttributeNode | undefined): number | undefined {
   const value = attr?.value;
   if (!value) return undefined;
-  const raw =
-    value.type === "Literal"
-      ? value.value
-      : value.type === "JSXExpressionContainer" && value.expression?.type === "Literal"
-        ? value.expression.value
-        : undefined;
+  let raw: unknown;
+  if (value.type === "Literal") {
+    raw = value.value;
+  } else if (value.type === "JSXExpressionContainer" && value.expression) {
+    const expr = value.expression;
+    if (expr.type === "Literal") {
+      raw = expr.value;
+    } else if (
+      expr.type === "UnaryExpression" &&
+      expr.operator === "-" &&
+      expr.argument?.type === "Literal" &&
+      typeof expr.argument.value === "number"
+    ) {
+      raw = -expr.argument.value;
+    }
+  }
   if (typeof raw === "number") return raw;
   if (typeof raw === "string" && raw.trim() !== "" && !Number.isNaN(Number(raw))) {
     return Number(raw);

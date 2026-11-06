@@ -12,6 +12,14 @@ export const DEFAULT_LEVELS = {
   "html-lang": "error",
   "no-positive-tabindex": "warn",
   "media-captions": "warn",
+  "iframe-title": "error",
+  "no-autofocus": "warn",
+  "no-redundant-alt": "warn",
+  "aria-hidden-focusable": "error",
+  "no-distracting-elements": "error",
+  "no-access-key": "warn",
+  "valid-lang": "error",
+  "aria-role-valid": "error",
 } as const satisfies Record<string, Level>;
 
 export type RuleId = keyof typeof DEFAULT_LEVELS;

@@ -59,6 +59,14 @@ Prioridad: opciones de la línea de comandos, luego el archivo de configuración
 | `jota/html-lang` | error | `<html>` tiene `lang` |
 | `jota/no-positive-tabindex` | warn | sin `tabIndex` mayor que 0 |
 | `jota/media-captions` | warn | `<video>` tiene pista de subtítulos |
+| `jota/iframe-title` | error | `<iframe>` tiene título |
+| `jota/aria-role-valid` | error | `role` es un rol ARIA real |
+| `jota/aria-hidden-focusable` | error | sin `aria-hidden` en elementos que reciben foco |
+| `jota/no-distracting-elements` | error | sin `<marquee>` ni `<blink>` |
+| `jota/valid-lang` | error | `lang` parece una etiqueta de idioma |
+| `jota/no-autofocus` | warn | sin `autoFocus` |
+| `jota/no-access-key` | warn | sin `accessKey` |
+| `jota/no-redundant-alt` | warn | sin "image" ni "photo" en `alt` |
 
 Cuando una regla no puede estar segura (props con spread, componentes, valores dinámicos), se calla en vez de adivinar. Los mensajes del producto están en inglés. Detalles: [docs/guard-rules.md](https://github.com/JJBeta-Dev/jota/blob/main/docs/guard-rules.md).
 

@@ -6,6 +6,12 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 
 ## [Unreleased] / [Sin publicar]
 
+### Added
+- Jota Guard: eight new rules: `iframe-title`, `aria-role-valid`, `aria-hidden-focusable`, `no-distracting-elements`, `valid-lang` (errors) and `no-autofocus`, `no-access-key`, `no-redundant-alt` (warnings). 220 Guard tests.
+
+### Fixed
+- Guard: `tabIndex={-1}` was not read as a number by the shared helper.
+
 ### Changed
 - Reactivity core: effects and computeds keep their subscriptions between runs and only drop the sources they stopped reading; owners allocate children and cleanups lazily. Jota now beats Solid in 4 of 6 micro-benchmarks (see `bench/RESULTS.md`).
 - README and README.es describe the published 1.0.0 instead of the pre-release state.

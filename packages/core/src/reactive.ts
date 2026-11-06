@@ -20,7 +20,8 @@ export interface SignalOptions<T> {
 }
 
 interface Source {
-  observers: Set<Observer>;
+  /** Allocated when the first observer subscribes. */
+  observers: Set<Observer> | null;
   version: number;
   refresh?: () => void;
 }
@@ -89,7 +90,7 @@ class Owner {
 }
 
 class Computation<T> extends Owner implements Source, Runnable {
-  observers = new Set<Observer>();
+  observers: Set<Observer> | null = null;
   sources = new Map<Source, number>();
   previous: Map<Source, number> | null = null;
   private spare: Map<Source, number> | null = null;
@@ -122,7 +123,8 @@ class Computation<T> extends Owner implements Source, Runnable {
     } else if (!this.stale) {
       this.stale = true;
       // Marking only flags memos and queues effects; it never changes the observer sets.
-      for (const observer of this.observers) observer.mark();
+      const observers = this.observers;
+      if (observers !== null) for (const observer of observers) observer.mark();
     }
   }
 
@@ -177,7 +179,7 @@ class Computation<T> extends Owner implements Source, Runnable {
       this.hasRun = true;
       this.previous = null;
       for (const source of previous.keys()) {
-        if (this.disposed || !this.sources.has(source)) source.observers.delete(this);
+        if (this.disposed || !this.sources.has(source)) source.observers?.delete(this);
       }
       previous.clear();
       this.spare = previous;
@@ -186,9 +188,9 @@ class Computation<T> extends Owner implements Source, Runnable {
 
   override dispose(): void {
     if (this.disposed) return;
-    for (const source of this.sources.keys()) source.observers.delete(this);
+    for (const source of this.sources.keys()) source.observers?.delete(this);
     this.sources.clear();
-    this.observers.clear();
+    this.observers?.clear();
     super.dispose();
   }
 }
@@ -197,7 +199,7 @@ function track(source: Source): void {
   const observer = currentObserver;
   if (!observer || observer.disposed) return;
   const previous = observer.previous;
-  if (previous === null || !previous.has(source)) source.observers.add(observer);
+  if (previous === null || !previous.has(source)) (source.observers ??= new Set()).add(observer);
   observer.sources.set(source, source.version);
 }
 
@@ -223,7 +225,7 @@ function flush(): void {
 /** Create a reactive value. Returns a `[get, set]` pair. */
 export function signal<T>(initial: T, options?: SignalOptions<T>): [Accessor<T>, Setter<T>] {
   const equals = resolveEquals(options?.equals);
-  const node: Source & { value: T } = { value: initial, version: 0, observers: new Set() };
+  const node: Source & { value: T } = { value: initial, version: 0, observers: null };
 
   const get: Accessor<T> = () => {
     track(node);
@@ -235,7 +237,8 @@ export function signal<T>(initial: T, options?: SignalOptions<T>): [Accessor<T>,
     if (equals(node.value, next)) return node.value;
     node.value = next;
     node.version++;
-    for (const observer of node.observers) observer.mark();
+    const observers = node.observers;
+    if (observers !== null) for (const observer of observers) observer.mark();
     if (batchDepth === 0) flush();
     return next;
   };

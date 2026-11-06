@@ -26,7 +26,7 @@ Jota does not promise "100% on every metric". It gives you measurable limits and
 
 | Package | What it does |
 |---|---|
-| [`jota-guard`](packages/guard) | Ten accessibility, semantics and performance rules, as an ESLint plugin and the `jota-guard` command |
+| [`jota-guard`](packages/guard) | Eighteen accessibility and semantics rules, as an ESLint plugin and the `jota-guard` command |
 | [`jota-js`](packages/core) | Signals, `Show` and `For`, a file-based router, islands, and the DOM runtime for compiled JSX |
 | [`vite-plugin-jota`](packages/vite-plugin) | Compiles `.tsx`/`.jsx`; static site generation with async data, AVIF/WebP images, critical CSS and a performance budget |
 | [`create-jota-js`](packages/create-jota-js) | Creates a new app in TypeScript or JavaScript |
