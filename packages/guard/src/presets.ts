@@ -20,6 +20,14 @@ export const DEFAULT_LEVELS = {
   "no-access-key": "warn",
   "valid-lang": "error",
   "aria-role-valid": "error",
+  "heading-has-content": "error",
+  "mouse-events-have-key-events": "warn",
+  "aria-props": "error",
+  "no-redundant-roles": "warn",
+  "no-noninteractive-tabindex": "warn",
+  "scope-valid": "error",
+  "aria-unsupported-elements": "error",
+  "anchor-ambiguous-text": "warn",
 } as const satisfies Record<string, Level>;
 
 export type RuleId = keyof typeof DEFAULT_LEVELS;

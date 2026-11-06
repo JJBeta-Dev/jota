@@ -7,6 +7,14 @@ import noDistractingElements from "./rules/no-distracting-elements.js";
 import noAccessKey from "./rules/no-access-key.js";
 import validLang from "./rules/valid-lang.js";
 import ariaRoleValid from "./rules/aria-role-valid.js";
+import headingHasContent from "./rules/heading-has-content.js";
+import mouseEventsHaveKeyEvents from "./rules/mouse-events-have-key-events.js";
+import ariaProps from "./rules/aria-props.js";
+import noRedundantRoles from "./rules/no-redundant-roles.js";
+import noNoninteractiveTabindex from "./rules/no-noninteractive-tabindex.js";
+import scopeValid from "./rules/scope-valid.js";
+import ariaUnsupportedElements from "./rules/aria-unsupported-elements.js";
+import anchorAmbiguousText from "./rules/anchor-ambiguous-text.js";
 import buttonName from "./rules/button-name.js";
 import clickableRole from "./rules/clickable-role.js";
 import headingOrder from "./rules/heading-order.js";
@@ -38,6 +46,14 @@ export const rules = {
   "no-access-key": noAccessKey,
   "valid-lang": validLang,
   "aria-role-valid": ariaRoleValid,
+  "heading-has-content": headingHasContent,
+  "mouse-events-have-key-events": mouseEventsHaveKeyEvents,
+  "aria-props": ariaProps,
+  "no-redundant-roles": noRedundantRoles,
+  "no-noninteractive-tabindex": noNoninteractiveTabindex,
+  "scope-valid": scopeValid,
+  "aria-unsupported-elements": ariaUnsupportedElements,
+  "anchor-ambiguous-text": anchorAmbiguousText,
 };
 
 const plugin: ESLint.Plugin = { rules };

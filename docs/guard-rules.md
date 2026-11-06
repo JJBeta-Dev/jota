@@ -1,6 +1,6 @@
 # Jota Guard — Rule specification (draft v0.1)
 
-Status: **v0.1 implemented** (2026-11-05) in `packages/guard`: eighteen rules (the first ten on 2026-11-05, eight more on 2026-11-06), three presets and the CLI, with 220 passing tests. This document is the specification they follow. Anything not listed here is out of scope for the first release.
+Status: **v0.1 implemented** (2026-11-05) in `packages/guard`: twenty-six rules (the first ten on 2026-11-05, sixteen more on 2026-11-06), three presets and the CLI, with 305 passing tests. This document is the specification they follow. Anything not listed here is out of scope for the first release.
 
 Guard is an ESLint plugin plus a CLI (`npx jota-guard`) that audits JSX/TSX files (React, Solid, Preact, Jota). Rules are static checks on the syntax tree. Guard never claims a page is "100% accessible": static analysis catches a known subset of problems and says so.
 
@@ -134,6 +134,38 @@ Message: `accessKey shortcuts clash with screen reader and browser shortcuts. Re
 `alt` text on `<img>` should not contain the words image, photo, picture, graphic, img or icon, because screen readers already say "image".
 Message: `Screen readers already say "image". Remove the word "photo" from the alt text and describe what the image shows.`
 Edge cases: dynamic `alt={expr}` passes; whole words only (`Imagery` passes).
+
+### `jota/heading-has-content` · error
+`<h1>` to `<h6>` must have text, an expression, or an `aria-label`. Screen reader users jump between headings, and an empty one is a dead stop.
+Message: `<h2> is empty. Screen reader users navigate by headings, so give it text.`
+
+### `jota/aria-props` · error
+Every `aria-*` attribute on a DOM element must be a real ARIA attribute (WAI-ARIA 1.2 list). Catches typos such as `aria-lable`.
+Message: `aria-lable is not a valid ARIA attribute. Check the spelling.`
+
+### `jota/scope-valid` · error
+`scope` belongs only on `<th>`.
+Message: `The scope attribute only works on <th>, not on <td>. Move it to the header cell.`
+
+### `jota/aria-unsupported-elements` · error
+`<meta>`, `<html>`, `<script>`, `<style>`, `<head>`, `<title>`, `<base>`, `<link>` and `<noscript>` are not exposed to assistive technology, so `role` and `aria-*` on them do nothing.
+Message: `<meta> does not support role or aria-* attributes. Remove aria-hidden.`
+
+### `jota/mouse-events-have-key-events` · warn
+`onMouseOver` needs `onFocus` and `onMouseOut` needs `onBlur`, so keyboard users get the same behaviour.
+Message: `onMouseOver needs onFocus too, so keyboard users get the same behaviour as mouse users.`
+
+### `jota/no-redundant-roles` · warn
+A `role` equal to the element's implicit role (`<button role="button">`, `<nav role="navigation">`, `<a href role="link">`, `<ul role="list">`, headings, `<main>`, `<form>`, `<article>`...) is noise.
+Message: `<button> already has the role "button". Remove the role attribute.`
+
+### `jota/no-noninteractive-tabindex` · warn
+`tabIndex` of 0 or more on plain content (`div`, `p`, `span`...) adds a tab stop that does nothing. It is accepted when the element has a `role`, `contentEditable`, or an event handler (those are `clickable-role`'s job), and `tabIndex={-1}` is always fine.
+Message: `<div> is not interactive, so tabIndex={0} puts a stop in the tab order that does nothing. Remove it, or give the element a role and a handler.`
+
+### `jota/anchor-ambiguous-text` · warn
+A link whose only text is "click here", "here", "read more", "more", "learn more", "link" or "this" means nothing when screen readers list links on their own. Links with expressions or child elements are not judged.
+Message: `The link text "Read more" means nothing out of context (screen readers list links on their own). Say where the link goes.`
 
 ## 4. Presets
 | Preset | Rules |

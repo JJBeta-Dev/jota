@@ -67,6 +67,14 @@ Prioridad: opciones de la línea de comandos, luego el archivo de configuración
 | `jota/no-autofocus` | warn | sin `autoFocus` |
 | `jota/no-access-key` | warn | sin `accessKey` |
 | `jota/no-redundant-alt` | warn | sin "image" ni "photo" en `alt` |
+| `jota/heading-has-content` | error | los encabezados no están vacíos |
+| `jota/aria-props` | error | los atributos `aria-*` existen en ARIA |
+| `jota/scope-valid` | error | `scope` solo en `<th>` |
+| `jota/aria-unsupported-elements` | error | sin `role`/`aria-*` en `<meta>`, `<html>`, `<script>`, `<style>`... |
+| `jota/mouse-events-have-key-events` | warn | `onMouseOver`/`onMouseOut` van con `onFocus`/`onBlur` |
+| `jota/no-redundant-roles` | warn | sin un rol que el elemento ya tiene |
+| `jota/no-noninteractive-tabindex` | warn | sin `tabIndex={0}` en contenido que no es interactivo |
+| `jota/anchor-ambiguous-text` | warn | sin enlaces "click here" ni "read more" |
 
 Cuando una regla no puede estar segura (props con spread, componentes, valores dinámicos), se calla en vez de adivinar. Los mensajes del producto están en inglés. Detalles: [docs/guard-rules.md](https://github.com/JJBeta-Dev/jota/blob/main/docs/guard-rules.md).
 

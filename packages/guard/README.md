@@ -77,6 +77,14 @@ Priority: command line options, then the config file, then the preset.
 | `jota/no-autofocus` | warn | no `autoFocus` |
 | `jota/no-access-key` | warn | no `accessKey` |
 | `jota/no-redundant-alt` | warn | no "image" or "photo" in `alt` |
+| `jota/heading-has-content` | error | headings are not empty |
+| `jota/aria-props` | error | `aria-*` attributes are real ARIA attributes |
+| `jota/scope-valid` | error | `scope` only on `<th>` |
+| `jota/aria-unsupported-elements` | error | no `role`/`aria-*` on `<meta>`, `<html>`, `<script>`, `<style>`... |
+| `jota/mouse-events-have-key-events` | warn | `onMouseOver`/`onMouseOut` come with `onFocus`/`onBlur` |
+| `jota/no-redundant-roles` | warn | no role the element already has |
+| `jota/no-noninteractive-tabindex` | warn | no `tabIndex={0}` on plain content |
+| `jota/anchor-ambiguous-text` | warn | no "click here" or "read more" link text |
 
 Full details, examples and edge cases: [docs/guard-rules.md](https://github.com/JJBeta-Dev/jota/blob/main/docs/guard-rules.md). When a rule cannot be sure (spread props, components, dynamic values), it stays silent instead of guessing.
 

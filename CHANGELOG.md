@@ -7,7 +7,7 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 ## [Unreleased] / [Sin publicar]
 
 ### Added
-- Jota Guard: eight new rules: `iframe-title`, `aria-role-valid`, `aria-hidden-focusable`, `no-distracting-elements`, `valid-lang` (errors) and `no-autofocus`, `no-access-key`, `no-redundant-alt` (warnings). 220 Guard tests.
+- Jota Guard: sixteen new rules (26 in total). Errors: `iframe-title`, `aria-role-valid`, `aria-hidden-focusable`, `no-distracting-elements`, `valid-lang`, `heading-has-content`, `aria-props`, `scope-valid`, `aria-unsupported-elements`. Warnings: `no-autofocus`, `no-access-key`, `no-redundant-alt`, `mouse-events-have-key-events`, `no-redundant-roles`, `no-noninteractive-tabindex`, `anchor-ambiguous-text`. 305 Guard tests.
 
 ### Fixed
 - Guard: `tabIndex={-1}` was not read as a number by the shared helper.
