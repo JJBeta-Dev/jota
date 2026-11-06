@@ -1,6 +1,6 @@
 {
   "name": "jota-js",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Jota runtime: fine-grained signals and a compiled-JSX DOM runtime (work in progress)",
   "license": "MIT",
   "author": "JJBeta",
