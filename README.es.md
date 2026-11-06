@@ -136,7 +136,7 @@ Cada archivo de `src/routes` se convierte en una página HTML sin JavaScript, sa
 
 ## Límites conocidos
 
-- Las islas y las rutas de cliente se montan de nuevo en el navegador; no hay hidratación del HTML del servidor.
+- Las islas y las rutas de cliente se montan de nuevo en el navegador; no hay hidratación del HTML del servidor. Una isla conserva lo que el usuario ya escribió, marcó o enfocó dentro de ella, pero los listeners y efectos se crean desde cero.
 - Las páginas se renderizan una vez al compilar. No hay renderizado en el servidor por petición.
 - No hay estilos con alcance por componente ni utilidades de CSS atómico.
 

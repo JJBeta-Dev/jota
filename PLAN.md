@@ -42,7 +42,7 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 ### Etapa 3 — Router + SSG + islas + CSS (6-8 semanas)
 - [x] Rutas por archivos (`src/routes`): `createRoutes`, `matchRoute`, `buildPath`, `startRouter` con navegación en el cliente (33 tests en core) y SSG con `vite-plugin-jota/static` (9 tests: páginas estáticas sin JS, rutas `client`, rutas dinámicas con `paths`, `head`, 404, sitemap)
 - [x] CSS: hojas de hasta 20 kB incrustadas completas; por encima, CSS crítico real por página con `beasties` y carga del resto sin bloquear (2 tests). Faltan CSS con alcance local por componente y utilidades atómicas (no están en la v1 acordada)
-- [x] Islas: `<Island>` + `startIslands` (`load`, `idle`, `visible`); la página sigue siendo estática y solo conserva su script si contiene una isla (se vuelve a montar, no hidrata). 8 tests en core y 1 de extremo a extremo
+- [x] Islas: `<Island>` + `startIslands` (`load`, `idle`, `visible`); la página sigue siendo estática y solo conserva su script si contiene una isla (se vuelve a montar, no hidrata; conserva lo que el usuario ya escribió, marcó o enfocó). 8 tests en core y 1 de extremo a extremo
 - [x] Medios: `fetchpriority="high"` en la primera imagen, `loading="lazy"` en el resto y conversión a AVIF/WebP con `sharp` (opcional) con `<picture>` (1 test)
 - [x] `create-jota-js` con plantillas TS (por defecto) y JS: 10 tests; verificado a mano que un proyecto generado compila (4.90 kB JS, 2.11 kB gzip), pasa el chequeo de tipos y pasa Guard. Su `npm install` real espera al primer lanzamiento (`^1.0.0`)
 - **Puerta:** sitio demo con 95+ en Lighthouse móvil y menos de 10 KB de JS en páginas de contenido.

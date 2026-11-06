@@ -52,7 +52,7 @@ startIslands(import.meta.glob("/src/islands/*.tsx"));`}
           A static page that contains an island keeps its script tag. Pages without islands still have none.
         </li>
         <li>
-          The browser replaces the server HTML of the island with the live component; it does not hydrate it.
+          The browser replaces the server HTML of the island with the live component; it does not hydrate it. Text the user already typed, boxes they checked and the focused element (with its caret) are carried over to the new elements.
         </li>
       </ul>
 

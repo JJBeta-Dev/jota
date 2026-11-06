@@ -10,6 +10,7 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - Jota Guard: sixteen new rules (26 in total). Errors: `iframe-title`, `aria-role-valid`, `aria-hidden-focusable`, `no-distracting-elements`, `valid-lang`, `heading-has-content`, `aria-props`, `scope-valid`, `aria-unsupported-elements`. Warnings: `no-autofocus`, `no-access-key`, `no-redundant-alt`, `mouse-events-have-key-events`, `no-redundant-roles`, `no-noninteractive-tabindex`, `anchor-ambiguous-text`. 305 Guard tests.
 
 ### Fixed
+- Islands: mounting an island no longer loses what the user already typed, checked or focused inside the server HTML (values, checkboxes, focus and caret are restored, and the component is told through `input`/`change` events). It is still a re-mount, not hydration.
 - Guard: `tabIndex={-1}` was not read as a number by the shared helper.
 
 ### Changed

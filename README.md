@@ -136,7 +136,7 @@ Every file in `src/routes` becomes an HTML page that contains no JavaScript unle
 
 ## Known limits
 
-- Islands and client routes are mounted again in the browser; there is no hydration of the server HTML.
+- Islands and client routes are mounted again in the browser; there is no hydration of the server HTML. An island keeps what the user already typed, checked or focused inside it, but listeners and effects are created from scratch.
 - Pages are rendered once at build time. There is no server-side rendering on request.
 - There are no scoped component styles or atomic CSS utilities.
 

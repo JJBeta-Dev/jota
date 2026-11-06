@@ -3,7 +3,7 @@
  *
  * `<Island>` renders a component into HTML at build time, wrapped in an element that records which
  * component it is and its props. In the browser, `startIslands` finds those wrappers and mounts the
- * component again (it replaces the server HTML, it does not hydrate), when the island loads, the
+ * component again (it replaces the server HTML, it does not hydrate; what the user already typed, checked or focused inside the island is carried over), when the island loads, the
  * browser is idle, or the island scrolls into view. Pages without islands keep shipping no JavaScript.
  */
 import { createComponent, insert, mount } from "./web.js";
@@ -45,6 +45,73 @@ function nameOf(path: string): string {
   return (path.split("/").pop() ?? path).replace(/\.[jt]sx?$/, "");
 }
 
+const CONTROLS = "input, textarea, select";
+const FOCUSABLE = "input, textarea, select, button, a[href], [tabindex]";
+
+type Control = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+
+interface Snapshot {
+  /** Controls the user changed before the island mounted, by position inside the island. */
+  changes: Array<{ index: number; value: string; checked: boolean }>;
+  focusIndex: number;
+  selection: [number | null, number | null] | null;
+}
+
+/** What the user already did inside the server HTML: typed values, checked boxes, focus, caret. */
+function snapshot(element: HTMLElement): Snapshot {
+  const changes: Snapshot["changes"] = [];
+  element.querySelectorAll<Control>(CONTROLS).forEach((control, index) => {
+    const input = control as HTMLInputElement;
+    const changed =
+      control instanceof HTMLSelectElement
+        ? [...control.options].some((option) => option.selected !== option.defaultSelected)
+        : input.type === "checkbox" || input.type === "radio"
+          ? input.checked !== input.defaultChecked
+          : control.value !== control.defaultValue;
+    if (changed) changes.push({ index, value: control.value, checked: input.checked });
+  });
+  const active = document.activeElement;
+  const focusIndex = active && element.contains(active) ? [...element.querySelectorAll(FOCUSABLE)].indexOf(active) : -1;
+  const selection =
+    focusIndex >= 0 && active instanceof HTMLInputElement && active.type !== "checkbox" && active.type !== "radio"
+      ? ([active.selectionStart, active.selectionEnd] as [number | null, number | null])
+      : null;
+  return { changes, focusIndex, selection };
+}
+
+/** Put the user's state back into the freshly mounted DOM, telling the component through events. */
+function restore(element: HTMLElement, state: Snapshot): void {
+  const controls = element.querySelectorAll<Control>(CONTROLS);
+  for (const change of state.changes) {
+    const control = controls[change.index];
+    if (!control) continue;
+    const input = control as HTMLInputElement;
+    if (input.type === "checkbox" || input.type === "radio") {
+      if (input.checked === change.checked) continue;
+      input.checked = change.checked;
+    } else {
+      if (control.value === change.value) continue;
+      control.value = change.value;
+    }
+    // Components that read the value from an event handler learn about it this way.
+    control.dispatchEvent(new Event("input", { bubbles: true }));
+    control.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  if (state.focusIndex >= 0) {
+    const target = element.querySelectorAll<HTMLElement>(FOCUSABLE)[state.focusIndex];
+    if (target) {
+      target.focus();
+      if (state.selection && target instanceof HTMLInputElement) {
+        try {
+          target.setSelectionRange(state.selection[0], state.selection[1]);
+        } catch {
+          // Some input types do not support selection.
+        }
+      }
+    }
+  }
+}
+
 async function mountIsland(element: HTMLElement, name: string, loader: Loader): Promise<void> {
   if (element.hasAttribute(MOUNTED)) return;
   element.setAttribute(MOUNTED, "");
@@ -55,8 +122,10 @@ async function mountIsland(element: HTMLElement, name: string, loader: Loader): 
     return;
   }
   const props = JSON.parse(element.getAttribute("data-jota-props") ?? "{}") as Record<string, unknown>;
+  const state = snapshot(element);
   element.textContent = "";
   mount(() => createComponent(component, props), element);
+  restore(element, state);
 }
 
 function schedule(element: HTMLElement, load: IslandLoad, run: () => void): void {

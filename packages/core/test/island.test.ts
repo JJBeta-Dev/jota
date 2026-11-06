@@ -133,3 +133,54 @@ describe("startIslands", () => {
     expect(startIslands({}, container)).toBe(0);
   });
 });
+
+describe("startIslands keeps what the user already did", () => {
+  function Search(): Node {
+    const [query, setQuery] = signal("");
+    const wrapper = document.createElement("div");
+    const input = document.createElement("input");
+    input.addEventListener("input", () => setQuery(input.value));
+    const out = document.createElement("p");
+    render(() => () => `You typed: ${query()}`, out);
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    wrapper.append(input, box, out);
+    return wrapper;
+  }
+
+  const serverHtml =
+    '<div data-jota-island="Search" data-jota-load="load" data-jota-props="{}"><div><input><input type="checkbox"><p>You typed: </p></div></div>';
+
+  it("carries typed text, checked boxes and focus into the mounted island", async () => {
+    container.innerHTML = serverHtml;
+    const [oldText, oldBox] = [...container.querySelectorAll("input")] as [HTMLInputElement, HTMLInputElement];
+    oldText.value = "hello";
+    oldBox.checked = true;
+    oldText.focus();
+    oldText.setSelectionRange(2, 4);
+
+    startIslands({ "/src/islands/Search.tsx": () => ({ default: Search }) }, container);
+    await flush();
+
+    const [text, box] = [...container.querySelectorAll("input")] as [HTMLInputElement, HTMLInputElement];
+    expect(text).not.toBe(oldText);
+    expect(text.value).toBe("hello");
+    expect(box.checked).toBe(true);
+    expect(document.activeElement).toBe(text);
+    expect([text.selectionStart, text.selectionEnd]).toEqual([2, 4]);
+    // The component heard about the text, so its own state matches the screen.
+    expect(container.querySelector("p")?.textContent).toBe("You typed: hello");
+  });
+
+  it("does not touch controls the user did not change", async () => {
+    container.innerHTML = serverHtml;
+    startIslands({ "/src/islands/Search.tsx": () => ({ default: Search }) }, container);
+    await flush();
+    const [text, box] = [...container.querySelectorAll("input")] as [HTMLInputElement, HTMLInputElement];
+    expect(text.value).toBe("");
+    expect(box.checked).toBe(false);
+    expect(container.querySelector("p")?.textContent).toBe("You typed: ");
+    expect(document.activeElement).not.toBe(text);
+  });
+});
+
