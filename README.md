@@ -155,6 +155,37 @@ jota/
 └─ CHANGELOG.md
 ```
 
+## How Jota compares
+
+An honest map, not a scoreboard. The other columns describe each project in general terms (check their own documentation for details and versions); the Jota column describes what is in this repository today.
+
+| | React | Angular | Vue | Svelte | Solid | Preact | **Jota** |
+|---|---|---|---|---|---|---|---|
+| How the page updates | Re-runs components, diffs a virtual DOM | Change detection, signals in recent versions | Fine-grained reactivity plus a virtual DOM | Compiled, signals-based (runes), no virtual DOM | Signals, no virtual DOM | Virtual DOM, small; signals as an add-on | Signals, no virtual DOM; components run once |
+| Syntax | JSX / TSX | Templates + TypeScript classes | `.vue` single-file components | `.svelte` files | JSX / TSX | JSX / TSX | JSX / TSX, no custom extension |
+| Accessibility checks | Community ESLint plugin | Optional template lint rules | Community ESLint plugin | **Built-in compiler warnings** | Community ESLint plugin | Community ESLint plugin | **Guard: 26 rules** as ESLint plugin and CLI, also for non-Jota JSX |
+| Performance budget that fails the build | No | Bundle budgets in the CLI | No | No | No | No | **Yes**: JS, CSS, HTML and image limits per page |
+| Routing and static pages | Needs a meta-framework (Next, Remix...) | Built-in router; SSR/prerender in the CLI | vue-router, Nuxt | SvelteKit | SolidStart | Add-ons | File-based router and static generation built in |
+| Server rendering | Yes | Yes | Yes | Yes | Yes | Yes | **No** (static generation only) |
+| Hydration | Yes | Yes | Yes | Yes | Yes | Yes | **No** (islands and routes re-mount) |
+| JS on a plain content page | A runtime is shipped | A runtime is shipped | A runtime is shipped | Small runtime | A runtime is shipped | A runtime is shipped | **0 kB** unless the page has an island |
+| Ecosystem, hiring, answers online | Huge | Large | Large | Medium | Small | Medium | **None yet** |
+| Maturity | Years in production | Years in production | Years in production | Years in production | Years in production | Years in production | **1.0.0 released 2026-11-06, no outside users** |
+
+### Where Jota is a good fit
+
+- **Content-heavy sites with a few interactive parts** (docs, blogs, landing pages): static HTML by default, JavaScript only inside islands. The docs site of this repository ships 0 kB of JavaScript and scored 100 in all four Lighthouse categories on the pages measured ([results](bench/lighthouse/RESULTS.md)).
+- **Teams that want accessibility and weight checked automatically**: Guard runs in the editor, in the terminal and in CI, and the budget fails the build before a heavy page ships.
+- **People who already know JSX**: the syntax and the signal model are the ones of Solid, with TypeScript types for every element and event.
+- **Trying Guard without switching framework**: `npx jota-guard src` audits any React, Preact or Solid project.
+
+### Where something else is the better choice
+
+- You need **server rendering, streaming or hydration**: use Next, Nuxt, SvelteKit, SolidStart or Angular.
+- You need **a large ecosystem** (component libraries, tutorials, hiring): React, Vue or Angular.
+- You want the **fastest raw reactivity**: in our micro-benchmarks Preact Signals is still 1.5x to 4x faster than Jota ([numbers](bench/RESULTS.md)), and Solid is on par with Jota in the browser table benchmark ([numbers](bench/browser/RESULTS.md)).
+- You want **compile-time accessibility warnings with zero setup** inside a framework with years of use: Svelte already has them.
+
 ## Contributing
 
 Ideas, bug reports and rule suggestions are welcome through GitHub issues once the repository is public. Please read [IA.md](IA.md) first: it explains what is in and out of scope for version 1.

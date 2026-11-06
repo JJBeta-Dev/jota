@@ -155,6 +155,37 @@ jota/
 └─ CHANGELOG.md
 ```
 
+## Cómo se compara Jota
+
+Un mapa honesto, no un marcador. Las otras columnas describen cada proyecto en términos generales (revisa su documentación para detalles y versiones); la columna de Jota describe lo que hay hoy en este repositorio.
+
+| | React | Angular | Vue | Svelte | Solid | Preact | **Jota** |
+|---|---|---|---|---|---|---|---|
+| Cómo se actualiza la página | Vuelve a ejecutar componentes y compara un DOM virtual | Detección de cambios, signals en versiones recientes | Reactividad fina más un DOM virtual | Compilado, basado en signals (runes), sin DOM virtual | Signals, sin DOM virtual | DOM virtual, pequeño; signals como complemento | Signals, sin DOM virtual; los componentes se ejecutan una vez |
+| Sintaxis | JSX / TSX | Plantillas + clases de TypeScript | Componentes `.vue` | Archivos `.svelte` | JSX / TSX | JSX / TSX | JSX / TSX, sin extensión propia |
+| Revisión de accesibilidad | Plugin de ESLint de la comunidad | Reglas opcionales en plantillas | Plugin de ESLint de la comunidad | **Avisos del compilador incluidos** | Plugin de ESLint de la comunidad | Plugin de ESLint de la comunidad | **Guard: 26 reglas** como plugin de ESLint y CLI, también para JSX que no es de Jota |
+| Presupuesto de rendimiento que rompe el build | No | Presupuestos de bundle en la CLI | No | No | No | No | **Sí**: límites de JS, CSS, HTML e imágenes por página |
+| Rutas y páginas estáticas | Necesita un meta-framework (Next, Remix...) | Router incluido; SSR/prerender en la CLI | vue-router, Nuxt | SvelteKit | SolidStart | Complementos | Router por archivos y generación estática incluidos |
+| Render en servidor | Sí | Sí | Sí | Sí | Sí | Sí | **No** (solo generación estática) |
+| Hidratación | Sí | Sí | Sí | Sí | Sí | Sí | **No** (las islas y rutas se vuelven a montar) |
+| JS en una página de contenido simple | Se envía un runtime | Se envía un runtime | Se envía un runtime | Runtime pequeño | Se envía un runtime | Se envía un runtime | **0 kB** salvo que la página tenga una isla |
+| Ecosistema, empleo, respuestas en línea | Enorme | Grande | Grande | Medio | Pequeño | Medio | **Ninguno todavía** |
+| Madurez | Años en producción | Años en producción | Años en producción | Años en producción | Años en producción | Años en producción | **1.0.0 publicada el 2026-11-06, sin usuarios externos** |
+
+### Dónde Jota encaja bien
+
+- **Sitios de contenido con pocas partes interactivas** (docs, blogs, landings): HTML estático por defecto y JavaScript solo dentro de islas. El sitio de documentación de este repositorio envía 0 kB de JavaScript y sacó 100 en las cuatro categorías de Lighthouse en las páginas medidas ([resultados](bench/lighthouse/RESULTS.md)).
+- **Equipos que quieren accesibilidad y peso revisados automáticamente**: Guard corre en el editor, en la terminal y en el CI, y el presupuesto rompe el build antes de que salga una página pesada.
+- **Quien ya conoce JSX**: la sintaxis y el modelo de signals son los de Solid, con tipos de TypeScript para cada elemento y evento.
+- **Probar Guard sin cambiar de framework**: `npx jota-guard src` audita cualquier proyecto de React, Preact o Solid.
+
+### Dónde conviene otra opción
+
+- Necesitas **render en servidor, streaming o hidratación**: usa Next, Nuxt, SvelteKit, SolidStart o Angular.
+- Necesitas **un ecosistema grande** (librerías de componentes, tutoriales, empleo): React, Vue o Angular.
+- Quieres la **reactividad más rápida en bruto**: en nuestros microbenchmarks Preact Signals sigue siendo de 1,5 a 4 veces más rápido que Jota ([números](bench/RESULTS.md)), y Solid está a la par de Jota en el benchmark de tabla en navegador ([números](bench/browser/RESULTS.md)).
+- Quieres **avisos de accesibilidad en compilación sin configurar nada** dentro de un framework con años de uso: Svelte ya los tiene.
+
 ## Contribuir
 
 Las ideas, los reportes de errores y las sugerencias de reglas serán bienvenidos mediante issues de GitHub cuando el repositorio sea público. Lee primero [IA.md](IA.md): explica qué entra y qué no en la versión 1.
