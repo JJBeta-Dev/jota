@@ -2,9 +2,9 @@
 
 All notable changes to Jota are documented here. Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [Semantic Versioning](https://semver.org/).
 
-> 1.0.0 was released on 2026-11-06. / 1.0.0 se publicó el 2026-11-06.
+> 1.0.0 was released on 2026-11-06, 1.1.0 is prepared the same day. / 1.0.0 se publicó el 2026-11-06 y 1.1.0 queda preparada el mismo día.
 
-## [Unreleased] / [Sin publicar]
+## [1.1.0] - 2026-11-06
 
 ### Added
 - Jota Guard: sixteen new rules (26 in total). Errors: `iframe-title`, `aria-role-valid`, `aria-hidden-focusable`, `no-distracting-elements`, `valid-lang`, `heading-has-content`, `aria-props`, `scope-valid`, `aria-unsupported-elements`. Warnings: `no-autofocus`, `no-access-key`, `no-redundant-alt`, `mouse-events-have-key-events`, `no-redundant-roles`, `no-noninteractive-tabindex`, `anchor-ambiguous-text`. 305 Guard tests.
@@ -14,7 +14,7 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - Guard: `tabIndex={-1}` was not read as a number by the shared helper.
 
 ### Changed
-- Reactivity core: effects and computeds keep their subscriptions between runs and only drop the sources they stopped reading; owners allocate children and cleanups lazily. Jota now beats Solid in 4 of 6 micro-benchmarks (see `bench/RESULTS.md`).
+- Reactivity core: effects and computeds keep their subscriptions between runs and only drop the sources they stopped reading; owners allocate children and cleanups lazily. Creating 100,000 signals and computeds went from about 70 ms to about 49 ms. Jota is now faster than Solid in 3 of 6 micro-benchmarks, level in one (see `bench/RESULTS.md`).
 - README and README.es describe the published 1.0.0 instead of the pre-release state.
 
 ## [1.0.0] - 2026-11-06

@@ -132,7 +132,7 @@ Cada archivo de `src/routes` se convierte en una página HTML sin JavaScript, sa
 - El ejemplo de tareas (`examples/hello`) compila a 6.18 kB de JavaScript (2.65 kB con gzip), con runtime y CSS incluidos.
 - Nueve de las diez páginas del sitio de documentación no contienen JavaScript. Lighthouse (local, emulación móvil) da 100 en rendimiento, accesibilidad, buenas prácticas y SEO en cuatro de ellas: [bench/lighthouse/RESULTS.md](bench/lighthouse/RESULTS.md). Es un sitio estático pequeño y una medición local, no datos de campo.
 - En un navegador real (Edge), la misma tabla en Jota y en Solid queda a menos de un 10% en casi todas las operaciones, y el bundle de Jota es menor (2.9 kB con gzip contra 4.6 kB): [bench/browser/RESULTS.md](bench/browser/RESULTS.md). Una máquina, un navegador; no es el js-framework-benchmark oficial.
-- Los micro-benchmarks de reactividad contra Solid y Preact Signals están en [bench/RESULTS.md](bench/RESULTS.md): Jota le gana a Solid en cuatro de seis escenarios y sigue siendo más lento que Preact Signals. Miden el grafo reactivo en Node, no páginas reales.
+- Los micro-benchmarks de reactividad contra Solid y Preact Signals están en [bench/RESULTS.md](bench/RESULTS.md): Jota es más rápido que Solid en tres de seis escenarios, está a la par en uno y sigue siendo más lento que Preact Signals. Miden el grafo reactivo en Node, no páginas reales.
 
 ## Límites conocidos
 

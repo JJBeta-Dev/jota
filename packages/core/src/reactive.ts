@@ -154,9 +154,12 @@ class Computation<T> extends Owner implements Source, Runnable {
   execute(): void {
     this.cleanup();
     // Keep the old subscriptions: only sources that are no longer read get unsubscribed afterwards.
-    const previous = this.sources;
-    this.sources = this.spare ?? new Map();
-    this.spare = null;
+    // The first run has nothing to compare with, so it allocates no second map.
+    const previous = this.hasRun ? this.sources : null;
+    if (previous !== null) {
+      this.sources = this.spare ?? new Map();
+      this.spare = null;
+    }
     this.previous = previous;
 
     const previousObserver = currentObserver;
@@ -178,11 +181,13 @@ class Computation<T> extends Owner implements Source, Runnable {
       currentOwner = previousOwner;
       this.hasRun = true;
       this.previous = null;
-      for (const source of previous.keys()) {
-        if (this.disposed || !this.sources.has(source)) source.observers?.delete(this);
+      if (previous !== null) {
+        for (const source of previous.keys()) {
+          if (this.disposed || !this.sources.has(source)) source.observers?.delete(this);
+        }
+        previous.clear();
+        this.spare = previous;
       }
-      previous.clear();
-      this.spare = previous;
     }
   }
 

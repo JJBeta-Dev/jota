@@ -1,6 +1,6 @@
 {
   "name": "jota-guard",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Jota Guard: accessibility and performance checks for JSX/TSX (work in progress)",
   "license": "MIT",
   "author": "JJBeta",
