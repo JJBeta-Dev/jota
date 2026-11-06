@@ -79,6 +79,20 @@ Una isla se renderiza a HTML al compilar y el navegador la monta cuando carga, c
 
 Para generar páginas estáticas sin JavaScript usa `vite-plugin-jota/static` (ver [vite-plugin-jota](../vite-plugin/README.es.md)).
 
+## Render en servidor
+
+`jota-js/server` renderiza un componente a una cadena de HTML en Node, en cada petición. Necesita un DOM, así que usa `happy-dom` (dependencia opcional: `npm install happy-dom`). El DOM existe solo mientras el componente se renderiza, y el render es síncrono, así que las peticiones simultáneas no se mezclan. Carga los datos primero y luego renderiza:
+
+```tsx
+import { renderToString } from "jota-js/server";
+
+const data = await loadPosts();
+const app = await renderToString(() => <Page data={data} />);
+response.end(shell.replace("<!--app-->", app));
+```
+
+El HTML lleva las marcas que el navegador necesita para hidratarlo (`hydrate: "page"` por defecto; `"islands"` o `false` lo cambian). En el navegador, `hydrate(() => <Page data={data} />, element)` conserva esos elementos y les conecta el comportamiento, y devuelve `null` si el HTML no coincide, para que puedas volver a `render`. Un servidor y un cliente completos están en [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). No incluye: streaming, ni render que espere datos dentro de los componentes (cárgalos antes).
+
 ## TypeScript
 
 Pon `"jsx": "preserve"` y `"jsxImportSource": "jota-js"` en `tsconfig.json`. Todos los elementos HTML estándar y los SVG comunes están tipados: atributos, `class`/`classList`/`style`, `ref` y manejadores de eventos con `currentTarget` tipado. Los atributos `data-*` y `aria-*` siempre se permiten y los elementos con guion en el nombre (elementos personalizados) aceptan cualquier atributo.

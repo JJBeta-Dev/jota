@@ -163,6 +163,34 @@ importers:
         specifier: ^2.1.5
         version: 2.1.9(@types/node@22.20.5)(happy-dom@20.14.6)
 
+  examples/server:
+    dependencies:
+      happy-dom:
+        specifier: ^20.0.0
+        version: 20.14.6
+      jota-js:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.20.5
+      jota-guard:
+        specifier: workspace:*
+        version: link:../../packages/guard
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.11
+        version: 5.4.21(@types/node@22.20.5)
+      vite-plugin-jota:
+        specifier: workspace:*
+        version: link:../../packages/vite-plugin
+      vitest:
+        specifier: ^2.1.5
+        version: 2.1.9(@types/node@22.20.5)(happy-dom@20.14.6)
+
   packages/core:
     devDependencies:
       '@types/node':

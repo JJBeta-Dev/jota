@@ -79,6 +79,20 @@ An island is rendered to HTML at build time and mounted in the browser when it l
 
 For static pages with no JavaScript use `vite-plugin-jota/static` (see [vite-plugin-jota](../vite-plugin)).
 
+## Server rendering
+
+`jota-js/server` renders a component to an HTML string in Node, on every request. It needs a DOM, so it uses `happy-dom` (optional dependency: `npm install happy-dom`). The DOM exists only while the component renders, and rendering is synchronous, so simultaneous requests do not mix. Load the data first, then render:
+
+```tsx
+import { renderToString } from "jota-js/server";
+
+const data = await loadPosts();
+const app = await renderToString(() => <Page data={data} />);
+response.end(shell.replace("<!--app-->", app));
+```
+
+The HTML carries the marks the browser needs to hydrate it (`hydrate: "page"` by default; `"islands"` or `false` change that). In the browser, `hydrate(() => <Page data={data} />, element)` keeps those elements and attaches behaviour, and returns `null` if the HTML does not match, so you can fall back to `render`. A complete server and client are in [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). Not included: streaming, and rendering that waits for data inside components (load it before).
+
 ## TypeScript
 
 Set `"jsx": "preserve"` and `"jsxImportSource": "jota-js"` in `tsconfig.json`. Every standard HTML element and the common SVG elements are typed: attributes, `class`/`classList`/`style`, `ref`, and event handlers with a typed `currentTarget`. `data-*` and `aria-*` attributes are always allowed, and elements with a hyphen in the name (custom elements) accept any attribute.

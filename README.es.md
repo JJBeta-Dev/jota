@@ -10,7 +10,7 @@
 
 </div>
 
-> **Estado: 1.0.0, joven.** Los cuatro paquetes están en npm y el código tiene pruebas (la integración continua corre en Node 20 y 22, en Linux y Windows), pero Jota es nuevo, aún no tiene usuarios externos y su API todavía puede cambiar. Las islas y las páginas de cliente hidratan su HTML del servidor; no hay render en servidor en cada petición. [PLAN.md](PLAN.md) tiene la hoja de ruta y [IA.md](IA.md) todas las decisiones técnicas.
+> **Estado: 1.0.0, joven.** Los cuatro paquetes están en npm y el código tiene pruebas (la integración continua corre en Node 20 y 22, en Linux y Windows), pero Jota es nuevo, aún no tiene usuarios externos y su API todavía puede cambiar. Las islas y las páginas de cliente hidratan su HTML del servidor; el render en servidor en cada petición está disponible con `jota-js/server` (sin streaming). [PLAN.md](PLAN.md) tiene la hoja de ruta y [IA.md](IA.md) todas las decisiones técnicas.
 
 ## ¿Qué es Jota?
 
@@ -136,7 +136,7 @@ Cada archivo de `src/routes` se convierte en una página HTML sin JavaScript, sa
 
 ## Límites conocidos
 
-- Las islas y las páginas de cliente se hidratan: el navegador conserva los elementos del servidor (el foco, el texto escrito y la posición de scroll dentro de ellos sobreviven) y les conecta listeners y efectos. El build marca ese HTML con atributos `data-hk` y comentarios, y el navegador los quita. Si el HTML no coincide con lo que construye el componente, Jota lo monta desde cero. Mientras conecta, las partes dinámicas de la página se sacan del DOM y se vuelven a poner una vez, así que un iframe dentro de ellas se recarga y un video o audio ahí se detiene. No existe: render en servidor en cada petición, streaming, hidratar solo algunos componentes de una página.
+- Las islas y las páginas de cliente se hidratan: el navegador conserva los elementos del servidor (el foco, el texto escrito y la posición de scroll dentro de ellos sobreviven) y les conecta listeners y efectos. El build marca ese HTML con atributos `data-hk` y comentarios, y el navegador los quita. Si el HTML no coincide con lo que construye el componente, Jota lo monta desde cero. Mientras conecta, las partes dinámicas de la página se sacan del DOM y se vuelven a poner una vez, así que un iframe dentro de ellas se recarga y un video o audio ahí se detiene. No existe: streaming, componentes de servidor, hidratar solo algunos componentes de una página. `renderToString` ejecuta los componentes sobre un DOM de happy-dom, que es más lento que un renderizador de cadenas.
 - Las páginas se renderizan una vez al compilar. No hay renderizado en el servidor por petición.
 - No hay estilos con alcance por componente ni utilidades de CSS atómico.
 
@@ -166,7 +166,7 @@ Un mapa honesto, no un marcador. Las otras columnas describen cada proyecto en t
 | Revisión de accesibilidad | Plugin de ESLint de la comunidad | Reglas opcionales en plantillas | Plugin de ESLint de la comunidad | **Avisos del compilador incluidos** | Plugin de ESLint de la comunidad | Plugin de ESLint de la comunidad | **Guard: 31 reglas** como plugin de ESLint y CLI, también para JSX que no es de Jota |
 | Presupuesto de rendimiento que rompe el build | No | Presupuestos de bundle en la CLI | No | No | No | No | **Sí**: límites de JS, CSS, HTML e imágenes por página |
 | Rutas y páginas estáticas | Necesita un meta-framework (Next, Remix...) | Router incluido; SSR/prerender en la CLI | vue-router, Nuxt | SvelteKit | SolidStart | Complementos | Router por archivos y generación estática incluidos |
-| Render en servidor | Sí | Sí | Sí | Sí | Sí | Sí | **No** (solo generación estática) |
+| Render en servidor | Sí | Sí | Sí | Sí | Sí | Sí | **Sí, sin streaming**: `renderToString` en Node, o generación estática |
 | Hidratación | Sí | Sí | Sí | Sí | Sí | Sí | **Parcial**: islas y páginas de cliente, completas de una vez; si no coincide, se vuelve a montar |
 | JS en una página de contenido simple | Se envía un runtime | Se envía un runtime | Se envía un runtime | Runtime pequeño | Se envía un runtime | Se envía un runtime | **0 kB** salvo que la página tenga una isla |
 | Ecosistema, empleo, respuestas en línea | Enorme | Grande | Grande | Medio | Pequeño | Medio | **Ninguno todavía** |
@@ -181,7 +181,7 @@ Un mapa honesto, no un marcador. Las otras columnas describen cada proyecto en t
 
 ### Dónde conviene otra opción
 
-- Necesitas **render en servidor en cada petición, streaming o hidratación parcial**: usa Next, Nuxt, SvelteKit, SolidStart o Angular.
+- Necesitas **streaming, componentes de servidor o hidratación parcial**: usa Next, Nuxt, SvelteKit, SolidStart o Angular.
 - Necesitas **un ecosistema grande** (librerías de componentes, tutoriales, empleo): React, Vue o Angular.
 - Quieres la **reactividad más rápida en bruto**: en nuestros microbenchmarks Preact Signals sigue siendo un 10-20% más rápido que Jota en la mayoría de filas y unas 4 veces más rápido creando nodos ([números](bench/RESULTS.md)), y Solid está a la par de Jota en el benchmark de tabla en navegador ([números](bench/browser/RESULTS.md)).
 - Quieres **avisos de accesibilidad en compilación sin configurar nada** dentro de un framework con años de uso: Svelte ya los tiene.

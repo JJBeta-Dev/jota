@@ -1,0 +1,23 @@
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vitest/config";
+import jota from "vite-plugin-jota";
+
+const core = (file: string) => fileURLToPath(new URL(`../../packages/core/src/${file}`, import.meta.url));
+
+/* While testing, use the runtime sources so tests do not depend on a previous build. */
+const testing = Boolean(process.env.VITEST);
+
+export default defineConfig({
+  plugins: [jota()],
+  resolve: testing
+    ? {
+        alias: [
+          { find: /^jota-js\/web$/, replacement: core("web.ts") },
+          { find: /^jota-js\/server$/, replacement: core("server.ts") },
+          { find: /^jota-js$/, replacement: core("index.ts") },
+        ],
+      }
+    : {},
+  build: { target: "es2022" },
+  test: { environment: "node" },
+});

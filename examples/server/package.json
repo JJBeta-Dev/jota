@@ -1,0 +1,26 @@
+{
+  "name": "server-jota",
+  "private": true,
+  "version": "1.1.0",
+  "type": "module",
+  "description": "Jota with server rendering at request time: a Node server renders the page on every request and the browser hydrates it.",
+  "scripts": {
+    "build": "vite build --outDir dist/client && vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "start": "node server.mjs",
+    "test": "vitest run",
+    "guard": "jota-guard src",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "jota-js": "workspace:*",
+    "happy-dom": "^20.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "jota-guard": "workspace:*",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-plugin-jota": "workspace:*",
+    "vitest": "^2.1.5"
+  }
+}

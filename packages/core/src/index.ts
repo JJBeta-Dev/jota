@@ -13,7 +13,7 @@ export {
 } from "./reactive.js";
 export { For, Show } from "./control.js";
 export { mergeProps, splitProps } from "./props.js";
-export { render } from "./web.js";
+export { hydrate, render } from "./web.js";
 export type { JSXElement, ParentProps } from "./types.js";
 export {
   buildPath,
