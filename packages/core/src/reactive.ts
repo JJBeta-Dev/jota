@@ -28,9 +28,14 @@ interface Source {
 
 interface Observer {
   disposed: boolean;
-  sources: Map<Source, number>;
-  /** Sources of the previous run while a run is in progress (used to skip re-subscribing). */
-  previous: Map<Source, number> | null;
+  /** Sources read by the last run, in the order they were read, with the version seen of each. */
+  sources: Source[];
+  seen: number[];
+  /** While a run is in progress: how many sources it has read so far, and how many the last run had. */
+  count: number;
+  previousCount: number;
+  /** Old sources replaced at their position during this run; they may need to be unsubscribed. */
+  evicted: Source[] | null;
   mark(): void;
 }
 
@@ -91,9 +96,11 @@ class Owner {
 
 class Computation<T> extends Owner implements Source, Runnable {
   observers: Set<Observer> | null = null;
-  sources = new Map<Source, number>();
-  previous: Map<Source, number> | null = null;
-  private spare: Map<Source, number> | null = null;
+  sources: Source[] = [];
+  seen: number[] = [];
+  count = 0;
+  previousCount = 0;
+  evicted: Source[] | null = null;
   version = 0;
   value: T | undefined;
   stale = false;
@@ -136,9 +143,11 @@ class Computation<T> extends Owner implements Source, Runnable {
   }
 
   sourcesChanged(): boolean {
-    for (const [source, seen] of this.sources) {
+    const sources = this.sources;
+    for (let i = 0; i < sources.length; i++) {
+      const source = sources[i] as Source;
       source.refresh?.();
-      if (source.version !== seen) return true;
+      if (source.version !== this.seen[i]) return true;
     }
     return false;
   }
@@ -153,14 +162,11 @@ class Computation<T> extends Owner implements Source, Runnable {
 
   execute(): void {
     this.cleanup();
-    // Keep the old subscriptions: only sources that are no longer read get unsubscribed afterwards.
-    // The first run has nothing to compare with, so it allocates no second map.
-    const previous = this.hasRun ? this.sources : null;
-    if (previous !== null) {
-      this.sources = this.spare ?? new Map();
-      this.spare = null;
-    }
-    this.previous = previous;
+    // The subscriptions of the last run stay in place. A run that reads the same sources in the same
+    // order (the usual case) changes nothing; only a different source costs a subscription change.
+    this.previousCount = this.sources.length;
+    this.count = 0;
+    this.evicted = null;
 
     const previousObserver = currentObserver;
     const previousOwner = currentOwner;
@@ -180,21 +186,49 @@ class Computation<T> extends Owner implements Source, Runnable {
       currentObserver = previousObserver;
       currentOwner = previousOwner;
       this.hasRun = true;
-      this.previous = null;
-      if (previous !== null) {
-        for (const source of previous.keys()) {
-          if (this.disposed || !this.sources.has(source)) source.observers?.delete(this);
-        }
-        previous.clear();
-        this.spare = previous;
+      this.finishRun();
+    }
+  }
+
+  /** After a run: unsubscribe from sources that were not read again and trim the lists. */
+  private finishRun(): void {
+    const count = this.count;
+    const list = this.sources;
+    const evicted = this.evicted;
+    this.evicted = null;
+    if (this.disposed) {
+      if (evicted !== null) for (const source of evicted) source.observers?.delete(this);
+      list.length = 0;
+      this.seen.length = 0;
+      return;
+    }
+    if (count < this.previousCount || evicted !== null) {
+      // Candidates: old sources past the end of this run, and old sources replaced in place.
+      const stillRead = count > 16 ? new Set(list.slice(0, count)) : null;
+      const isRead = (source: Source): boolean => {
+        if (stillRead !== null) return stillRead.has(source);
+        for (let i = 0; i < count; i++) if (list[i] === source) return true;
+        return false;
+      };
+      for (let i = count; i < this.previousCount; i++) {
+        const source = list[i] as Source;
+        if (!isRead(source)) source.observers?.delete(this);
       }
+      if (evicted !== null) {
+        for (const source of evicted) if (!isRead(source)) source.observers?.delete(this);
+      }
+    }
+    if (list.length !== count) {
+      list.length = count;
+      this.seen.length = count;
     }
   }
 
   override dispose(): void {
     if (this.disposed) return;
-    for (const source of this.sources.keys()) source.observers?.delete(this);
-    this.sources.clear();
+    for (const source of this.sources) source.observers?.delete(this);
+    this.sources.length = 0;
+    this.seen.length = 0;
     this.observers?.clear();
     super.dispose();
   }
@@ -203,9 +237,22 @@ class Computation<T> extends Owner implements Source, Runnable {
 function track(source: Source): void {
   const observer = currentObserver;
   if (!observer || observer.disposed) return;
-  const previous = observer.previous;
-  if (previous === null || !previous.has(source)) (source.observers ??= new Set()).add(observer);
-  observer.sources.set(source, source.version);
+  const n = observer.count;
+  const list = observer.sources;
+  // Reading the same source twice in a row costs nothing.
+  if (n > 0 && list[n - 1] === source) return;
+  const old = n < observer.previousCount ? list[n] : undefined;
+  if (old === source) {
+    // Same source at the same position as the last run: already subscribed.
+    observer.seen[n] = source.version;
+    observer.count = n + 1;
+    return;
+  }
+  if (old !== undefined) (observer.evicted ??= []).push(old);
+  list[n] = source;
+  observer.seen[n] = source.version;
+  observer.count = n + 1;
+  (source.observers ??= new Set()).add(observer);
 }
 
 function flush(): void {

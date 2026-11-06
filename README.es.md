@@ -132,7 +132,7 @@ Cada archivo de `src/routes` se convierte en una página HTML sin JavaScript, sa
 - El ejemplo de tareas (`examples/hello`) compila a 6.18 kB de JavaScript (2.65 kB con gzip), con runtime y CSS incluidos.
 - Nueve de las diez páginas del sitio de documentación no contienen JavaScript. Lighthouse (local, emulación móvil) da 100 en rendimiento, accesibilidad, buenas prácticas y SEO en cuatro de ellas: [bench/lighthouse/RESULTS.md](bench/lighthouse/RESULTS.md). Es un sitio estático pequeño y una medición local, no datos de campo.
 - En un navegador real (Edge), la misma tabla en Jota y en Solid queda a menos de un 10% en casi todas las operaciones, y el bundle de Jota es menor (2.9 kB con gzip contra 4.6 kB): [bench/browser/RESULTS.md](bench/browser/RESULTS.md). Una máquina, un navegador; no es el js-framework-benchmark oficial.
-- Los micro-benchmarks de reactividad contra Solid y Preact Signals están en [bench/RESULTS.md](bench/RESULTS.md): Jota es más rápido que Solid en tres de seis escenarios, está a la par en uno y sigue siendo más lento que Preact Signals. Miden el grafo reactivo en Node, no páginas reales.
+- Los micro-benchmarks de reactividad contra Solid y Preact Signals están en [bench/RESULTS.md](bench/RESULTS.md): Jota es más rápido que Solid en cinco de seis escenarios y queda a un 10-20% de Preact Signals en cuatro de ellos (lo supera en batching, y es unas 4 veces más lento creando muchos nodos). Miden el grafo reactivo en Node, no páginas reales.
 
 ## Límites conocidos
 
@@ -183,7 +183,7 @@ Un mapa honesto, no un marcador. Las otras columnas describen cada proyecto en t
 
 - Necesitas **render en servidor, streaming o hidratación**: usa Next, Nuxt, SvelteKit, SolidStart o Angular.
 - Necesitas **un ecosistema grande** (librerías de componentes, tutoriales, empleo): React, Vue o Angular.
-- Quieres la **reactividad más rápida en bruto**: en nuestros microbenchmarks Preact Signals sigue siendo de 1,5 a 4 veces más rápido que Jota ([números](bench/RESULTS.md)), y Solid está a la par de Jota en el benchmark de tabla en navegador ([números](bench/browser/RESULTS.md)).
+- Quieres la **reactividad más rápida en bruto**: en nuestros microbenchmarks Preact Signals sigue siendo un 10-20% más rápido que Jota en la mayoría de filas y unas 4 veces más rápido creando nodos ([números](bench/RESULTS.md)), y Solid está a la par de Jota en el benchmark de tabla en navegador ([números](bench/browser/RESULTS.md)).
 - Quieres **avisos de accesibilidad en compilación sin configurar nada** dentro de un framework con años de uso: Svelte ya los tiene.
 
 ## Contribuir

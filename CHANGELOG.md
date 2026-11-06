@@ -14,7 +14,7 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - Guard: `tabIndex={-1}` was not read as a number by the shared helper.
 
 ### Changed
-- Reactivity core: effects and computeds keep their subscriptions between runs and only drop the sources they stopped reading; owners allocate children and cleanups lazily. Creating 100,000 signals and computeds went from about 70 ms to about 49 ms. Jota is now faster than Solid in 3 of 6 micro-benchmarks, level in one (see `bench/RESULTS.md`).
+- Reactivity core: effects and computeds keep their subscriptions between runs and only drop the sources they stopped reading; owners allocate children and cleanups lazily. Dependency tracking keeps each effect's sources in arrays and skips subscription changes when a run reads the same sources in the same order. A single signal feeding one effect went from 82 ms to 45 ms per million writes; Jota is now faster than Solid in 5 of 6 micro-benchmarks and within roughly 10-20% of Preact Signals in four (see `bench/RESULTS.md`). Creating many nodes is still about 4x slower than Preact Signals.
 - README and README.es describe the published 1.0.0 instead of the pre-release state.
 
 ## [1.0.0] - 2026-11-06

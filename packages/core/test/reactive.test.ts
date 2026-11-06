@@ -222,3 +222,145 @@ describe("createRoot", () => {
     expect(run).toHaveBeenCalledTimes(2);
   });
 });
+
+describe("dependency tracking when sources change between runs", () => {
+  it("follows a conditional branch and drops the source it stopped reading", () => {
+    const [flag, setFlag] = signal(true);
+    const [a, setA] = signal(1);
+    const [b, setB] = signal(10);
+    const seen: number[] = [];
+    effect(() => void seen.push(flag() ? a() : b()));
+    expect(seen).toEqual([1]);
+
+    setA(2);
+    expect(seen).toEqual([1, 2]);
+    setFlag(false);
+    expect(seen).toEqual([1, 2, 10]);
+    setA(3); // no longer read: must not re-run
+    expect(seen).toEqual([1, 2, 10]);
+    setB(11);
+    expect(seen).toEqual([1, 2, 10, 11]);
+    setFlag(true);
+    setB(12); // b was dropped again
+    expect(seen).toEqual([1, 2, 10, 11, 3]);
+  });
+
+  it("handles sources read in a different order and read twice", () => {
+    const [a, setA] = signal(1);
+    const [b, setB] = signal(2);
+    const [swap, setSwap] = signal(false);
+    const runs = vi.fn();
+    effect(() => {
+      runs();
+      if (swap()) {
+        b();
+        a();
+        a();
+      } else {
+        a();
+        a();
+        b();
+      }
+    });
+    expect(runs).toHaveBeenCalledTimes(1);
+    setSwap(true);
+    expect(runs).toHaveBeenCalledTimes(2);
+    setA(5);
+    expect(runs).toHaveBeenCalledTimes(3);
+    setB(6);
+    expect(runs).toHaveBeenCalledTimes(4);
+    setSwap(false);
+    setA(7);
+    setB(8);
+    expect(runs).toHaveBeenCalledTimes(7);
+  });
+
+  it("keeps a source that moved to a later position", () => {
+    const [a, setA] = signal(0);
+    const [b, setB] = signal(0);
+    const [c, setC] = signal(0);
+    const [mode, setMode] = signal(0);
+    const runs = vi.fn();
+    effect(() => {
+      runs();
+      if (mode() === 0) {
+        a();
+        b();
+      } else {
+        c();
+        a();
+        b();
+      }
+    });
+    setMode(1);
+    runs.mockClear();
+    setA(1);
+    setB(1);
+    setC(1);
+    expect(runs).toHaveBeenCalledTimes(3);
+  });
+
+  it("shrinks the list of sources and still reacts to the ones that remain", () => {
+    const [count, setCount] = signal(3);
+    const sources = [signal(0), signal(0), signal(0)];
+    const runs = vi.fn();
+    effect(() => {
+      runs();
+      for (let i = 0; i < count(); i++) (sources[i] as ReturnType<typeof signal<number>>)[0]();
+    });
+    setCount(1);
+    runs.mockClear();
+    (sources[2] as ReturnType<typeof signal<number>>)[1](1); // dropped
+    expect(runs).toHaveBeenCalledTimes(0);
+    (sources[0] as ReturnType<typeof signal<number>>)[1](1); // still read
+    expect(runs).toHaveBeenCalledTimes(1);
+  });
+
+  it("works for computeds whose sources change", () => {
+    const [useA, setUseA] = signal(true);
+    const [a, setA] = signal(1);
+    const [b, setB] = signal(100);
+    const picked = computed(() => (useA() ? a() : b()));
+    const seen: number[] = [];
+    effect(() => void seen.push(picked()));
+    setA(2);
+    setUseA(false);
+    setA(3); // dropped
+    setB(101);
+    expect(seen).toEqual([1, 2, 100, 101]);
+  });
+
+  it("handles many sources, more than the linear search limit", () => {
+    const signals = Array.from({ length: 40 }, () => signal(0));
+    const [limit, setLimit] = signal(40);
+    const runs = vi.fn();
+    effect(() => {
+      runs();
+      for (let i = 0; i < limit(); i++) (signals[i] as ReturnType<typeof signal<number>>)[0]();
+    });
+    setLimit(30);
+    runs.mockClear();
+    (signals[35] as ReturnType<typeof signal<number>>)[1](1); // dropped
+    expect(runs).toHaveBeenCalledTimes(0);
+    (signals[29] as ReturnType<typeof signal<number>>)[1](1); // kept
+    expect(runs).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not stay subscribed when an effect is disposed during one of its runs", () => {
+    const [a, setA] = signal(0);
+    const runs = vi.fn();
+    let stopNow = false;
+    let stop = () => {};
+    stop = effect(() => {
+      runs();
+      a();
+      if (stopNow) stop();
+    });
+    stopNow = true;
+    setA(1); // second run disposes itself
+    expect(runs).toHaveBeenCalledTimes(2);
+    setA(2);
+    setA(3);
+    expect(runs).toHaveBeenCalledTimes(2);
+  });
+});
