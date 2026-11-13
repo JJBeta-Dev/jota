@@ -79,7 +79,12 @@ Principio: no competir en todo. Ganar donde Jota ya es fuerte y cerrar solo las 
 - [x] Benchmark de navegador con React y Preact (Jota: bundle más pequeño; velocidad en el rango de los demás, no la más alta)
 - [x] CONTRIBUTING, SECURITY, plantillas, Dependabot, borradores de lanzamiento y `HANDOFF-LANZAMIENTO.md`
 - [x] Versión 1.2.0 preparada y tarballs verificados (falta publicar: lo hace el dueño)
-- [ ] Extensión de VS Code, js-framework-benchmark, MDX y colecciones tipadas, streaming, devtools, formularios/datos/i18n/UI, docs completas en español
+- [x] `jota-js/resource`, `store`, `i18n`, `form`, `content`, `ui` (pestañas, diálogo, disclosure) y `devtools`
+- [x] Extensión de VS Code para Guard (`packages/vscode`, falta probarla dentro de VS Code)
+- [x] Docs del sitio en Markdown, con todas las páginas en español
+- [x] Entrada para js-framework-benchmark lista y comprobada en navegador (falta enviarla)
+- [x] Decisiones escritas: nombre y streaming (`docs/decisiones/`)
+- [ ] MDX, streaming, panel visual de devtools, más componentes (menú, combobox, tooltip, toast), guías de migración y codemod, adaptadores (Cloudflare, Deno, Bun), umbral de cobertura y tests de propiedades
 
 ### Estado real (verificado 2026-11-13)
 - npm: `jota-js` 1.1.0; `jota-guard`, `create-jota-js`, `vite-plugin-jota` 1.0.0 (la 1.2.0 está preparada en `release/`, sin publicar). Repo `JJBeta-Dev/jota` público, 0 estrellas.

@@ -12,6 +12,10 @@ Actualizado el 2026-11-13. Todo lo de abajo ya está preparado; solo faltan paso
 | Markdown como contenido, con chequeo de `alt` y encabezados en el build | `examples/blog/src/content/` y `pnpm --filter blog-jota test` |
 | `jota-js/testing`: render para pruebas y auditoría con axe del DOM renderizado | `packages/core/test/testing.test.tsx` |
 | Prefetch y transiciones de vista sin JavaScript (activos en el sitio de docs) | `jotaStatic({ prefetch: true, viewTransitions: true })` |
+| Datos, store, i18n, formularios accesibles, pestañas, diálogo y devtools | `packages/core/README.es.md` |
+| Extensión de VS Code para Guard | `cd packages/vscode && npm run package` y `code --install-extension jota-guard-vscode-1.2.0.vsix` |
+| Docs completas en español en el sitio | `site/src/content/es/` |
+| Entrada para js-framework-benchmark | `node bench/browser/check-jfb.mjs` |
 | Benchmark en navegador real con React y Preact | `bench/browser/RESULTS.md` |
 | Guía para contribuir, política de seguridad, plantillas, Dependabot | `CONTRIBUTING.md`, `SECURITY.md`, `.github/` |
 | Borradores de lanzamiento (EN y ES) | `docs/launch/show-hn.md` |
@@ -58,11 +62,15 @@ Sí: el build falla ante HTML inaccesible o pesado; el bundle es el más pequeñ
 
 No: "el más rápido". Los números propios muestran que está en el rango de Solid y que crear nodos reactivos es 3 a 4 veces más lento que Preact Signals. Decirlo de frente da más credibilidad que esconderlo.
 
-## 7. Lo que sigue pendiente (por orden de impacto)
+## 7. Decisiones que te esperan
 
-1. Extensión de VS Code para Guard.
-2. Enviar Jota a js-framework-benchmark (números de terceros).
+- **Nombre:** `docs/decisiones/nombre.md`. Recomendación: lanzar como Jota y revisar a las 4 semanas; mientras tanto reservar `hebra` en npm.
+- **Streaming en servidor:** `docs/decisiones/streaming.md`. No se hace en 1.x.
+
+## 8. Lo que sigue pendiente (por orden de impacto)
+
+1. Probar la extensión dentro de VS Code y, si te convence, publicarla en el Marketplace (cuenta de editor gratuita).
+2. Enviar la entrada a js-framework-benchmark después de publicar la 1.2.0 (pasos en `bench/js-framework-benchmark/README.md`).
 3. Revisar los pull requests de Dependabot: los primeros fallan porque sharp 0.35 y los tipos nuevos de Vite piden cambios de código.
-4. Página de docs para Markdown en el sitio y traducción completa al español.
-5. Formularios accesibles, caché de datos, i18n y componentes sin estilo.
-6. Decidir el nombre (similitud con Jotai) antes de una versión 2.0.
+4. MDX, más componentes accesibles (menú, combobox, tooltip, toast) y un panel visual de devtools.
+5. Guías de migración desde React, Solid y Svelte, y adaptadores para Cloudflare, Deno y Bun.

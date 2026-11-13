@@ -171,6 +171,19 @@ const dialog = createDialog();
 
 They are tested with axe in compiled JSX.
 
+## Devtools
+
+```ts
+import { signal } from "jota-js";
+import { startDevtools } from "jota-js/devtools";
+
+const [count, setCount] = signal(0, { name: "count" });
+const devtools = startDevtools();
+devtools.measure(() => setCount(1));
+```
+
+`measure` returns what one action caused: the signals written, and how many computeds and effects ran (each effect is one place of the page that was updated). In the browser console the same object is `__JOTA_DEVTOOLS__`.
+
 ## Testing
 
 `jota-js/testing` renders a component for a test and audits the result with [axe-core](https://github.com/dequelabs/axe-core) (`npm install -D axe-core`).

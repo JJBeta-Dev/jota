@@ -17,6 +17,25 @@ export type Equals<T> = false | ((a: T, b: T) => boolean);
 export interface SignalOptions<T> {
   /** Custom equality. `false` makes every set notify, even with the same value. */
   equals?: Equals<T>;
+  /** A label for the devtools (`jota-js/devtools`). It has no other effect. */
+  name?: string;
+}
+
+export interface DevEvent {
+  type: "write" | "computed" | "effect";
+  /** The signal's `name` option, for writes. */
+  name: string | undefined;
+  /** The new value of a signal or computed. */
+  value: unknown;
+  /** How many signals and computeds the computation read in this run. */
+  sources: number;
+}
+
+let devHook: ((event: DevEvent) => void) | null = null;
+
+/** Used by `jota-js/devtools`: receive every signal write and every run of a computed or effect. Pass null to stop. */
+export function setDevHook(hook: ((event: DevEvent) => void) | null): void {
+  devHook = hook;
 }
 
 interface Source {
@@ -197,6 +216,7 @@ class Computation<T> extends Owner implements Source, Runnable {
     } finally {
       currentObserver = previousObserver;
       currentOwner = previousOwner;
+      if (devHook !== null) devHook({ type: this.isEffect ? "effect" : "computed", name: undefined, value: this.isEffect ? undefined : this.value, sources: this.count });
       this.hasRun = true;
       this.finishRun();
     }
@@ -299,6 +319,7 @@ export function signal<T>(initial: T, options?: SignalOptions<T>): [Accessor<T>,
     if (equals(node.value, next)) return node.value;
     node.value = next;
     node.version++;
+    if (devHook !== null) devHook({ type: "write", name: options?.name, value: next, sources: 0 });
     const observers = node.observers;
     if (observers !== null) for (const observer of observers) observer.mark();
     if (batchDepth === 0) flush();

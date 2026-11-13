@@ -1,0 +1,23 @@
+{
+  "name": "js-framework-benchmark-jota",
+  "version": "1.0.0",
+  "description": "Jota demo",
+  "main": "dist/main.js",
+  "js-framework-benchmark": {
+    "frameworkVersionFromPackage": "jota-js",
+    "frameworkHomeURL": "https://github.com/JJBeta-Dev/jota",
+    "issues": []
+  },
+  "scripts": {
+    "dev": "vite build --watch",
+    "build-prod": "vite build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jota-js": "^1.2.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11",
+    "vite-plugin-jota": "^1.2.0"
+  }
+}
