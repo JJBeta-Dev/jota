@@ -59,6 +59,29 @@ Una página estática puede contener islas interactivas: `<Island name="Newslett
 
 Límites: `load` se ejecuta una vez por compilación; una página de cliente que no coincide con su HTML pre-renderizado se monta desde cero.
 
+## Markdown (`vite-plugin-jota/markdown`)
+
+```ts
+import jota from "vite-plugin-jota";
+import jotaStatic from "vite-plugin-jota/static";
+import { jotaMarkdown } from "vite-plugin-jota/markdown";
+
+export default defineConfig({ plugins: [jota(), jotaMarkdown(), jotaStatic()] });
+```
+
+```tsx
+import Post, { frontmatter, headings, html } from "./post.md";
+const posts = import.meta.glob("./posts/*.md", { eager: true });
+```
+
+- `frontmatter`: los datos entre `---` al inicio del archivo (texto, números, booleanos y listas).
+- `headings`: `{ depth, text, id }` de cada encabezado; cada uno recibe un `id` para enlazarlo.
+- `html`: el documento como HTML. Úsalo con `<div innerHTML={html} />` o con el componente por defecto, `<Post class="prose" />`.
+- **El build revisa el contenido:** una imagen sin texto alternativo lo rompe; un encabezado que se salta un nivel imprime un aviso. `jotaMarkdown({ guard: false })` lo desactiva.
+- `highlight(code, language)` permite usar un resaltador de sintaxis en el build.
+- Tipos: añade `/// <reference types="vite-plugin-jota/md" />` en un archivo `.d.ts`.
+- El HTML que escribas dentro del Markdown no se limpia: úsalo solo con contenido propio.
+
 ## Licencia
 
 MIT © JJBeta

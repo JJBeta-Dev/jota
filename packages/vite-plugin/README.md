@@ -69,6 +69,29 @@ Limits: `load` runs once per build; a client page that does not match its pre-re
 
 Under the hood it runs `@babel/preset-typescript` and `babel-plugin-jsx-dom-expressions` (MIT) with event delegation off, so listeners attach directly to elements.
 
+## Markdown (`vite-plugin-jota/markdown`)
+
+```ts
+import jota from "vite-plugin-jota";
+import jotaStatic from "vite-plugin-jota/static";
+import { jotaMarkdown } from "vite-plugin-jota/markdown";
+
+export default defineConfig({ plugins: [jota(), jotaMarkdown(), jotaStatic()] });
+```
+
+```tsx
+import Post, { frontmatter, headings, html } from "./post.md";
+const posts = import.meta.glob("./posts/*.md", { eager: true });
+```
+
+- `frontmatter`: the data between `---` at the top of the file (strings, numbers, booleans and lists).
+- `headings`: `{ depth, text, id }` for every heading; each one gets an `id` so it can be linked.
+- `html`: the document as HTML. Use it with `<div innerHTML={html} />` or with the default component, `<Post class="prose" />`.
+- **The build checks the content:** an image without alt text fails it; a heading that skips a level prints a warning. `jotaMarkdown({ guard: false })` turns this off.
+- `highlight(code, language)` lets you plug a syntax highlighter that runs at build time.
+- Types: add `/// <reference types="vite-plugin-jota/md" />` to a `.d.ts` file.
+- HTML written inside Markdown is not sanitized: use it only for your own content.
+
 ## License
 
 MIT © JJBeta

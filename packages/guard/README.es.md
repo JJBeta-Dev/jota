@@ -24,7 +24,8 @@ Códigos de salida: `0` nada que corregir, `1` hay problemas, `2` error de uso.
 | `--preset <nombre>` | `recommended` (por defecto), `strict` (las advertencias pasan a error) o `a11y-only` (apaga `img-size`) |
 | `--rule <id>=<nivel>` | cambia una regla a `error`, `warn` u `off` (repetible), por ejemplo `--rule heading-order=error` |
 | `--config <archivo>` | lee ajustes de un JSON (por defecto `jota.config.json` si existe) |
-| `--format <nombre>` | `stylish` (por defecto) o `json` |
+| `--format <nombre>` | `stylish` (por defecto), `json`, `sarif` (GitHub code scanning) o `github` (anotaciones en el pull request) |
+| `--fix` | Repara lo que es seguro reparar: `no-redundant-roles`, `no-autofocus` y `no-access-key` quitan el atributo. Guard nunca inventa texto accesible |
 | `--max-warnings <n>` | falla si hay más de `n` advertencias |
 | `--ignore <glob>` | glob extra a ignorar, repetible (`node_modules`, `dist`, `build` siempre se ignoran) |
 

@@ -34,9 +34,26 @@ Exit codes: `0` nothing to fix, `1` problems found, `2` usage error.
 | `--preset <name>` | `recommended` (default), `strict` (warnings become errors) or `a11y-only` (turns `img-size` off) |
 | `--rule <id>=<level>` | set one rule to `error`, `warn` or `off` (repeatable), e.g. `--rule heading-order=error` |
 | `--config <file>` | read settings from a JSON file (default: `jota.config.json` when present) |
-| `--format <name>` | `stylish` (default) or `json` |
+| `--format <name>` | `stylish` (default), `json`, `sarif` (GitHub code scanning) or `github` (annotations on the pull request) |
+| `--fix` | Repair what is safe to repair: `no-redundant-roles`, `no-autofocus` and `no-access-key` remove the attribute. Guard never invents accessible text |
 | `--max-warnings <n>` | fail when there are more than `n` warnings |
 | `--ignore <glob>` | extra glob to ignore, repeatable (`node_modules`, `dist`, `build` are always ignored) |
+
+## In GitHub Actions
+
+```yaml
+- run: npx jota-guard src --format github
+```
+
+Each problem appears as an annotation on the changed line of the pull request. For the Security tab, write SARIF and upload it:
+
+```yaml
+- run: npx jota-guard src --format sarif > guard.sarif
+  continue-on-error: true
+- uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: guard.sarif
+```
 
 ## Configurable severity
 
