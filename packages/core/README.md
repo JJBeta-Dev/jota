@@ -93,6 +93,55 @@ response.end(shell.replace("<!--app-->", app));
 
 The HTML carries the marks the browser needs to hydrate it (`hydrate: "page"` by default; `"islands"` or `false` change that). In the browser, `hydrate(() => <Page data={data} />, element)` keeps those elements and attaches behaviour, and returns `null` if the HTML does not match, so you can fall back to `render`. A complete server and client are in [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). Measured on one machine with a page of 50 list items: about 12,000 renders per second per core with the default DOM, about 1,000 with `dom: "happy-dom"`. Not included: streaming, and rendering that waits for data inside components (load it before).
 
+## Data, state, translations and forms
+
+Each one is a separate entry, so you only ship what you import.
+
+```tsx
+import { createResource, invalidate } from "jota-js/resource";
+import { createStore } from "jota-js/store";
+import { createI18n } from "jota-js/i18n";
+import { createForm } from "jota-js/form";
+import { defineCollection } from "jota-js/content";
+
+const user = createResource(userId, (id, { signal }) => fetch(`/api/users/${id}`, { signal }).then((r) => r.json()), {
+  cacheKey: (id) => `users/${id}`,
+});
+<Show when={!user.loading()} fallback={<p>Loading</p>}>{user.data()?.name}</Show>;
+invalidate("users/");
+
+const [store, setStore] = createStore({ todos: [{ title: "Write docs", done: false }] });
+setStore((draft) => { draft.todos[0].done = true; });
+
+const { t, setLocale } = createI18n({
+  locale: "en",
+  messages: {
+    en: { items: { one: "{count} item", other: "{count} items" } },
+    es: { items: { one: "{count} elemento", other: "{count} elementos" } },
+  },
+});
+t("items", { count: 3 });
+
+const form = createForm({
+  initial: { email: "" },
+  validate: { email: (value) => (value.includes("@") ? undefined : "Enter an email address.") },
+  onSubmit: (values) => save(values),
+});
+<form onSubmit={form.submit} noValidate>
+  <label for="field-email">Email</label>
+  <input type="email" {...form.field("email")} />
+  <p {...form.errorProps("email")}>{form.error("email")}</p>
+</form>;
+
+const posts = defineCollection(import.meta.glob("./posts/*.md", { eager: true }), { title: "string", date: "string", draft: "boolean?" });
+```
+
+- **`createResource`**: async data as signals (`data`, `loading`, `error`, `refetch`, `mutate`). It loads again when its source changes, a slow answer never overwrites a newer one, and resources with the same `cacheKey` share one request and one stored value. `invalidate(prefix)` reloads them.
+- **`createStore`**: nested state. Reading `store.todos[0].done` subscribes to that property only; writes happen inside `setStore`.
+- **`createI18n`**: translations with `{placeholders}` and plurals from `Intl.PluralRules`, plus `number` and `date`. TypeScript checks the keys.
+- **`createForm`**: validation that is accessible by default. Each control gets `aria-invalid` and `aria-describedby` pointing at its message, the message is announced, and a failed submit moves focus to the first invalid field.
+- **`defineCollection`**: typed entries from a folder of Markdown files; a missing or mistyped front matter field stops the build and names the file.
+
 ## Testing
 
 `jota-js/testing` renders a component for a test and audits the result with [axe-core](https://github.com/dequelabs/axe-core) (`npm install -D axe-core`).

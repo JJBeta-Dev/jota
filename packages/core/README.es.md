@@ -93,6 +93,55 @@ response.end(shell.replace("<!--app-->", app));
 
 El HTML lleva las marcas que el navegador necesita para hidratarlo (`hydrate: "page"` por defecto; `"islands"` o `false` lo cambian). En el navegador, `hydrate(() => <Page data={data} />, element)` conserva esos elementos y les conecta el comportamiento, y devuelve `null` si el HTML no coincide, para que puedas volver a `render`. Un servidor y un cliente completos están en [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). Medido en una máquina con una página de 50 elementos de lista: unos 12.000 renders por segundo por núcleo con el DOM por defecto, unos 1.000 con `dom: "happy-dom"`. No incluye: streaming, ni render que espere datos dentro de los componentes (cárgalos antes).
 
+## Datos, estado, traducciones y formularios
+
+Cada pieza es una entrada aparte: solo se descarga lo que importas.
+
+```tsx
+import { createResource, invalidate } from "jota-js/resource";
+import { createStore } from "jota-js/store";
+import { createI18n } from "jota-js/i18n";
+import { createForm } from "jota-js/form";
+import { defineCollection } from "jota-js/content";
+
+const user = createResource(userId, (id, { signal }) => fetch(`/api/users/${id}`, { signal }).then((r) => r.json()), {
+  cacheKey: (id) => `users/${id}`,
+});
+<Show when={!user.loading()} fallback={<p>Loading</p>}>{user.data()?.name}</Show>;
+invalidate("users/");
+
+const [store, setStore] = createStore({ todos: [{ title: "Write docs", done: false }] });
+setStore((draft) => { draft.todos[0].done = true; });
+
+const { t, setLocale } = createI18n({
+  locale: "en",
+  messages: {
+    en: { items: { one: "{count} item", other: "{count} items" } },
+    es: { items: { one: "{count} elemento", other: "{count} elementos" } },
+  },
+});
+t("items", { count: 3 });
+
+const form = createForm({
+  initial: { email: "" },
+  validate: { email: (value) => (value.includes("@") ? undefined : "Enter an email address.") },
+  onSubmit: (values) => save(values),
+});
+<form onSubmit={form.submit} noValidate>
+  <label for="field-email">Email</label>
+  <input type="email" {...form.field("email")} />
+  <p {...form.errorProps("email")}>{form.error("email")}</p>
+</form>;
+
+const posts = defineCollection(import.meta.glob("./posts/*.md", { eager: true }), { title: "string", date: "string", draft: "boolean?" });
+```
+
+- **`createResource`**: datos asíncronos como signals (`data`, `loading`, `error`, `refetch`, `mutate`). Vuelve a cargar cuando cambia su fuente, una respuesta lenta nunca pisa a una más nueva, y los recursos con la misma `cacheKey` comparten una sola petición y un solo valor guardado. `invalidate(prefijo)` los recarga.
+- **`createStore`**: estado anidado. Leer `store.todos[0].done` suscribe solo a esa propiedad; se escribe dentro de `setStore`.
+- **`createI18n`**: traducciones con `{parámetros}` y plurales de `Intl.PluralRules`, además de `number` y `date`. TypeScript revisa las claves.
+- **`createForm`**: validación accesible por defecto. Cada control recibe `aria-invalid` y `aria-describedby` apuntando a su mensaje, el mensaje se anuncia y un envío fallido lleva el foco al primer campo con error.
+- **`defineCollection`**: entradas tipadas a partir de una carpeta de archivos Markdown; un campo ausente o de tipo incorrecto detiene el build y nombra el archivo.
+
 ## Pruebas
 
 `jota-js/testing` renderiza un componente para una prueba y audita el resultado con [axe-core](https://github.com/dequelabs/axe-core) (`npm install -D axe-core`).
