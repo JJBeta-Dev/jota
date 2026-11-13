@@ -10,10 +10,10 @@ tester.run("jota/no-autofocus", rule, {
     { code: "<button>Go</button>" },
   ],
   invalid: [
-    { code: "<input autoFocus />", errors: [{ messageId: "autoFocus" }] },
-    { code: "<input autoFocus={true} />", errors: [{ messageId: "autoFocus" }] },
-    { code: "<input autoFocus={focused} />", errors: [{ messageId: "autoFocus" }] },
-    { code: "<input autofocus />", errors: [{ messageId: "autoFocus" }] },
-    { code: '<textarea autoFocus="autofocus" />', errors: [{ messageId: "autoFocus" }] },
+    { code: "<input autoFocus />", output: "<input />", errors: [{ messageId: "autoFocus" }] },
+    { code: "<input autoFocus={true} />", output: "<input />", errors: [{ messageId: "autoFocus" }] },
+    { code: "<input autoFocus={focused} />", output: "<input />", errors: [{ messageId: "autoFocus" }] },
+    { code: "<input autofocus />", output: "<input />", errors: [{ messageId: "autoFocus" }] },
+    { code: '<textarea autoFocus="autofocus" />', output: '<textarea />', errors: [{ messageId: "autoFocus" }] },
   ],
 });

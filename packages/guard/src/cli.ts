@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import { ESLint } from "eslint";
 import tsParser from "@typescript-eslint/parser";
+import { docsUrl } from "./docs.js";
 import plugin from "./index.js";
 import { DEFAULT_LEVELS, PRESET_NAMES, presetRules, type Level, type PresetName } from "./presets.js";
 
@@ -12,12 +13,16 @@ export interface CliResult {
   output: string;
 }
 
+const FORMATS = ["stylish", "json", "sarif", "github"] as const;
+type Format = (typeof FORMATS)[number];
+
 interface Options {
   paths: string[];
   preset: PresetName | undefined;
   rules: Record<string, Level>;
   config: string | undefined;
-  format: "stylish" | "json";
+  format: Format;
+  fix: boolean;
   maxWarnings: number;
   ignore: string[];
   help: boolean;
@@ -41,7 +46,8 @@ Options:
   --preset <name>        recommended (default) | strict | a11y-only
   --rule <id>=<level>    set one rule to error, warn or off (repeatable), e.g. --rule heading-order=error
   --config <file>        read settings from a JSON file (default: jota.config.json when present)
-  --format <name>        stylish (default) | json
+  --format <name>        stylish (default) | json | sarif | github (pull request annotations)
+  --fix                  repair what can be repaired safely (redundant roles, autofocus, accesskey)
   --max-warnings <n>     fail when there are more than n warnings (default: never)
   --ignore <glob>        extra glob to ignore (repeatable)
   -h, --help             show this help
@@ -124,6 +130,7 @@ function parseArgs(argv: string[]): Options | { error: string } {
     rules: {},
     config: undefined,
     format: "stylish",
+    fix: false,
     maxWarnings: -1,
     ignore: [],
     help: false,
@@ -173,12 +180,15 @@ function parseArgs(argv: string[]): Options | { error: string } {
       }
       case "--format": {
         const value = takeValue();
-        if (value !== "stylish" && value !== "json") {
-          return { error: `Unknown format "${value ?? ""}". Use: stylish, json.` };
+        if (!(FORMATS as readonly string[]).includes(value ?? "")) {
+          return { error: `Unknown format "${value ?? ""}". Use: ${FORMATS.join(", ")}.` };
         }
-        options.format = value;
+        options.format = value as Format;
         break;
       }
+      case "--fix":
+        options.fix = true;
+        break;
       case "--max-warnings": {
         const value = takeValue();
         const parsed = Number(value);
@@ -200,6 +210,81 @@ function parseArgs(argv: string[]): Options | { error: string } {
     }
   }
   return options;
+}
+
+function relativePath(file: string, cwd: string): string {
+  return relative(cwd, file).split("\\").join("/");
+}
+
+/** SARIF 2.1.0, the format GitHub code scanning reads. */
+function toSarif(results: ESLint.LintResult[], cwd: string): string {
+  const ruleIds = new Set<string>();
+  const sarifResults = results.flatMap((result) =>
+    result.messages.map((message) => {
+      const ruleId = message.ruleId ?? "jota/parse-error";
+      ruleIds.add(ruleId);
+      return {
+        ruleId,
+        level: message.severity === 2 ? "error" : "warning",
+        message: { text: message.message },
+        locations: [
+          {
+            physicalLocation: {
+              artifactLocation: { uri: relativePath(result.filePath, cwd) },
+              region: {
+                startLine: Math.max(1, message.line),
+                startColumn: Math.max(1, message.column),
+                ...(message.endLine ? { endLine: message.endLine, endColumn: message.endColumn } : {}),
+              },
+            },
+          },
+        ],
+      };
+    }),
+  );
+  const rules = [...ruleIds].map((id) => {
+    const short = id.replace("jota/", "");
+    const level = DEFAULT_LEVELS[short as keyof typeof DEFAULT_LEVELS];
+    return {
+      id,
+      ...(level === "error" || level === "warn" ? { helpUri: docsUrl(short, level) } : {}),
+    };
+  });
+  return (
+    JSON.stringify(
+      {
+        $schema: "https://json.schemastore.org/sarif-2.1.0.json",
+        version: "2.1.0",
+        runs: [
+          {
+            tool: { driver: { name: "jota-guard", version: readVersion(), informationUri: "https://github.com/JJBeta-Dev/jota", rules } },
+            results: sarifResults,
+          },
+        ],
+      },
+      null,
+      2,
+    ) + "\n"
+  );
+}
+
+function escapeGithub(text: string, property: boolean): string {
+  let out = text.split("%").join("%25").split(String.fromCharCode(13)).join("%0D").split(String.fromCharCode(10)).join("%0A");
+  if (property) out = out.replace(/:/g, "%3A").replace(/,/g, "%2C");
+  return out;
+}
+
+/** GitHub Actions workflow commands: each problem shows up as an annotation on the pull request. */
+function toGithub(results: ESLint.LintResult[], cwd: string): string {
+  const lines = results.flatMap((result) =>
+    result.messages.map((message) => {
+      const kind = message.severity === 2 ? "error" : "warning";
+      const file = escapeGithub(relativePath(result.filePath, cwd), true);
+      const title = escapeGithub(message.ruleId ?? "jota-guard", true);
+      return `::${kind} file=${file},line=${Math.max(1, message.line)},col=${Math.max(1, message.column)},title=${title}::${escapeGithub(message.message, false)}`;
+    }),
+  );
+  return lines.length > 0 ? lines.join("\n") + "\n" : "";
 }
 
 function readVersion(): string {
@@ -236,6 +321,7 @@ export async function run(argv: string[], cwd: string): Promise<CliResult> {
   try {
     const eslint = new ESLint({
       cwd,
+      fix: parsed.fix,
       overrideConfigFile: true,
       errorOnUnmatchedPattern: false,
       overrideConfig: [
@@ -253,8 +339,11 @@ export async function run(argv: string[], cwd: string): Promise<CliResult> {
     });
 
     const results = await eslint.lintFiles(parsed.paths.length > 0 ? parsed.paths : ["."]);
-    const formatter = await eslint.loadFormatter(parsed.format);
-    let output = await formatter.format(results);
+    if (parsed.fix) await ESLint.outputFixes(results);
+    let output: string;
+    if (parsed.format === "sarif") output = toSarif(results, cwd);
+    else if (parsed.format === "github") output = toGithub(results, cwd);
+    else output = await (await eslint.loadFormatter(parsed.format)).format(results);
 
     const errors = results.reduce((sum, r) => sum + r.errorCount + r.fatalErrorCount, 0);
     const warnings = results.reduce((sum, r) => sum + r.warningCount, 0);

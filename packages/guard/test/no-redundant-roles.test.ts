@@ -13,11 +13,12 @@ tester.run("jota/no-redundant-roles", rule, {
   invalid: [
     {
       code: '<button role="button">x</button>',
+      output: "<button>x</button>",
       errors: [{ messageId: "redundantRole", data: { tag: "button", role: "button" } }],
     },
-    { code: '<nav role="navigation" />', errors: [{ messageId: "redundantRole" }] },
-    { code: '<a href="/x" role="link">x</a>', errors: [{ messageId: "redundantRole" }] },
-    { code: '<ul role="list" />', errors: [{ messageId: "redundantRole" }] },
-    { code: '<h2 role="heading">x</h2>', errors: [{ messageId: "redundantRole" }] },
+    { code: '<nav role="navigation" />', output: '<nav />', errors: [{ messageId: "redundantRole" }] },
+    { code: '<a href="/x" role="link">x</a>', output: '<a href="/x">x</a>', errors: [{ messageId: "redundantRole" }] },
+    { code: '<ul role="list" />', output: '<ul />', errors: [{ messageId: "redundantRole" }] },
+    { code: '<h2 role="heading">x</h2>', output: '<h2>x</h2>', errors: [{ messageId: "redundantRole" }] },
   ],
 });

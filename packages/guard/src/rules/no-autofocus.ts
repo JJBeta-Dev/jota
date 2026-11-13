@@ -1,11 +1,12 @@
 import type { Rule } from "eslint";
 import { createRule } from "../create-rule.js";
-import { findAttribute, isDomTag, tagName, type JSXOpeningElementNode } from "../jsx.js";
+import { findAttribute, removeAttribute, isDomTag, tagName, type JSXOpeningElementNode } from "../jsx.js";
 
 export default createRule({
   id: "no-autofocus",
   level: "warn",
   description: "Disallow autoFocus on DOM elements.",
+  fixable: true,
   messages: {
     autoFocus:
       "autoFocus moves focus without the user asking, which disorients screen reader and keyboard users. Remove it.",
@@ -23,7 +24,7 @@ export default createRule({
           value.expression?.type === "Literal" &&
           value.expression.value === false;
         if (isFalse) return;
-        context.report({ node: attr as unknown as Rule.Node, messageId: "autoFocus" });
+        context.report({ node: attr as unknown as Rule.Node, messageId: "autoFocus", fix: removeAttribute(context, attr as NonNullable<typeof attr>) });
       },
     };
   },

@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -58,6 +58,48 @@ describe("jota-guard CLI", () => {
     const { output } = await run(["bad", "--format", "json"], demo);
     const parsed = JSON.parse(output) as Array<{ messages: Array<{ ruleId: string }> }>;
     expect(parsed[0]?.messages.some((m) => m.ruleId === "jota/img-alt")).toBe(true);
+  });
+
+  it("supports --format sarif", async () => {
+    const { output } = await run(["bad", "--format", "sarif"], demo);
+    const sarif = JSON.parse(output) as {
+      version: string;
+      runs: Array<{
+        tool: { driver: { rules: Array<{ id: string; helpUri?: string }> } };
+        results: Array<{ ruleId: string; level: string; locations: Array<{ physicalLocation: { artifactLocation: { uri: string } } }> }>;
+      }>;
+    };
+    expect(sarif.version).toBe("2.1.0");
+    const result = sarif.runs[0]?.results.find((r) => r.ruleId === "jota/img-alt");
+    expect(result?.level).toBe("error");
+    expect(result?.locations[0]?.physicalLocation.artifactLocation.uri).toBe("bad/Page.tsx");
+    expect(sarif.runs[0]?.tool.driver.rules.find((r) => r.id === "jota/img-alt")?.helpUri).toContain("guard-rules.md");
+  });
+
+  it("supports --format github", async () => {
+    const { output } = await run(["bad", "--format", "github"], demo);
+    expect(output).toMatch(/^::error file=bad\/Page\.tsx,line=\d+,col=\d+,title=jota\/[a-z-]+::/m);
+    expect((await run(["good", "--format", "github"], demo)).output).toBe("");
+  });
+
+  it("repairs safe problems with --fix and leaves the rest", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "jota-guard-fix-"));
+    try {
+      const file = join(dir, "Fix.tsx");
+      await writeFile(
+        file,
+        ['export const A = () => (', "  <main>", '    <nav role="navigation">x</nav>', '    <input aria-label="q" autoFocus accessKey="s" />', '    <img src="a.png" width="1" height="1" />', "  </main>", ");", ""].join("\n")
+      );
+      const { code, output } = await run(["--fix", "--preset", "strict"], dir);
+      const fixed = await readFile(file, "utf8");
+      expect(fixed).toContain("<nav>x</nav>");
+      expect(fixed).toContain('<input aria-label="q" />');
+      expect(output).toContain("jota/img-alt");
+      expect(output).not.toContain("jota/no-autofocus");
+      expect(code).toBe(1);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 
   it("respects --ignore", async () => {

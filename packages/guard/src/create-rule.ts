@@ -6,6 +6,8 @@ interface RuleOptions {
   level: "error" | "warn";
   description: string;
   messages: Record<string, string>;
+  /** True when the rule can repair the code itself (`jota-guard --fix`). */
+  fixable?: boolean;
   create: (context: Rule.RuleContext) => Rule.RuleListener;
 }
 
@@ -18,6 +20,7 @@ export function createRule(options: RuleOptions): Rule.RuleModule {
         url: docsUrl(options.id, options.level),
       },
       schema: [],
+      ...(options.fixable ? { fixable: "code" as const } : {}),
       messages: options.messages,
     },
     create: options.create,

@@ -4,6 +4,13 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 
 > 1.0.0 was released on 2026-11-06, 1.1.0 is prepared the same day. / 1.0.0 se publicó el 2026-11-06 y 1.1.0 queda preparada el mismo día.
 
+## [Unreleased]
+
+### Added
+- Jota Guard: `--fix` repairs what is safe to repair (`no-redundant-roles`, `no-autofocus`, `no-access-key` remove the attribute). It never invents accessible text.
+- Jota Guard: `--format sarif` (GitHub code scanning) and `--format github` (annotations on the pull request).
+- CI: a Lighthouse gate on the docs site (95+ performance; 100 accessibility, best practices and SEO) and a check that source comments are JSDoc only.
+
 ## [1.1.0] - 2026-11-06
 
 ### Added

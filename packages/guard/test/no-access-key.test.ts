@@ -10,10 +10,10 @@ tester.run("jota/no-access-key", rule, {
     { code: "<div tabIndex={0} />" },
   ],
   invalid: [
-    { code: '<button accessKey="s">Save</button>', errors: [{ messageId: "accessKey" }] },
-    { code: "<a href='/x' accessKey={key}>x</a>", errors: [{ messageId: "accessKey" }] },
-    { code: '<input accesskey="n" />', errors: [{ messageId: "accessKey" }] },
-    { code: '<div accessKey="d" />', errors: [{ messageId: "accessKey" }] },
-    { code: '<textarea accessKey="t" />', errors: [{ messageId: "accessKey" }] },
+    { code: '<button accessKey="s">Save</button>', output: '<button>Save</button>', errors: [{ messageId: "accessKey" }] },
+    { code: "<a href='/x' accessKey={key}>x</a>", output: "<a href='/x'>x</a>", errors: [{ messageId: "accessKey" }] },
+    { code: '<input accesskey="n" />', output: '<input />', errors: [{ messageId: "accessKey" }] },
+    { code: '<div accessKey="d" />', output: '<div />', errors: [{ messageId: "accessKey" }] },
+    { code: '<textarea accessKey="t" />', output: '<textarea />', errors: [{ messageId: "accessKey" }] },
   ],
 });

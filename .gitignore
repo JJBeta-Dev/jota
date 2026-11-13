@@ -10,3 +10,5 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 release/
+lighthouse-report/
+.lighthouseci/

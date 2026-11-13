@@ -1,3 +1,4 @@
+import type { Rule } from "eslint";
 
 export interface ValueNode {
   type: string;
@@ -201,4 +202,16 @@ function childrenMayHaveName(children: ChildNode[]): boolean {
     }
   }
   return false;
+}
+
+/**
+ * A fix that deletes an attribute together with the space before it. Only for attributes whose
+ * removal cannot change meaning for the user (a redundant role, autofocus, accesskey).
+ */
+export function removeAttribute(context: Rule.RuleContext, attr: JSXAttributeNode): (fixer: Rule.RuleFixer) => Rule.Fix {
+  const node = attr as unknown as Rule.Node;
+  const before = context.sourceCode.getTokenBefore(node);
+  const end = (node.range as [number, number])[1];
+  const start = before ? (before.range as [number, number])[1] : (node.range as [number, number])[0];
+  return (fixer) => fixer.removeRange([start, end]);
 }

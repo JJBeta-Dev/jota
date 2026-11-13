@@ -1,6 +1,6 @@
 import type { Rule } from "eslint";
 import { createRule } from "../create-rule.js";
-import { findAttribute, hasAttribute, isDomTag, staticString, tagName, type JSXOpeningElementNode } from "../jsx.js";
+import { findAttribute, removeAttribute, hasAttribute, isDomTag, staticString, tagName, type JSXOpeningElementNode } from "../jsx.js";
 
 const IMPLICIT: Record<string, string> = {
   button: "button",
@@ -30,6 +30,7 @@ export default createRule({
   id: "no-redundant-roles",
   level: "warn",
   description: "Disallow a role that the element already has.",
+  fixable: true,
   messages: {
     redundantRole: '<{{tag}}> already has the role "{{role}}". Remove the role attribute.',
   },
@@ -44,7 +45,7 @@ export default createRule({
         if (role === undefined) return;
         const implicit = name === "a" ? (hasAttribute(element, "href") ? "link" : undefined) : IMPLICIT[name];
         if (implicit !== undefined && implicit === role) {
-          context.report({ node: attr as unknown as Rule.Node, messageId: "redundantRole", data: { tag: name, role } });
+          context.report({ node: attr as unknown as Rule.Node, messageId: "redundantRole", fix: removeAttribute(context, attr as NonNullable<typeof attr>), data: { tag: name, role } });
         }
       },
     };
