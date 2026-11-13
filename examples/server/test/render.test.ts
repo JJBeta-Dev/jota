@@ -13,7 +13,6 @@ let outDir: string;
 let render: (data: { title: string; renderedAt: string; posts: string[] }) => Promise<string>;
 
 beforeAll(async () => {
-  /* Inside the project (dist is ignored by git) so the bundle can resolve happy-dom from node_modules. */
   await mkdir(join(root, "dist"), { recursive: true });
   outDir = await mkdtemp(join(root, "dist", "test-"));
   await build({

@@ -81,7 +81,7 @@ For static pages with no JavaScript use `vite-plugin-jota/static` (see [vite-plu
 
 ## Server rendering
 
-`jota-js/server` renders a component to an HTML string in Node, on every request. It needs a DOM, so it uses `happy-dom` (optional dependency: `npm install happy-dom`). The DOM exists only while the component renders, and rendering is synchronous, so simultaneous requests do not mix. Load the data first, then render:
+`jota-js/server` renders a component to an HTML string in Node, on every request. Jota builds real DOM nodes, so it needs a DOM: by default a small one that ships with Jota (nothing to install), which implements what the runtime and typical components use (elements, text, comments, attributes, classes, styles, cloning, parsing and serializing HTML). If a component needs more browser APIs, pass `dom: "happy-dom"` for a full DOM (optional dependency: `npm install happy-dom`). The DOM exists only while the component renders, and rendering is synchronous, so simultaneous requests do not mix. Load the data first, then render:
 
 ```tsx
 import { renderToString } from "jota-js/server";
@@ -91,7 +91,7 @@ const app = await renderToString(() => <Page data={data} />);
 response.end(shell.replace("<!--app-->", app));
 ```
 
-The HTML carries the marks the browser needs to hydrate it (`hydrate: "page"` by default; `"islands"` or `false` change that). In the browser, `hydrate(() => <Page data={data} />, element)` keeps those elements and attaches behaviour, and returns `null` if the HTML does not match, so you can fall back to `render`. A complete server and client are in [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). Not included: streaming, and rendering that waits for data inside components (load it before).
+The HTML carries the marks the browser needs to hydrate it (`hydrate: "page"` by default; `"islands"` or `false` change that). In the browser, `hydrate(() => <Page data={data} />, element)` keeps those elements and attaches behaviour, and returns `null` if the HTML does not match, so you can fall back to `render`. A complete server and client are in [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). Measured on one machine with a page of 50 list items: about 12,000 renders per second per core with the default DOM, about 1,000 with `dom: "happy-dom"`. Not included: streaming, and rendering that waits for data inside components (load it before).
 
 ## TypeScript
 

@@ -7,7 +7,7 @@ import { insert, template } from "../src/web.js";
 const pageTemplate = template("<section><h2>Title</h2><p></p></section>");
 function Page(props: { text: string }): Node {
   const section = pageTemplate() as HTMLElement;
-  insert(section.querySelector("p") as HTMLElement, () => props.text);
+  insert((section.firstChild as Node).nextSibling as HTMLElement, () => props.text);
   return section;
 }
 

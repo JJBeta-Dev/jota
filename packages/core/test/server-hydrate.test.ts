@@ -7,7 +7,7 @@ const cardTemplate = template("<article><h3>Counter</h3><button></button></artic
 function Card(props: { start: number }): Node {
   const [count, setCount] = signal(props.start);
   const article = cardTemplate() as HTMLElement;
-  const button = article.querySelector("button") as HTMLButtonElement;
+  const button = article.lastChild as HTMLButtonElement;
   button.addEventListener("click", () => setCount(count() + 1));
   insert(button, () => `Clicked ${count()}`);
   return article;

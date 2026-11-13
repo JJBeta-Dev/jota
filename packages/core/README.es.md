@@ -81,7 +81,7 @@ Para generar páginas estáticas sin JavaScript usa `vite-plugin-jota/static` (v
 
 ## Render en servidor
 
-`jota-js/server` renderiza un componente a una cadena de HTML en Node, en cada petición. Necesita un DOM, así que usa `happy-dom` (dependencia opcional: `npm install happy-dom`). El DOM existe solo mientras el componente se renderiza, y el render es síncrono, así que las peticiones simultáneas no se mezclan. Carga los datos primero y luego renderiza:
+`jota-js/server` renderiza un componente a una cadena de HTML en Node, en cada petición. Jota construye nodos DOM reales, así que necesita un DOM: por defecto uno pequeño que viene con Jota (nada que instalar), que implementa lo que usan el runtime y los componentes típicos (elementos, texto, comentarios, atributos, clases, estilos, clonado, lectura y escritura de HTML). Si un componente necesita más APIs del navegador, pasa `dom: "happy-dom"` para un DOM completo (dependencia opcional: `npm install happy-dom`). El DOM existe solo mientras el componente se renderiza, y el render es síncrono, así que las peticiones simultáneas no se mezclan. Carga los datos primero y luego renderiza:
 
 ```tsx
 import { renderToString } from "jota-js/server";
@@ -91,7 +91,7 @@ const app = await renderToString(() => <Page data={data} />);
 response.end(shell.replace("<!--app-->", app));
 ```
 
-El HTML lleva las marcas que el navegador necesita para hidratarlo (`hydrate: "page"` por defecto; `"islands"` o `false` lo cambian). En el navegador, `hydrate(() => <Page data={data} />, element)` conserva esos elementos y les conecta el comportamiento, y devuelve `null` si el HTML no coincide, para que puedas volver a `render`. Un servidor y un cliente completos están en [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). No incluye: streaming, ni render que espere datos dentro de los componentes (cárgalos antes).
+El HTML lleva las marcas que el navegador necesita para hidratarlo (`hydrate: "page"` por defecto; `"islands"` o `false` lo cambian). En el navegador, `hydrate(() => <Page data={data} />, element)` conserva esos elementos y les conecta el comportamiento, y devuelve `null` si el HTML no coincide, para que puedas volver a `render`. Un servidor y un cliente completos están en [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). Medido en una máquina con una página de 50 elementos de lista: unos 12.000 renders por segundo por núcleo con el DOM por defecto, unos 1.000 con `dom: "happy-dom"`. No incluye: streaming, ni render que espere datos dentro de los componentes (cárgalos antes).
 
 ## TypeScript
 
