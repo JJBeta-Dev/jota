@@ -1,0 +1,25 @@
+name: Guard rule (new rule or false positive)
+description: Propose an accessibility rule, or report a rule that flags valid code
+labels: [guard]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options: [New rule, False positive, Missed problem, Fix suggestion]
+    validations:
+      required: true
+  - type: textarea
+    id: bad
+    attributes:
+      label: Code that should be reported
+      render: tsx
+  - type: textarea
+    id: good
+    attributes:
+      label: Similar code that must stay valid
+      render: tsx
+  - type: input
+    id: wcag
+    attributes:
+      label: WCAG criterion or reference, if you know it
