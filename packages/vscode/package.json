@@ -1,0 +1,69 @@
+{
+  "name": "jota-guard-vscode",
+  "displayName": "Jota Guard",
+  "description": "Accessibility problems in JSX and TSX as you save: missing alt text, clickable divs, inputs without labels, invalid ARIA and more.",
+  "version": "1.2.0",
+  "private": true,
+  "publisher": "jjbeta",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JJBeta-Dev/jota.git",
+    "directory": "packages/vscode"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters"
+  ],
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "jsx",
+    "tsx",
+    "jota"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:typescriptreact",
+    "onLanguage:javascriptreact"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "jotaGuard.fixFile",
+        "title": "Jota Guard: Fix what is safe in this file"
+      },
+      {
+        "command": "jotaGuard.checkFile",
+        "title": "Jota Guard: Check this file"
+      }
+    ],
+    "configuration": {
+      "title": "Jota Guard",
+      "properties": {
+        "jotaGuard.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check JSX and TSX files when they are opened and saved."
+        },
+        "jotaGuard.preset": {
+          "type": "string",
+          "enum": [
+            "",
+            "recommended",
+            "strict",
+            "a11y-only"
+          ],
+          "default": "",
+          "description": "Preset to use. Empty: the one in jota.config.json, or recommended."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "package": "npx --yes @vscode/vsce package --no-dependencies"
+  }
+}
