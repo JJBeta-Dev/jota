@@ -14,6 +14,7 @@ All notable changes to Jota are documented here. Format based on [Keep a Changel
 - `jota-js/i18n`: `createI18n`, typed translations with plurals and `Intl` formatting.
 - `jota-js/form`: `createForm`, validation with `aria-invalid`, `aria-describedby`, announced messages and focus on the first invalid field.
 - `jota-js/content`: `defineCollection`, typed Markdown collections whose front matter is checked at build time.
+- `jota-js/ui`: `createTabs`, `createDialog` and `createDisclosure`: unstyled behavior and ARIA wiring as props you spread, audited with axe.
 - `jota-js/testing`: `render` and `cleanup` for tests, and `expectAccessible` / `checkAccessibility`, which audit the rendered DOM with axe-core (optional dependency). Guard reads the source; this reads the result.
 - Markdown content: `jotaMarkdown()` from `vite-plugin-jota/markdown`. `import Post, { html, frontmatter, headings } from "./post.md"`; a folder of posts loads with `import.meta.glob`. Headings get ids. The build checks the content: an image without alt text fails it, a skipped heading level prints a warning (`guard: false` turns this off). `highlight` accepts a syntax highlighter. Types: `/// <reference types="vite-plugin-jota/md" />`. `examples/blog` has a Markdown post (still no JavaScript on the page).
 - Static build: `prefetch` (speculation rules: the browser fetches the next page on hover; a JSON block, not a script that runs) and `viewTransitions` (cross-document view transitions with one CSS rule). Both keep pages free of JavaScript.

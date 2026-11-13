@@ -142,6 +142,35 @@ const posts = defineCollection(import.meta.glob("./posts/*.md", { eager: true })
 - **`createForm`**: validation that is accessible by default. Each control gets `aria-invalid` and `aria-describedby` pointing at its message, the message is announced, and a failed submit moves focus to the first invalid field.
 - **`defineCollection`**: typed entries from a folder of Markdown files; a missing or mistyped front matter field stops the build and names the file.
 
+## Accessible building blocks
+
+`jota-js/ui` gives behavior and ARIA wiring with no styles and no markup of its own: you spread the props on your elements.
+
+```tsx
+import { createDialog, createDisclosure, createTabs } from "jota-js/ui";
+
+const tabs = createTabs({ tabs: ["code", "preview"] as const });
+<div {...tabs.list} aria-label="View">
+  <button {...tabs.tab("code")}>Code</button>
+  <button {...tabs.tab("preview")}>Preview</button>
+</div>;
+<div {...tabs.panel("code")}>...</div>;
+<div {...tabs.panel("preview")}>...</div>;
+
+const dialog = createDialog();
+<button type="button" onClick={dialog.show}>Delete</button>;
+<dialog {...dialog.dialog}>
+  <h2 {...dialog.title}>Delete the file?</h2>
+  <button type="button" onClick={dialog.close}>Cancel</button>
+</dialog>;
+```
+
+- **`createTabs`**: one tab stop, arrow keys, Home and End, panels linked to their tabs.
+- **`createDialog`**: a modal on the native `<dialog>` (the browser traps focus and closes on Escape), named by its title, focus returns to the opener.
+- **`createDisclosure`**: a button that shows and hides a region, with `aria-expanded` and `aria-controls`.
+
+They are tested with axe in compiled JSX.
+
 ## Testing
 
 `jota-js/testing` renders a component for a test and audits the result with [axe-core](https://github.com/dequelabs/axe-core) (`npm install -D axe-core`).
