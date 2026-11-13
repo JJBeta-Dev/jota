@@ -18,18 +18,10 @@ Actualizado el 2026-11-13. Todo lo de abajo ya está preparado; solo faltan paso
 
 En npm hoy están `jota-js` 1.1.0 y los otros tres en 1.0.0. Lo nuevo (hidratación, servidor, 21 reglas, Markdown, `--fix`) aún no está publicado.
 
+La versión 1.2.0 ya está preparada: versiones cambiadas, pruebas pasadas, `CHANGELOG.md` actualizado y los cuatro paquetes verificados en la carpeta `release/`. Solo falta publicar:
+
 ```bash
 cd C:\Users\JJBeta\jota
-corepack enable
-pnpm install
-node scripts/release.mjs prepare 1.2.0
-```
-
-Luego mueve las entradas de `[Unreleased]` y `[1.1.0]` de `CHANGELOG.md` bajo `## [1.2.0] - <fecha>`, y:
-
-```bash
-git add -A
-git commit -m "chore: release 1.2.0"
 npm login
 node scripts/release.mjs publish
 git tag v1.2.0

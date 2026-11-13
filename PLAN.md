@@ -69,9 +69,20 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 ## Plan de ventaja competitiva (desde 2026-11-13)
 Principio: no competir en todo. Ganar donde Jota ya es fuerte y cerrar solo las brechas que frenan la adopción.
 
+### Hecho el 2026-11-13
+- [x] Commit de lo pendiente, comentarios solo JSDoc con chequeo en CI
+- [x] Lighthouse CI como puerta (95+ / 100 / 100 / 100) en el sitio de docs
+- [x] Guard: `--fix` (3 reglas seguras), `--format sarif` y `--format github`
+- [x] Markdown como contenido con chequeo de `alt` y encabezados en el build
+- [x] Prefetch (speculation rules) y transiciones de vista sin JavaScript
+- [x] Benchmark de navegador con React y Preact (Jota: bundle más pequeño; velocidad en el rango de los demás, no la más alta)
+- [x] CONTRIBUTING, SECURITY, plantillas, Dependabot, borradores de lanzamiento y `HANDOFF-LANZAMIENTO.md`
+- [x] Versión 1.2.0 preparada y tarballs verificados (falta publicar: lo hace el dueño)
+- [ ] Extensión de VS Code, axe en tests (`jota-js/testing`), js-framework-benchmark, MDX y colecciones tipadas, streaming, devtools, formularios/datos/i18n/UI, docs completas en español
+
 ### Estado real (verificado 2026-11-13)
-- npm: `jota-js` 1.1.0; `jota-guard`, `create-jota-js`, `vite-plugin-jota` 1.0.0. Repo `JJBeta-Dev/jota` público, 0 estrellas.
-- Tests en verde en todos los paquetes y ejemplos. Hay cambios sin commit (limpieza de comentarios, ajustes en core, guard, vite-plugin y sitio).
+- npm: `jota-js` 1.1.0; `jota-guard`, `create-jota-js`, `vite-plugin-jota` 1.0.0 (la 1.2.0 está preparada en `release/`, sin publicar). Repo `JJBeta-Dev/jota` público, 0 estrellas.
+- Tests en verde en todos los paquetes y ejemplos; nada pendiente de commit.
 - Guard: 31 reglas. Servidor: `renderToString` con DOM ligero. Hidratación de islas y páginas cliente.
 
 ### Fortalezas a convertir en victoria clara

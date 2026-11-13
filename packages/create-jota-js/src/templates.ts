@@ -1,7 +1,7 @@
 export type TemplateName = "ts" | "js";
 
 /** Version range of the Jota packages written into new projects (the first real release). */
-export const JOTA_VERSION_RANGE = "^1.0.0";
+export const JOTA_VERSION_RANGE = "^1.2.0";
 
 export interface TemplateContext {
   name: string;
