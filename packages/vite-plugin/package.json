@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-jota",
   "version": "1.1.0",
-  "description": "Vite plugin that compiles Jota JSX to fine-grained DOM updates (work in progress)",
+  "description": "Vite plugin for Jota: JSX compiled to fine-grained DOM updates, static build with islands, Markdown content",
   "license": "MIT",
   "author": "JJBeta",
   "homepage": "https://github.com/JJBeta-Dev/jota#readme",
@@ -12,6 +12,7 @@
   },
   "files": [
     "dist",
+    "md.d.ts",
     "README.md"
   ],
   "keywords": [
@@ -32,6 +33,13 @@
     "./static": {
       "types": "./dist/static.d.ts",
       "import": "./dist/static.js"
+    },
+    "./markdown": {
+      "types": "./dist/markdown.d.ts",
+      "import": "./dist/markdown.js"
+    },
+    "./md": {
+      "types": "./md.d.ts"
     }
   },
   "scripts": {
@@ -44,7 +52,8 @@
     "@babel/preset-typescript": "^7.29.0",
     "babel-plugin-jsx-dom-expressions": "^0.40.11",
     "beasties": "^0.5.5",
-    "happy-dom": "^20.0.0"
+    "happy-dom": "^20.0.0",
+    "marked": "^15.0.0"
   },
   "peerDependencies": {
     "jota-js": ">=0.0.1",

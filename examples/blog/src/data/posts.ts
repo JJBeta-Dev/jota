@@ -4,9 +4,11 @@ export interface Post {
   date: string;
   summary: string;
   body: string[];
+  /** Set for posts written in Markdown (src/content). */
+  html?: string;
 }
 
-export const posts: Post[] = [
+const written: Post[] = [
   {
     slug: "components-run-once",
     title: "Components run once",
@@ -44,3 +46,21 @@ export async function loadPosts(): Promise<Post[]> {
   await Promise.resolve();
   return [...posts].sort((a, b) => b.date.localeCompare(a.date));
 }
+
+interface MarkdownFile {
+  html: string;
+  frontmatter: Record<string, unknown>;
+}
+
+const files = import.meta.glob<MarkdownFile>("../content/*.md", { eager: true });
+
+const fromMarkdown: Post[] = Object.entries(files).map(([path, file]) => ({
+  slug: path.slice(path.lastIndexOf("/") + 1, -".md".length),
+  title: String(file.frontmatter.title),
+  date: String(file.frontmatter.date),
+  summary: String(file.frontmatter.summary),
+  body: [],
+  html: file.html,
+}));
+
+export const posts: Post[] = [...written, ...fromMarkdown];

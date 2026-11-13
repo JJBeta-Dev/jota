@@ -57,4 +57,12 @@ describe("blog build", () => {
       expect(read(file), file).not.toContain("<script");
     }
   });
+
+  it("renders a post written in Markdown, with heading ids and no JavaScript", () => {
+    const html = read("blog", "markdown-content", "index.html");
+    expect(html).toContain("<title>Posts written in Markdown | Jota blog</title>");
+    expect(html).toContain('<h2 id="what-the-build-checks">What the build checks</h2>');
+    expect(html).toContain('<code class="language-ts">');
+    expect(html).not.toContain("<script");
+  });
 });

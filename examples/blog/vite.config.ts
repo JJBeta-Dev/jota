@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 import jota from "vite-plugin-jota";
 import jotaStatic from "vite-plugin-jota/static";
+import { jotaMarkdown } from "vite-plugin-jota/markdown";
 
 const core = (file: string) => fileURLToPath(new URL(`../../packages/core/src/${file}`, import.meta.url));
 
@@ -9,7 +10,7 @@ const core = (file: string) => fileURLToPath(new URL(`../../packages/core/src/${
 const testing = Boolean(process.env.VITEST);
 
 export default defineConfig({
-  plugins: [jota(), jotaStatic()],
+  plugins: [jota(), jotaMarkdown(), jotaStatic()],
   resolve: testing
     ? {
         alias: [

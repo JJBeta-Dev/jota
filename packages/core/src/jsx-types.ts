@@ -62,6 +62,9 @@ export interface DOMEvents<T> {
 
 export interface HTMLAttributes<T> extends DOMEvents<T> {
   children?: Opt<JSXElement>;
+  /** Sets the HTML of the element. Only for trusted HTML (for example compiled Markdown): it is not escaped. */
+  innerHTML?: Opt<string>;
+  textContent?: Opt<string>;
   /** Called with the element once it exists, or receives it: `let el; <div ref={el} />`. */
   ref?: Opt<T | ((element: T) => void)>;
   id?: Opt<string>;

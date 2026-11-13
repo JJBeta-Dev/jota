@@ -381,6 +381,7 @@ export async function prerender(config: ResolvedConfig, options: StaticOptions =
         enforce: "pre",
         transform: (code, id) => transformJota(code, id, options.jota),
       },
+      ...config.plugins.filter((plugin) => plugin.name === "vite-plugin-jota:markdown"),
     ],
   });
 

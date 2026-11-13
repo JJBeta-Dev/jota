@@ -24,9 +24,7 @@ export default function PostPage(props: { params: Record<string, string>; data?:
         <p class="muted">
           <time datetime={post.date}>{post.date}</time>
         </p>
-        {post.body.map((paragraph) => (
-          <p>{paragraph}</p>
-        ))}
+        {post.html ? <div innerHTML={post.html} /> : post.body.map((paragraph) => <p>{paragraph}</p>)}
         <p>
           <a href="/">Back to all posts</a>
         </p>
