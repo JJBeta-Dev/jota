@@ -1,6 +1,6 @@
 /**
  * Rendering benchmark in a real browser (Microsoft Edge through puppeteer-core).
- * Both apps build the same table with the same operations (js-framework-benchmark style).
+ * All apps build the same table with the same operations (js-framework-benchmark style).
  * Run: pnpm -r build && pnpm --filter jota-bench-browser bench
  */
 import { createServer } from "node:http";
@@ -31,9 +31,11 @@ if (!executablePath) {
 const APPS = [
   { key: "jota", name: "Jota", plugin: () => jota() },
   { key: "solid", name: "Solid", plugin: () => solid() },
+  { key: "preact", name: "Preact", esbuild: { jsx: "automatic", jsxImportSource: "preact" } },
+  { key: "react", name: "React", esbuild: { jsx: "automatic", jsxImportSource: "react" } },
 ];
 
-/** 1. Build both apps and measure their JavaScript. */
+/** 1. Build the apps and measure their JavaScript. */
 const sizes = {};
 for (const app of APPS) {
   const root = join(here, "apps", app.key);
@@ -43,7 +45,9 @@ for (const app of APPS) {
     configFile: false,
     logLevel: "silent",
     base: "./",
-    plugins: [app.plugin()],
+    plugins: app.plugin ? [app.plugin()] : [],
+    ...(app.esbuild ? { esbuild: app.esbuild } : {}),
+    define: { "process.env.NODE_ENV": JSON.stringify("production") },
     build: { outDir, emptyOutDir: true, target: "es2022" },
   });
   const assets = join(outDir, "assets");
@@ -104,7 +108,7 @@ try {
             await frame();
             const start = performance.now();
             ${operation.run};
-            document.body.getBoundingClientRect(); // force layout so rendering work is included
+            document.body.getBoundingClientRect();
             times.push(performance.now() - start);
             await frame();
           }
@@ -125,16 +129,17 @@ try {
 const fmt = (value) => (value >= 100 ? value.toFixed(0) : value.toFixed(1));
 console.log(`${userAgent} on ${os.cpus()[0]?.model.trim() ?? "unknown CPU"} (${os.platform()}), Node ${process.version}`);
 console.log(`Median of ${RUNS} runs after a warm-up, milliseconds including forced layout, lower is better.\n`);
-console.log("| Operation | Jota | Solid |");
-console.log("|---|---:|---:|");
+const bold = (value, best) => (value === best ? `**${fmt(value)}**` : fmt(value));
+console.log(`| Operation | ${APPS.map((app) => app.name).join(" | ")} |`);
+console.log(`|---|${APPS.map(() => "---:").join("|")}|`);
 for (const operation of OPERATIONS) {
-  const a = results.jota[operation.name];
-  const b = results.solid[operation.name];
-  const best = Math.min(a, b);
-  console.log(`| ${operation.name} | ${a === best ? `**${fmt(a)}**` : fmt(a)} | ${b === best ? `**${fmt(b)}**` : fmt(b)} |`);
+  const values = APPS.map((app) => results[app.key][operation.name]);
+  const best = Math.min(...values);
+  console.log(`| ${operation.name} | ${values.map((value) => bold(value, best)).join(" | ")} |`);
 }
-const kb = (value) => (value / 1024).toFixed(1);
-console.log("\n| JavaScript of the benchmark app | Jota | Solid |");
-console.log("|---|---:|---:|");
-console.log(`| Minified | ${kb(sizes.jota.bytes)} kB | ${kb(sizes.solid.bytes)} kB |`);
-console.log(`| Gzip | ${kb(sizes.jota.gzip)} kB | ${kb(sizes.solid.gzip)} kB |`);
+const kb = (bytes) => `${(bytes / 1000).toFixed(1)} kB`;
+console.log(`
+| JavaScript of the benchmark app | ${APPS.map((app) => app.name).join(" | ")} |`);
+console.log(`|---|${APPS.map(() => "---:").join("|")}|`);
+console.log(`| Minified | ${APPS.map((app) => kb(sizes[app.key].bytes)).join(" | ")} |`);
+console.log(`| Gzip | ${APPS.map((app) => kb(sizes[app.key].gzip)).join(" | ")} |`);
