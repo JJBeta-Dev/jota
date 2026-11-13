@@ -1,6 +1,6 @@
 import { For, render, signal } from "jota-js";
 
-// js-framework-benchmark style table. Keep this file and ../../solid/src/main.tsx equivalent.
+/** js-framework-benchmark style table. Keep this file and ../../solid/src/main.tsx equivalent. */
 interface Row {
   id: number;
   label: () => string;

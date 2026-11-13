@@ -1,7 +1,7 @@
 import { createSignal, For } from "solid-js";
 import { render } from "solid-js/web";
 
-// js-framework-benchmark style table. Keep this file and ../../jota/src/main.tsx equivalent.
+/** js-framework-benchmark style table. Keep this file and ../../jota/src/main.tsx equivalent. */
 interface Row {
   id: number;
   label: () => string;

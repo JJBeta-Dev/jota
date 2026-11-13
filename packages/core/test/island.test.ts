@@ -60,7 +60,6 @@ describe("startIslands", () => {
     expect(button.textContent).toBe("Count: 3");
     button.click();
     expect(button.textContent).toBe("Count: 4");
-    // The server HTML was replaced, not duplicated.
     expect(container.querySelectorAll("button")).toHaveLength(1);
   });
 
@@ -82,7 +81,6 @@ describe("startIslands", () => {
 
   it("waits for idle and for visibility", async () => {
     container.innerHTML = html("visible");
-    // Without IntersectionObserver the island falls back to loading right away.
     vi.stubGlobal("IntersectionObserver", undefined);
     startIslands({ "/src/islands/Counter.tsx": () => ({ default: Counter }) }, container);
     await flush();
@@ -111,7 +109,7 @@ describe("startIslands", () => {
     container.innerHTML = html("visible");
     startIslands({ "/src/islands/Counter.tsx": () => ({ default: Counter }) }, container);
     await flush();
-    expect(container.querySelector("[data-jota-mounted]")).toBeNull(); // not visible yet
+    expect(container.querySelector("[data-jota-mounted]")).toBeNull();
 
     callbacks[0]?.([{ isIntersecting: false }]);
     await flush();
@@ -168,7 +166,6 @@ describe("startIslands keeps what the user already did", () => {
     expect(box.checked).toBe(true);
     expect(document.activeElement).toBe(text);
     expect([text.selectionStart, text.selectionEnd]).toEqual([2, 4]);
-    // The component heard about the text, so its own state matches the screen.
     expect(container.querySelector("p")?.textContent).toBe("You typed: hello");
   });
 

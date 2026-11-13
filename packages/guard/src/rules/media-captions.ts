@@ -14,7 +14,7 @@ function hasCaptionsTrack(element: JSXElementNode): boolean {
     if (child.type !== "JSXElement" || !child.openingElement) return false;
     if (tagName(child.openingElement) !== "track") return false;
     const kind = staticString(findAttribute(child.openingElement, "kind"));
-    // A dynamic `kind` cannot be judged, so it counts as present.
+    /** A dynamic `kind` cannot be judged, so it counts as present. */
     return kind === undefined || kind === "captions";
   });
 }

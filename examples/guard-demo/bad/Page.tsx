@@ -1,4 +1,4 @@
-// Planted violations for Jota Guard. Do not fix: tests expect these problems.
+/** Planted violations for Jota Guard. Do not fix: tests expect these problems. */
 export function Page({ openMenu }: { openMenu: () => void }) {
   return (
     <html>

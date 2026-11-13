@@ -16,7 +16,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
-    "lint": "pnpm -r lint",
+    "lint": "pnpm -r lint && node scripts/check-comments.mjs",
     "typecheck": "pnpm -r typecheck",
     "release:check": "node scripts/release.mjs check"
   }

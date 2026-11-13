@@ -66,6 +66,33 @@ Presupuesto: **$0**. Producto en inglés primero (TypeScript-first), docs en esp
 - [ ] Decisión de renombrado (por la similitud con Jotai) antes de congelar la API
 - **Puerta:** 1.0 solo con API estable.
 
+## Plan de ventaja competitiva (desde 2026-11-13)
+Principio: no competir en todo. Ganar donde Jota ya es fuerte y cerrar solo las brechas que frenan la adopción.
+
+### Estado real (verificado 2026-11-13)
+- npm: `jota-js` 1.1.0; `jota-guard`, `create-jota-js`, `vite-plugin-jota` 1.0.0. Repo `JJBeta-Dev/jota` público, 0 estrellas.
+- Tests en verde en todos los paquetes y ejemplos. Hay cambios sin commit (limpieza de comentarios, ajustes en core, guard, vite-plugin y sitio).
+- Guard: 31 reglas. Servidor: `renderToString` con DOM ligero. Hidratación de islas y páginas cliente.
+
+### Fortalezas a convertir en victoria clara
+1. **Jota Guard (nadie más lo tiene integrado en el build).** Pendiente: autofix en las reglas seguras; salida SARIF y anotaciones de GitHub; extensión de VS Code; auditoría del DOM renderizado con axe en los tests (`jota-js/testing`); regla de contraste sobre tokens CSS; publicar 1.1.0 de Guard con las 5+21 reglas nuevas.
+2. **Peso y rendimiento verificados.** Pendiente: Lighthouse CI en cada PR con el presupuesto como puerta; insignias de tamaño; enviar a js-framework-benchmark para tener números de terceros; tabla de comparación con medidas reproducibles (`bench/`), sin afirmar de más.
+3. **Cero JS por defecto + islas + hidratación.** Pendiente: Markdown/MDX como fuente de contenido (sin esto Astro gana en blogs y docs); prefetch al pasar el cursor; transiciones de vista; límites conocidos documentados (`<picture>` raíz, iframes, páginas cliente con islas).
+4. **Reactividad fina.** Pendiente: costo de creación de nodos (3-4x más lento que Preact Signals) solo si aparece un caso real; mientras tanto no tocar.
+
+### Brechas que frenan la adopción (cerrar, no liderar)
+1. Herramientas de desarrollo: overlay de errores y HMR verificados, devtools simples para ver el grafo de signals, plugin de tsserver opcional.
+2. Piezas que todo proyecto pide: formularios con validación accesible, i18n, caché de datos (`createResource` con invalidación), store anidado, primitivas sin estilo y accesibles (aprovecha Guard como argumento).
+3. Confianza: revisión del inglés por un nativo; 5 testers externos de las docs; política de seguridad y de versionado; decisión de renombrado por Jotai antes de congelar API 2.0.
+
+### Orden de ejecución sugerido
+1. Hacer commit de lo pendiente (autoría JJBeta-Dev, sin co-autor IA) y publicar Guard 1.1.0 y vite-plugin con lo nuevo (lo ejecuta el usuario con su PIN).
+2. Lighthouse CI + js-framework-benchmark (pruebas externas, barato, alto impacto).
+3. Guard: autofix, SARIF, VS Code, axe en tests.
+4. Markdown/MDX y prefetch (cierra la brecha frente a Astro).
+5. Lanzamiento público (Etapa 5) con el mensaje: "el framework que no te deja publicar un sitio inaccesible ni lento".
+6. Piezas de ecosistema según lo que pidan los primeros usuarios (issues reales, no suposiciones).
+
 ## Infraestructura $0
 GitHub (repo público + Actions), npm, Cloudflare Pages o GitHub Pages, StackBlitz, Lighthouse CI. Dominio propio opcional (~$10/año), no necesario. Pagos más adelante: Lemon Squeezy / Gumroad (solo comisión).
 

@@ -3,7 +3,7 @@ import Counter from "../islands/Counter";
 
 export const head = { title: "Islands" };
 
-// A static page with one interactive island: only this page loads JavaScript.
+/** A static page with one interactive island: only this page loads JavaScript. */
 export default function IslandsPage(): JSXElement {
   return (
     <main>

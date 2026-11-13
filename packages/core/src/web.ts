@@ -13,13 +13,7 @@ export { effect, mergeProps };
 
 type Props = Record<string, unknown>;
 
-/* --- hydration ---------------------------------------------------------------------------- */
 
-/* Build time: while a static page is rendered, every template root gets `data-hk="<n>.<hash>"` and */
-/* every dynamic spot is wrapped in `<!--[n-->` ... `<!--]n-->`, numbered in the order they are created. */
-/* Browser: the same code runs again in the same order, so `hydrate` can hand the existing elements */
-/* back to it instead of creating new ones. The hash of each template is checked, and anything that */
-/* does not line up marks the hydration as failed, so the caller falls back to mounting from scratch. */
 
 interface Marks {
   /** "page": number everything. "islands": number only what is inside an island. */
@@ -108,7 +102,6 @@ function strip(parent: Node, found: Hydration): void {
       const after: ChildNode | null = cursor.nextSibling;
       parent.removeChild(cursor);
       parent.removeChild(child);
-      /* Spots nested at the same level, and elements inside, are handled the same way. */
       strip(holder, found);
       found.slots.set(id, Array.from(holder.childNodes));
       child = after;
@@ -141,19 +134,15 @@ export function withHydration(root: Element, code: () => void): boolean {
   } finally {
     hydration = saved;
   }
-  /* Putting nodes back moved them, which drops focus; give it back to the same element. */
   if (active instanceof HTMLElement && active.isConnected && document.activeElement !== active) {
     active.focus();
     if (input && caret && caret[0] !== null && caret[1] !== null) {
       try {
         input.setSelectionRange(caret[0], caret[1]);
       } catch {
-        /* Some input types have no selection. */
       }
     }
   }
-  /* Every marked element and every spot must have been claimed; a leftover is server HTML that the
-     component did not build. */
   return !found.failed && found.elements.size === 0 && found.slots.size === 0;
 }
 
@@ -166,7 +155,6 @@ export function withHydration(root: Element, code: () => void): boolean {
 export function hydrate(code: () => JSXElement, element: Element): (() => void) | null {
   let ok = false;
   const dispose = createRoot((dispose) => {
-    /* The root spot is numbered before the component runs, exactly as `mount` does at build time. */
     ok = withHydration(element, () => {
       const id = reserveSlot();
       insert(element, untrack(code), null, undefined, id);
@@ -186,17 +174,25 @@ export function hydrate(code: () => JSXElement, element: Element): (() => void) 
 /** Create a function that clones a static piece of HTML on every call. */
 export function template(html: string, isImportNode?: boolean, isSVG?: boolean): () => Node {
   let node: Node | undefined;
+  let owner: Document | undefined;
   let hash: string | undefined;
   const create = (): Node => {
     const holder = document.createElement("template");
-    /* For SVG the compiler already wraps the markup in <svg>...</svg>; the node we want is inside it. */
     holder.innerHTML = html;
     const root = holder.content.firstChild as Node;
     return isSVG ? (root.firstChild as Node) : root;
   };
+  /** The parsed template is kept, but it belongs to one document: a server can render with another. */
+  const source = (): Node => {
+    if (node === undefined || owner !== document) {
+      node = create();
+      owner = document;
+    }
+    return node;
+  };
   const fresh = isImportNode
-    ? () => untrack(() => document.importNode((node ??= create()), true))
-    : () => (node ??= create()).cloneNode(true);
+    ? () => untrack(() => document.importNode(source(), true))
+    : () => source().cloneNode(true);
   const clone = (): Node => {
     const h = hydration;
     if (h !== null) {
@@ -235,7 +231,6 @@ export function use<T>(fn: (element: Element, argument: T) => void, element: Ele
   untrack(() => fn(element, argument));
 }
 
-/* --- insert ------------------------------------------------------------------------------- */
 
 function normalize(value: unknown, out: Node[]): void {
   while (typeof value === "function") value = (value as () => unknown)();
@@ -262,7 +257,7 @@ function normalize(value: unknown, out: Node[]): void {
  */
 function longestIncreasingSubsequence(values: number[]): number[] {
   const previous = new Array<number>(values.length);
-  const tails: number[] = []; /* tails[k] = index of the smallest tail of an increasing run of length k + 1 */
+  const tails: number[] = [];
   for (let i = 0; i < values.length; i++) {
     const value = values[i] as number;
     let low = 0;
@@ -285,7 +280,6 @@ function longestIncreasingSubsequence(values: number[]): number[] {
 function reconcile(parent: Node, current: Node[], next: Node[], marker: Node | null): Node[] {
   if (current.length === next.length && current.every((node, i) => node === next[i])) return current;
 
-  /* First render of this spot: insert everything in one go. */
   if (current.length === 0) {
     if (next.length === 0) return next;
     const fragment = document.createDocumentFragment();
@@ -299,8 +293,7 @@ function reconcile(parent: Node, current: Node[], next: Node[], marker: Node | n
     if (!keep.has(old) && old.parentNode === parent) parent.removeChild(old);
   }
 
-  /* Nodes that were already here keep their place if they are part of a longest increasing run of */
-  /* old positions; every other node is inserted before its successor. */
+  /** old positions; every other node is inserted before its successor. */
   const oldPosition = new Map<Node, number>();
   current.forEach((node, index) => oldPosition.set(node, index));
   const positions: number[] = [];
@@ -324,7 +317,6 @@ function reconcile(parent: Node, current: Node[], next: Node[], marker: Node | n
 }
 
 function render(parent: Node, value: unknown, current: Node[], marker: Node | null): Node[] {
-  /* Fast path: update an existing single text node in place. */
   if ((typeof value === "string" || typeof value === "number") && current.length === 1) {
     const node = current[0] as Node;
     if (node.nodeType === 3) {
@@ -349,8 +341,10 @@ export function insert(parent: Node, accessor: unknown, marker?: Node | null, in
   const h = hydration;
   const m = marks;
   if (h !== null) {
-    /* Put back what the server rendered for this spot, in its place among the static nodes. The render
-       below keeps the nodes that were claimed and replaces the rest (for example text). */
+    /**
+     * Put back what the server rendered for this spot, in its place among the static nodes. The render
+     * below keeps the nodes that were claimed and replaces the rest (for example text).
+     */
     const id = reserved ?? h.s++;
     const existing = h.slots.get(id);
     if (existing) {
@@ -379,10 +373,7 @@ export function insert(parent: Node, accessor: unknown, marker?: Node | null, in
 /** Mount a component into an element. Returns a function that unmounts it. */
 export function mount(code: () => JSXElement, element: Element): () => void {
   return createRoot((dispose) => {
-    /* Build the root once, without tracking: only the value it returns (a node or an accessor) is */
-    /* inserted reactively. Calling `code` inside the insert effect would rebuild the whole root */
-    /* every time something it returns changes. */
-    /* The root spot is numbered before the root is built (hydration depends on that order). */
+    /** The root spot is numbered before the root is built (hydration depends on that order). */
     const id = reserveSlot();
     insert(element, untrack(code), null, undefined, id);
     return () => {
@@ -393,7 +384,6 @@ export function mount(code: () => JSXElement, element: Element): () => void {
 }
 export { mount as render };
 
-/* --- attributes, classes, styles, events --------------------------------------------------- */
 
 export function setAttribute(node: Element, name: string, value: unknown): void {
   if (value === null || value === undefined || value === false) node.removeAttribute(name);
@@ -484,7 +474,6 @@ export function delegateEvents(names: string[], doc: Document = document): void 
   }
 }
 
-/* --- spread -------------------------------------------------------------------------------- */
 
 const PROPERTY_NAMES = new Set([
   "value", "checked", "selected", "disabled", "hidden", "readOnly", "multiple", "indeterminate", "innerHTML", "textContent",

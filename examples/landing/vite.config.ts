@@ -5,7 +5,7 @@ import jotaStatic from "vite-plugin-jota/static";
 
 const core = (file: string) => fileURLToPath(new URL(`../../packages/core/src/${file}`, import.meta.url));
 
-// While testing, use the runtime sources so tests do not depend on a previous build.
+/** While testing, use the runtime sources so tests do not depend on a previous build. */
 const testing = Boolean(process.env.VITEST);
 
 export default defineConfig({

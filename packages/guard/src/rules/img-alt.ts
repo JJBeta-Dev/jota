@@ -15,7 +15,7 @@ export default createRule({
       JSXOpeningElement(node: Rule.Node) {
         const element = node as unknown as JSXOpeningElementNode;
         if (tagName(element) !== "img") return;
-        // Spread props may carry `alt`; stay silent instead of guessing.
+        /** Spread props may carry `alt`; stay silent instead of guessing. */
         if (hasSpread(element)) return;
         if (hasAttribute(element, "alt")) return;
         context.report({ node, messageId: "missingAlt" });

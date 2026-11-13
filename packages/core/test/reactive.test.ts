@@ -109,9 +109,9 @@ describe("effect", () => {
       effect(() => innerRuns(inner()));
     });
     expect(innerRuns).toHaveBeenCalledTimes(1);
-    setOuter(1); /* old inner effect disposed, new one created */
+    setOuter(1);
     expect(innerRuns).toHaveBeenCalledTimes(2);
-    setInner(1); /* only the new inner effect reacts */
+    setInner(1);
     expect(innerRuns).toHaveBeenCalledTimes(3);
   });
 
@@ -139,9 +139,9 @@ describe("computed", () => {
     const parity = computed(() => n() % 2);
     const run = vi.fn();
     effect(() => run(parity()));
-    setN(3); /* parity still 1 */
+    setN(3);
     expect(run).toHaveBeenCalledTimes(1);
-    setN(4); /* parity 0 */
+    setN(4);
     expect(run).toHaveBeenCalledTimes(2);
   });
 
@@ -236,12 +236,12 @@ describe("dependency tracking when sources change between runs", () => {
     expect(seen).toEqual([1, 2]);
     setFlag(false);
     expect(seen).toEqual([1, 2, 10]);
-    setA(3); /* no longer read: must not re-run */
+    setA(3);
     expect(seen).toEqual([1, 2, 10]);
     setB(11);
     expect(seen).toEqual([1, 2, 10, 11]);
     setFlag(true);
-    setB(12); /* b was dropped again */
+    setB(12);
     expect(seen).toEqual([1, 2, 10, 11, 3]);
   });
 
@@ -310,9 +310,9 @@ describe("dependency tracking when sources change between runs", () => {
     });
     setCount(1);
     runs.mockClear();
-    (sources[2] as ReturnType<typeof signal<number>>)[1](1); /* dropped */
+    (sources[2] as ReturnType<typeof signal<number>>)[1](1);
     expect(runs).toHaveBeenCalledTimes(0);
-    (sources[0] as ReturnType<typeof signal<number>>)[1](1); /* still read */
+    (sources[0] as ReturnType<typeof signal<number>>)[1](1);
     expect(runs).toHaveBeenCalledTimes(1);
   });
 
@@ -325,7 +325,7 @@ describe("dependency tracking when sources change between runs", () => {
     effect(() => void seen.push(picked()));
     setA(2);
     setUseA(false);
-    setA(3); /* dropped */
+    setA(3);
     setB(101);
     expect(seen).toEqual([1, 2, 100, 101]);
   });
@@ -340,9 +340,9 @@ describe("dependency tracking when sources change between runs", () => {
     });
     setLimit(30);
     runs.mockClear();
-    (signals[35] as ReturnType<typeof signal<number>>)[1](1); /* dropped */
+    (signals[35] as ReturnType<typeof signal<number>>)[1](1);
     expect(runs).toHaveBeenCalledTimes(0);
-    (signals[29] as ReturnType<typeof signal<number>>)[1](1); /* kept */
+    (signals[29] as ReturnType<typeof signal<number>>)[1](1);
     expect(runs).toHaveBeenCalledTimes(1);
   });
 
@@ -357,7 +357,7 @@ describe("dependency tracking when sources change between runs", () => {
       if (stopNow) stop();
     });
     stopNow = true;
-    setA(1); /* second run disposes itself */
+    setA(1);
     expect(runs).toHaveBeenCalledTimes(2);
     setA(2);
     setA(3);
@@ -379,7 +379,6 @@ describe("ownership of many children", () => {
       }
       return dispose;
     });
-    /* Remove from the middle, the end and the start (exercises the swap with the last child). */
     (stops[2] as () => void)();
     (stops[5] as () => void)();
     (stops[0] as () => void)();

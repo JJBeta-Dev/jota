@@ -149,7 +149,6 @@ async function generateImageVariants(
   let sharp: typeof import("sharp");
   try {
     sharp = (await import("sharp")).default;
-    /* sharp caches open files by default, which makes Windows refuse to delete them afterwards. */
     sharp.cache(false);
   } catch {
     warn("jota static: `images` is on but the optional package `sharp` is not installed, so images were left as they are.");
@@ -330,7 +329,7 @@ async function inlineStyles(
   const sheets: Array<{ tag: string; css: string }> = [];
   for (const [tag] of links) {
     const href = /href="([^"]+)"/.exec(tag)?.[1];
-    if (!href || /^https?:\/\//.test(href)) return html; /* external stylesheet: leave everything as is */
+    if (!href || /^https?:\/\//.test(href)) return html;
     const file = join(outDir, href.replace(/^\//, "").split("?")[0] as string);
     if (!existsSync(file)) return html;
     sheets.push({ tag, css: await readFile(file, "utf8") });
@@ -418,7 +417,6 @@ export async function prerender(config: ResolvedConfig, options: StaticOptions =
         const url = router.buildPath(route.pattern, params);
         const data = module.load ? await module.load({ params }) : undefined;
         const container = document.createElement("div");
-        /* Mark the HTML so the browser can hydrate it: a whole client page, or only the islands. */
         web.setMarking((module.config?.render ?? "static") === "client" ? "page" : "islands");
         const dispose = web.mount(() => web.createComponent(module.default, { params, data }), container);
         web.setMarking(null);
@@ -430,7 +428,7 @@ export async function prerender(config: ResolvedConfig, options: StaticOptions =
         const head = typeof module.head === "function" ? module.head(params, data) : (module.head ?? {});
         let html = shell.replace(/<div id="app">\s*<\/div>/, () => `<div id="app">${content}</div>`);
         html = applyHead(html, head);
-        /* Static pages ship no script, unless they contain islands that need to be mounted. */
+        /** Static pages ship no script, unless they contain islands that need to be mounted. */
         const hasIslands = content.includes("data-jota-island");
         if ((module.config?.render ?? "static") !== "client" && !hasIslands) html = stripScripts(html);
         html = await inlineStyles(html, outDir, limit, options.criticalCss !== false, config.base);

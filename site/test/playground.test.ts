@@ -40,7 +40,7 @@ describe("previewDocument", () => {
     expect(html).toContain('"jota-js":"https://example.test/runtime/jota.js"');
     expect(html).toContain('"jota-js/web":"https://example.test/runtime/web.js"');
     expect(html).toContain("<\\/script><b>");
-    expect(html.match(/<\/script>/g)).toHaveLength(3); /* importmap, error handler, module */
+    expect(html.match(/<\/script>/g)).toHaveLength(3);
   });
 });
 
@@ -55,7 +55,6 @@ const BROWSERS = [
 ].filter((path): path is string => Boolean(path));
 const executablePath = BROWSERS.find((path) => existsSync(path));
 
-/* End to end in a real browser. Skipped when no Chromium-based browser is installed. */
 describe.skipIf(!executablePath)("playground in a browser", () => {
   let outDir: string;
   let server: Server;
@@ -136,7 +135,6 @@ describe.skipIf(!executablePath)("playground in a browser", () => {
     });
     await page.goto(`${origin}/playground/`);
     await page.waitForSelector("#playground-code");
-    /* The marks are removed as the elements are claimed, so none left means hydration finished. */
     await page.waitForFunction("document.querySelectorAll('[data-hk]').length === 0");
     const result = await page.evaluate(() => {
       const server = (window as unknown as { serverElements: Element[] }).serverElements;
@@ -150,7 +148,6 @@ describe.skipIf(!executablePath)("playground in a browser", () => {
     expect(result.server).toBeGreaterThan(10);
     expect(result.kept).toBe(result.server);
     expect(result.comments).toBe(true);
-    /* And it still works: typing updates the component, running the code shows its output. */
     await page.click(".actions button");
     const frame = await frameOf(page);
     await frame.waitForFunction("document.querySelector('p')?.textContent === 'Count: 0'");

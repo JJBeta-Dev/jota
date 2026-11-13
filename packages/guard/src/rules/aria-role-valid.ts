@@ -108,7 +108,6 @@ export default createRule({
         const value = staticString(attr);
         if (value === undefined) return;
         const tokens = value.trim().split(/\s+/).filter(Boolean);
-        // A list is a fallback chain: the browser uses the first role it knows.
         if (tokens.some(isValidRole)) return;
         context.report({ node: attr as unknown as Rule.Node, messageId: "invalidRole", data: { value } });
       },

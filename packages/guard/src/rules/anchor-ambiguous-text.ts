@@ -17,7 +17,6 @@ export default createRule({
       JSXElement(node: Rule.Node) {
         const element = node as unknown as { openingElement: JSXOpeningElementNode; children: ChildNode[] };
         if (tagName(element.openingElement) !== "a" || hasSpread(element.openingElement)) return;
-        // Only plain text is judged: any expression or element inside makes the text unknowable.
         if (element.children.length === 0 || element.children.some((child) => child.type !== "JSXText")) return;
         const text = element.children
           .map((child) => child.value ?? "")

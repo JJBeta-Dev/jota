@@ -1,5 +1,7 @@
-// Type-level checks for the JSX element types. This file is only typechecked (`pnpm typecheck`).
-// Every `@ts-expect-error` must really be an error, otherwise TypeScript reports the line.
+/**
+ * Type-level checks for the JSX element types. This file is only typechecked (`pnpm typecheck`).
+ * Every `@ts-expect-error` must really be an error, otherwise TypeScript reports the line.
+ */
 import type { JSXElement } from "jota-js";
 
 export function Valid(): JSXElement {
@@ -49,19 +51,19 @@ export function Valid(): JSXElement {
 export function Invalid(): JSXElement {
   return (
     <div>
-      {/* @ts-expect-error an unknown button type */}
+      {/** @ts-expect-error an unknown button type */}
       <button type="nope">x</button>
-      {/* @ts-expect-error href must be a string */}
+      {/** @ts-expect-error href must be a string */}
       <a href={5}>x</a>
-      {/* @ts-expect-error unknown element */}
+      {/** @ts-expect-error unknown element */}
       <blink />
-      {/* @ts-expect-error the handler gets an InputEvent, not a KeyboardEvent */}
+      {/** @ts-expect-error the handler gets an InputEvent, not a KeyboardEvent */}
       <input onInput={(event: KeyboardEvent) => event} />
-      {/* @ts-expect-error unknown attribute on a known element */}
+      {/** @ts-expect-error unknown attribute on a known element */}
       <img src="/a.jpg" alt="" sizzle="yes" />
-      {/* @ts-expect-error loading must be eager or lazy */}
+      {/** @ts-expect-error loading must be eager or lazy */}
       <img src="/a.jpg" alt="" loading="sometimes" />
-      {/* @ts-expect-error tabIndex is a number */}
+      {/** @ts-expect-error tabIndex is a number */}
       <div tabIndex="0" />
     </div>
   );

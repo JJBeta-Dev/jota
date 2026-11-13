@@ -4,7 +4,7 @@ interface Data {
   items: string[];
 }
 
-// Async data: `load` runs at build time and its result reaches the page and `head` as `data`.
+/** Async data: `load` runs at build time and its result reaches the page and `head` as `data`. */
 export const load = async (): Promise<Data> => {
   await new Promise((resolve) => setTimeout(resolve, 5));
   return { items: ["alpha", "beta"] };

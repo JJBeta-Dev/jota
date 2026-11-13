@@ -23,7 +23,7 @@ export default createRule({
         if (tagName(element) !== "html") return;
         if (hasSpread(element)) return;
         const lang = findAttribute(element, "lang");
-        // A dynamic value (lang={locale}) is accepted; only a missing or empty lang is reported.
+        /** A dynamic value (lang={locale}) is accepted; only a missing or empty lang is reported. */
         if (lang && staticString(lang)?.trim() !== "") return;
         context.report({ node, messageId: "missingLang" });
       },

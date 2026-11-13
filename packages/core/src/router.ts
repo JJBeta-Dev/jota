@@ -135,7 +135,6 @@ export function matchRoute(routes: Route[], pathname: string): RouteMatch | null
         } else {
           params[segment.slice(1)] = rest.map(safeDecode).join("/");
         }
-        /* A catch-all consumes everything that is left. */
         if (matched) return { route, params };
         break;
       }
@@ -176,7 +175,6 @@ export function resolveHead(module: RouteModule, params: Params, data?: unknown)
   return typeof module.head === "function" ? module.head(params, data) : (module.head ?? {});
 }
 
-/* --- client router ------------------------------------------------------------------------- */
 
 export interface RouterOptions {
   /** Rendered when no route matches. */
@@ -214,9 +212,7 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
   const [view, setView] = signal<JSXElement>(null);
   let token = 0;
 
-  /* A pre-rendered page already has HTML in `element`, and it stays visible while the route module */
-  /* loads. The first client view either hydrates it (the elements are kept) or, when the HTML was not */
-  /* marked at build time or does not match, replaces it, so nothing is duplicated. */
+  /** marked at build time or does not match, replaces it, so nothing is duplicated. */
   let started = false;
   let unmount: () => void = () => {};
   const showView = (next: JSXElement | (() => JSXElement)): void => {
@@ -225,8 +221,10 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
       return;
     }
     started = true;
-    /* A function given to the setter runs right away, so the page is built here: inside `hydrate` it
-       claims the server elements, inside `mount` it creates new ones. */
+    /**
+     * A function given to the setter runs right away, so the page is built here: inside `hydrate` it
+     * claims the server elements, inside `mount` it creates new ones.
+     */
     const build = (): JSXElement => {
       setView(next as JSXElement);
       return view;
@@ -249,7 +247,7 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
     }
     const render = async (): Promise<void> => {
       const module = await found.route.load();
-      if (current !== token) return; /* a newer navigation won */
+      if (current !== token) return;
       const data = module.load ? await module.load({ params: found.params }) : undefined;
       if (current !== token) return;
       const head = resolveHead(module, found.params, data);
@@ -283,7 +281,6 @@ export function startRouter(routes: Route[], element: Element, options: RouterOp
     if (!anchor) return;
     const href = localHref(anchor as HTMLAnchorElement);
     if (href === null) return;
-    /* Links to pages that are not client routes (for example static pages) are normal navigations. */
     if (!matchRoute(routes, new URL(href, window.location.href).pathname)) return;
     event.preventDefault();
     navigate(href);

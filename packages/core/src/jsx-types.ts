@@ -363,7 +363,7 @@ type Same<T> = HTMLAttributes<T>;
 
 /** Typed attributes for every standard HTML and common SVG element. */
 export interface IntrinsicElementMap {
-  // text and sections
+  /** text and sections */
   a: AnchorHTMLAttributes<HTMLAnchorElement>;
   abbr: Same<HTMLElement>; address: Same<HTMLElement>; article: Same<HTMLElement>; aside: Same<HTMLElement>;
   b: Same<HTMLElement>; bdi: Same<HTMLElement>; bdo: Same<HTMLElement>; blockquote: Same<HTMLQuoteElement>;
@@ -382,7 +382,7 @@ export interface IntrinsicElementMap {
   span: Same<HTMLSpanElement>; strong: Same<HTMLElement>; style: Same<HTMLStyleElement>; sub: Same<HTMLElement>;
   summary: Same<HTMLElement>; sup: Same<HTMLElement>; template: Same<HTMLTemplateElement>; title: Same<HTMLTitleElement>;
   u: Same<HTMLElement>; ul: Same<HTMLUListElement>; var: Same<HTMLElement>; wbr: Same<HTMLElement>;
-  // elements with their own attributes
+  /** elements with their own attributes */
   button: ButtonHTMLAttributes<HTMLButtonElement>;
   input: InputHTMLAttributes<HTMLInputElement>;
   textarea: TextareaHTMLAttributes<HTMLTextAreaElement>;
@@ -419,7 +419,7 @@ export interface IntrinsicElementMap {
   base: HTMLAttributes<HTMLBaseElement> & { href?: Opt<string>; target?: Opt<string> };
   script: HTMLAttributes<HTMLScriptElement> & { src?: Opt<string>; type?: Opt<string>; async?: Opt<boolean>; defer?: Opt<boolean> };
   slot: HTMLAttributes<HTMLSlotElement> & { name?: Opt<string> };
-  // SVG
+  /** SVG */
   svg: SVGAttributes<SVGSVGElement>;
   g: SVGAttributes<SVGGElement>;
   path: SVGAttributes<SVGPathElement>;

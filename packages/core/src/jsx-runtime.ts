@@ -1,5 +1,7 @@
-// Type-only entry used by TypeScript when `jsxImportSource` is "jota-js" and `jsx` is "preserve".
-// Jota's compiler removes all JSX at build time, so no runtime functions are needed here.
+/**
+ * Type-only entry used by TypeScript when `jsxImportSource` is "jota-js" and `jsx` is "preserve".
+ * Jota's compiler removes all JSX at build time, so no runtime functions are needed here.
+ */
 import type { CustomElements, IntrinsicElementMap } from "./jsx-types.js";
 import type { JSXElement } from "./types.js";
 

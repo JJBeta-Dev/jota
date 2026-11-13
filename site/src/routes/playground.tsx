@@ -2,7 +2,7 @@ import { onCleanup, signal, type JSXElement } from "jota-js";
 import { Layout } from "../components/Layout";
 import { EXAMPLE } from "../playground/example";
 
-// The only page of this site that loads JavaScript: it compiles your code in the browser.
+/** The only page of this site that loads JavaScript: it compiles your code in the browser. */
 export const config = { render: "client" } as const;
 
 export const head = {

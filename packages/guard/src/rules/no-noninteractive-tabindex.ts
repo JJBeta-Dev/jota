@@ -13,7 +13,7 @@ import {
 const INTERACTIVE = new Set([
   "a", "button", "input", "select", "textarea", "summary", "details", "audio", "video", "iframe", "embed", "object",
 ]);
-// A focusable <div> that reacts to events is clickable-role's job; this rule is for plain content.
+/** A focusable <div> that reacts to events is clickable-role's job; this rule is for plain content. */
 const HANDLERS = ["onClick", "onKeyDown", "onKeyUp", "onKeyPress", "onMouseDown", "onPointerDown"];
 
 export default createRule({

@@ -52,7 +52,7 @@ describe("dashboard", () => {
     choose("product", "parts");
     const after = [...container.querySelectorAll("rect.bar")];
     expect(after).toHaveLength(before.length);
-    // Rows are new objects, so bars are rebuilt: this documents the current behavior of For (identity based).
+    /** Rows are new objects, so bars are rebuilt: this documents the current behavior of For (identity based). */
     expect(bars()).toEqual(["Jan", "Feb", "Mar", "Apr", "May", "Jun"]);
   });
 

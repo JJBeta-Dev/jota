@@ -3,7 +3,7 @@ import { signal } from "../src/reactive.js";
 import { Island, startIslands } from "../src/island.js";
 import { hydrate, insert, render, setMarking, template } from "../src/web.js";
 
-/* Hand-written equivalent of what the compiler emits for <button>Count: {count()}</button>. */
+/** Hand-written equivalent of what the compiler emits for <button>Count: {count()}</button>. */
 const buttonTemplate = template("<button></button>");
 function Counter(props: { start: number }): Node {
   const [count, setCount] = signal(props.start);
@@ -13,7 +13,7 @@ function Counter(props: { start: number }): Node {
   return button;
 }
 
-/* <section><h2>Title</h2><p>{text}</p><Counter /></section> */
+/** <section><h2>Title</h2><p>{text}</p><Counter /></section> */
 const sectionTemplate = template("<section><h2>Title</h2><p></p></section>");
 function Section(): Node {
   const section = sectionTemplate() as HTMLElement;
@@ -68,7 +68,7 @@ describe("marking at build time", () => {
     setMarking("page");
     render(() => Section(), host);
     setMarking(null);
-    expect(host.querySelectorAll("[data-hk]").length).toBe(2); /* section and button */
+    expect(host.querySelectorAll("[data-hk]").length).toBe(2);
   });
 });
 
@@ -82,11 +82,11 @@ describe("hydrating an island", () => {
     await flush();
 
     const button = container.querySelector("button") as HTMLButtonElement;
-    expect(button).toBe(serverButton); /* not rebuilt */
+    expect(button).toBe(serverButton);
     expect(container.querySelectorAll("button")).toHaveLength(1);
     expect(button.hasAttribute("data-hk")).toBe(false);
     expect(button.textContent).toBe("Count: 3");
-    expect(Array.from(button.childNodes).filter((node) => node.nodeType === 3)).toEqual([serverText]); /* the text node was adopted too */
+    expect(Array.from(button.childNodes).filter((node) => node.nodeType === 3)).toEqual([serverText]);
 
     button.click();
     expect(button.textContent).toBe("Count: 4");
@@ -135,7 +135,7 @@ describe("hydrating an island", () => {
 
     const button = container.querySelector("button") as HTMLButtonElement;
     expect(container.querySelectorAll("button")).toHaveLength(1);
-    expect(button).not.toBe(serverButton); /* rebuilt */
+    expect(button).not.toBe(serverButton);
     button.click();
     expect(button.textContent).toBe("Count: 4");
   });
@@ -181,7 +181,7 @@ describe("hydrate()", () => {
     render(() => Section(), host);
     setMarking(null);
     container.innerHTML = host.innerHTML;
-    /* A page that builds something else cannot claim these nodes. */
+    /** A page that builds something else cannot claim these nodes. */
     const other = template("<article>Other</article>");
     expect(hydrate(() => other(), container)).toBeNull();
   });

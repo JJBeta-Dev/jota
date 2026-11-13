@@ -24,7 +24,7 @@ export default createRule({
         if (hasAttribute(element, "aria-label") || hasAttribute(element, "aria-labelledby")) return;
         const title = findAttribute(element, "title");
         if (title && title.value !== null) {
-          // A dynamic title (title={name}) is accepted; only a missing or empty one is reported.
+          /** A dynamic title (title={name}) is accepted; only a missing or empty one is reported. */
           const text = staticString(title);
           if (text === undefined || text.trim() !== "") return;
         }

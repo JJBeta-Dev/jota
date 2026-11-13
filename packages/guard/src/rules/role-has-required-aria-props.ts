@@ -40,7 +40,6 @@ export default createRule({
         if (role === undefined) return;
         const required = REQUIRED[role];
         if (required === undefined) return;
-        /* A native input already exposes its state, and a heading tag its level. */
         if (name === "input" || (role === "heading" && HEADINGS.has(name))) return;
         const missing = required.filter((prop) => !hasAttribute(element, prop));
         if (missing.length > 0) {

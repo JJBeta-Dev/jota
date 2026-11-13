@@ -1,10 +1,12 @@
-// Reactivity micro-benchmarks. Same scenarios, same logic, three libraries.
-// Run `pnpm --filter jota-bench bench` after `pnpm -r build`.
-// This measures the reactive graph only, in Node, with no DOM and no browser.
+/**
+ * Reactivity micro-benchmarks. Same scenarios, same logic, three libraries.
+ * Run `pnpm --filter jota-bench bench` after `pnpm -r build`.
+ * This measures the reactive graph only, in Node, with no DOM and no browser.
+ */
 import { readFileSync } from "node:fs";
 import os from "node:os";
 import * as jota from "jota-js";
-// The default "solid-js" entry in Node is the server build (no reactivity), so import the client build.
+/** The default "solid-js" entry in Node is the server build (no reactivity), so import the client build. */
 import * as solid from "solid-js/dist/solid.js";
 import * as preact from "@preact/signals-core";
 
@@ -47,9 +49,11 @@ const libs = {
   },
 };
 
-// Each scenario builds its graph inside a root (so effects exist and are subscribed: Solid only runs
-// effects created in a root once the root function returns) and returns a function that performs
-// and times the measured work afterwards.
+/**
+ * Each scenario builds its graph inside a root (so effects exist and are subscribed: Solid only runs
+ * effects created in a root once the root function returns) and returns a function that performs
+ * and times the measured work afterwards.
+ */
 const scenarios = [
   {
     title: "1,000,000 writes to one signal read by one effect",

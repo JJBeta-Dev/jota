@@ -22,7 +22,7 @@ describe("compiler output", () => {
   it("removes JSX and TypeScript, and imports from the Jota runtime", async () => {
     const result = await transformJota('const x: number = 1; export const a = <p class="c">{x}</p>;', "a.tsx");
     expect(result?.code).toContain("jota-js/web");
-    // The element became a cloned template (static HTML inside a string), not JSX.
+    /** The element became a cloned template (static HTML inside a string), not JSX. */
     expect(result?.code).toContain("_$template(`<p class=c>");
     expect(result?.code).toContain("export const a = _tmpl$();");
     expect(result?.code).not.toContain(": number");
@@ -53,7 +53,7 @@ describe("fine-grained updates (Counter)", () => {
     (container.querySelector("button") as HTMLButtonElement).click();
 
     expect(paragraph.textContent).toBe("Clicks: 2");
-    // Same elements and same text node: nothing was re-created.
+    /** Same elements and same text node: nothing was re-created. */
     expect(container.querySelector("p")).toBe(paragraph);
     expect(container.querySelector("h2")).toBe(heading);
     expect(paragraph.lastChild).toBe(textNodeBefore);

@@ -230,7 +230,7 @@ export async function run(argv: string[], cwd: string): Promise<CliResult> {
     ignore = [...config.ignore, ...ignore];
     if (maxWarnings < 0 && config.maxWarnings !== undefined) maxWarnings = config.maxWarnings;
   }
-  // Priority: command line rules > config file rules > preset.
+  /** Priority: command line rules > config file rules > preset. */
   const rules = { ...presetRules(preset), ...fileRules, ...parsed.rules };
 
   try {

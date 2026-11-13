@@ -1,4 +1,4 @@
-// Fixed version of bad/Page.tsx: Jota Guard reports nothing here.
+/** Fixed version of bad/Page.tsx: Jota Guard reports nothing here. */
 export function Page({ openMenu }: { openMenu: () => void }) {
   return (
     <html lang="en">

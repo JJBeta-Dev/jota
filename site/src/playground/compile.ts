@@ -19,7 +19,7 @@ export async function compileSnippet(source: string): Promise<CompileResult> {
   } catch (error) {
     console.error(error);
     const message = error instanceof Error ? error.message : String(error);
-    // Babel prefixes messages with the file name; drop it so the message starts at the problem.
+    /** Babel prefixes messages with the file name; drop it so the message starts at the problem. */
     return { error: message.replace(/^snippet\.tsx:\s*/, "") };
   }
 }

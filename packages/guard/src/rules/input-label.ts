@@ -43,7 +43,7 @@ export default createRule({
         if (tag === null) return;
 
         if (tag === "label") {
-          // React-style `htmlFor` and the HTML-style `for` used by Solid and Jota.
+          /** React-style `htmlFor` and the HTML-style `for` used by Solid and Jota. */
           const htmlFor = findAttribute(opening, "htmlFor") ?? findAttribute(opening, "for");
           if (htmlFor) {
             const value = staticString(htmlFor);

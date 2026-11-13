@@ -59,7 +59,7 @@ startIslands(import.meta.glob("/src/islands/*.tsx"));`}
       <h2>Images in AVIF and WebP</h2>
       <Code
         code={`// vite.config.ts
-jotaStatic({ images: true }) /* avif + webp, quality 70 */
+jotaStatic({ images: true })               // avif + webp, quality 70
 jotaStatic({ images: { formats: ["webp"], quality: 80 } })`}
       />
       <p>
@@ -81,10 +81,10 @@ jotaStatic({ images: { formats: ["webp"], quality: 80 } })`}
       <Code
         code={`jotaStatic({
   budget: {
-    maxJsPerRoute: "10kb", /* gzip: scripts and preloaded modules of one page */
-    maxCssPerRoute: "20kb", /* gzip: stylesheets a page links */
-    maxHtmlPerRoute: "20kb", /* one HTML page */
-    maxImageWeight: "200kb", /* any single image */
+    maxJsPerRoute: "10kb",   // gzip: scripts and preloaded modules of one page
+    maxCssPerRoute: "20kb",  // gzip: stylesheets a page links
+    maxHtmlPerRoute: "20kb", // one HTML page
+    maxImageWeight: "200kb", // any single image
   },
 })`}
       />

@@ -1,5 +1,3 @@
-// Minimal JSX node shapes used by the rules. ESLint's estree types do not include JSX,
-// so we describe only the fields we read instead of using `any`.
 
 export interface ValueNode {
   type: string;
@@ -187,7 +185,7 @@ function childrenMayHaveName(children: ChildNode[]): boolean {
     } else if (child.type === "JSXElement" && child.openingElement) {
       const opening = child.openingElement;
       const name = tagName(opening);
-      if (!isDomTag(name)) return true; // component: cannot judge
+      if (!isDomTag(name)) return true;
       if (isTrueAttribute(findAttribute(opening, "aria-hidden"))) continue;
       if (name === "img") {
         const alt = findAttribute(opening, "alt");

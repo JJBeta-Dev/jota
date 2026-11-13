@@ -1,6 +1,8 @@
-// Rendering benchmark in a real browser (Microsoft Edge through puppeteer-core).
-// Both apps build the same table with the same operations (js-framework-benchmark style).
-// Run: pnpm -r build && pnpm --filter jota-bench-browser bench
+/**
+ * Rendering benchmark in a real browser (Microsoft Edge through puppeteer-core).
+ * Both apps build the same table with the same operations (js-framework-benchmark style).
+ * Run: pnpm -r build && pnpm --filter jota-bench-browser bench
+ */
 import { createServer } from "node:http";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { gzipSync } from "node:zlib";
@@ -31,7 +33,7 @@ const APPS = [
   { key: "solid", name: "Solid", plugin: () => solid() },
 ];
 
-// 1. Build both apps and measure their JavaScript.
+/** 1. Build both apps and measure their JavaScript. */
 const sizes = {};
 for (const app of APPS) {
   const root = join(here, "apps", app.key);
@@ -51,7 +53,7 @@ for (const app of APPS) {
   sizes[app.key] = { bytes, gzip };
 }
 
-// 2. Serve the builds.
+/** 2. Serve the builds. */
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css" };
 const server = createServer((request, response) => {
   const [, key, ...rest] = (request.url ?? "/").split("?")[0].split("/");
@@ -67,7 +69,7 @@ const server = createServer((request, response) => {
 await new Promise((done) => server.listen(0, "127.0.0.1", done));
 const origin = `http://127.0.0.1:${server.address().port}`;
 
-// 3. Operations. `before` puts the page in the state the operation needs; `run` is the timed part.
+/** 3. Operations. `before` puts the page in the state the operation needs; `run` is the timed part. */
 const OPERATIONS = [
   { name: "create 1,000 rows", before: "bench.clear()", run: "bench.run(1000)" },
   { name: "replace 1,000 rows", before: "bench.clear(); bench.run(1000)", run: "bench.run(1000)" },
@@ -89,7 +91,7 @@ try {
     const page = await browser.newPage();
     await page.goto(`${origin}/${app.key}/`);
     await page.waitForFunction("typeof window.bench === 'object'");
-    // Warm up the JIT with the same operations.
+    /** Warm up the JIT with the same operations. */
     await page.evaluate(`(async () => { for (let i = 0; i < 3; i++) { bench.clear(); bench.run(1000); bench.updateEveryTenth(); bench.swap(); bench.clear(); } })()`);
 
     for (const operation of OPERATIONS) {
