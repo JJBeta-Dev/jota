@@ -12,3 +12,5 @@ coverage/
 release/
 lighthouse-report/
 .lighthouseci/
+*.timestamp-*.mjs
+*_tmp.*

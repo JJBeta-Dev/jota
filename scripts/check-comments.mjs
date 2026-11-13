@@ -9,7 +9,7 @@ import { join, extname } from "node:path";
 const roots = ["packages", "examples", "site", "bench", "scripts"];
 const extensions = new Set([".ts", ".tsx", ".js", ".mjs", ".css"]);
 const skip = new Set(["node_modules", "dist", "release", ".vite"]);
-const pattern = /^\s*\/\/|^\s*\/\*(?!\*)|\{\/\*(?!\*)/;
+const pattern = /^\s*\/\/(?!\/ <reference)|^\s*\/\*(?!\*)|\{\/\*(?!\*)/;
 const findings = [];
 
 /** @param {string} dir */
