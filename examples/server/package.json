@@ -16,11 +16,11 @@
     "happy-dom": "^20.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.9.0",
+    "@types/node": "^26.6.6",
     "jota-guard": "workspace:*",
     "typescript": "^5.6.3",
-    "vite": "^5.4.11",
+    "vite": "^8.3.7",
     "vite-plugin-jota": "workspace:*",
-    "vitest": "^2.1.5"
+    "vitest": "^5.1.0"
   }
 }
