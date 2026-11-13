@@ -53,7 +53,7 @@
     "babel-plugin-jsx-dom-expressions": "^0.40.11",
     "beasties": "^0.5.5",
     "happy-dom": "^20.0.0",
-    "marked": "^15.0.0"
+    "marked": "^18.2.0"
   },
   "peerDependencies": {
     "jota-js": ">=0.0.1",
