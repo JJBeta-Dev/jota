@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.29.0",
-    "@babel/preset-typescript": "^7.29.0",
+    "@babel/preset-typescript": "^8.0.7",
     "babel-plugin-jsx-dom-expressions": "^0.40.11",
     "beasties": "^0.5.5",
     "happy-dom": "^20.0.0",
