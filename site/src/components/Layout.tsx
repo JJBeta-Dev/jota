@@ -16,20 +16,33 @@ const NAV = {
     { href: "/docs/routing", label: "Routing and static pages" },
     { href: "/docs/islands", label: "Islands and build options" },
     { href: "/docs/guard", label: "Guard" },
+    { href: "/docs/markdown", label: "Markdown" },
+    { href: "/docs/toolkit", label: "Data, forms and widgets" },
     { href: "/playground", label: "Playground" },
   ],
   es: [
     { href: "/es", label: "Inicio" },
     { href: "/es/docs/getting-started", label: "Primeros pasos" },
+    { href: "/es/docs/senales", label: "Signals" },
+    { href: "/es/docs/rutas", label: "Rutas y páginas estáticas" },
+    { href: "/es/docs/islas", label: "Islas y opciones del build" },
+    { href: "/es/docs/guard", label: "Guard" },
+    { href: "/es/docs/markdown", label: "Markdown" },
+    { href: "/es/docs/herramientas", label: "Datos, formularios y componentes" },
   ],
 } as const;
 
-const TRANSLATED = new Map<string, string>([
+const PAIRS: Array<[en: string, es: string]> = [
   ["/", "/es"],
   ["/docs/getting-started", "/es/docs/getting-started"],
-  ["/es", "/"],
-  ["/es/docs/getting-started", "/docs/getting-started"],
-]);
+  ["/docs/signals", "/es/docs/senales"],
+  ["/docs/routing", "/es/docs/rutas"],
+  ["/docs/islands", "/es/docs/islas"],
+  ["/docs/guard", "/es/docs/guard"],
+  ["/docs/markdown", "/es/docs/markdown"],
+  ["/docs/toolkit", "/es/docs/herramientas"],
+];
+const TRANSLATED = new Map<string, string>(PAIRS.flatMap(([en, es]) => [[en, es], [es, en]] as Array<[string, string]>));
 
 export function Layout(props: LayoutProps): JSXElement {
   const es = props.lang === "es";

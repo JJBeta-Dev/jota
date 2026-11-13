@@ -11,10 +11,6 @@ export default function GettingStarted(): JSXElement {
   return (
     <Layout lang="en" path="/docs/getting-started">
       <h1>Getting started</h1>
-      <p class="note">
-        Jota has not had its first real release yet, so <code>npm create jota-js</code> will only work after it. Until then,
-        use the repository.
-      </p>
 
       <p>
         Want to try it first? The <a href="/playground">playground</a> compiles and runs your code in the browser, with

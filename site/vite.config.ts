@@ -2,12 +2,14 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import jota from "vite-plugin-jota";
 import jotaStatic from "vite-plugin-jota/static";
+import { jotaMarkdown } from "vite-plugin-jota/markdown";
 
 const file = (path: string) => fileURLToPath(new URL(path, import.meta.url));
 
 export default defineConfig({
   plugins: [
     jota(),
+    jotaMarkdown(),
     /** The docs site keeps itself honest: the build fails if a page grows past these limits. */
     jotaStatic({ prefetch: true, viewTransitions: true, budget: { maxJsPerRoute: "12kb", maxCssPerRoute: "20kb", maxHtmlPerRoute: "20kb", maxImageWeight: "200kb" } }),
   ],

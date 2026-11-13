@@ -11,10 +11,6 @@ export default function PrimerosPasos(): JSXElement {
   return (
     <Layout lang="es" path="/es/docs/getting-started">
       <h1>Primeros pasos</h1>
-      <p class="note">
-        Jota todavía no tiene su primer lanzamiento real, así que <code>npm create jota-js</code> solo funcionará después de
-        él. Mientras tanto, usa el repositorio.
-      </p>
 
       <p>
         ¿Quieres probarlo antes? El <a href="/playground">playground</a> (en inglés) compila y ejecuta tu código en el
