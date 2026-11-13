@@ -31,6 +31,13 @@ export interface StaticOptions {
    * `onload` attribute to the stylesheet link and a `<noscript>` fallback.
    */
   criticalCss?: boolean;
+  /**
+   * Ask the browser to fetch the next page before the click, with speculation rules: a JSON block the
+   * browser reads, not a script that runs. true means "moderate" (on hover). Browsers without support ignore it.
+   */
+  prefetch?: boolean | "conservative" | "moderate" | "eager";
+  /** Animate navigation between pages with cross-document view transitions (one CSS rule, no JavaScript). */
+  viewTransitions?: boolean;
   /** Options for the Jota compiler used while rendering. */
   jota?: JotaOptions;
   /**
@@ -312,6 +319,18 @@ function applyHead(html: string, head: Head): string {
   return result;
 }
 
+/** The tags that `prefetch` and `viewTransitions` add to the head of every page. */
+export function navigationHints(options: Pick<StaticOptions, "prefetch" | "viewTransitions">, base = "/"): string {
+  const tags: string[] = [];
+  if (options.viewTransitions) tags.push("<style>@view-transition{navigation:auto}</style>");
+  if (options.prefetch) {
+    const eagerness = options.prefetch === true ? "moderate" : options.prefetch;
+    const rules = { prefetch: [{ where: { href_matches: `${base.endsWith("/") ? base : `${base}/`}*` }, eagerness }] };
+    tags.push(`<script type="speculationrules">${JSON.stringify(rules)}</script>`);
+  }
+  return tags.join("");
+}
+
 function stripScripts(html: string): string {
   return html
     .replace(/<script\b[^>]*\btype="module"[^>]*>\s*<\/script>\s*/g, "")
@@ -389,6 +408,7 @@ export async function prerender(config: ResolvedConfig, options: StaticOptions =
     ? await generateImageVariants(outDir, options.images, (message) => config.logger.warn(message))
     : new Map();
 
+  const hints = navigationHints(options, config.base);
   const dom = installDom();
   const rendered: string[] = [];
   try {
@@ -433,6 +453,7 @@ export async function prerender(config: ResolvedConfig, options: StaticOptions =
         const hasIslands = content.includes("data-jota-island");
         if ((module.config?.render ?? "static") !== "client" && !hasIslands) html = stripScripts(html);
         html = await inlineStyles(html, outDir, limit, options.criticalCss !== false, config.base);
+        if (hints) html = html.replace("</head>", () => `${hints}</head>`);
 
         const target = url === "/" ? shellPath : join(outDir, ...url.split("/").filter(Boolean), "index.html");
         await mkdir(dirname(target), { recursive: true });

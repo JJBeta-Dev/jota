@@ -181,7 +181,7 @@ describe.skipIf(!executablePath)("playground in a browser", () => {
   it("keeps the other pages free of JavaScript, and links back to them as normal navigations", async () => {
     for (const path of ["/", "/docs/guard/", "/es/"]) {
       const html = readFileSync(join(outDir, path, "index.html"), "utf8");
-      expect(html, path).not.toContain("<script");
+      expect(html.replace(/<script type="speculationrules">[^<]*<\/script>/, ""), path).not.toContain("<script");
     }
     const page = await open();
     await page.click("a[href='/docs/guard']");

@@ -50,6 +50,8 @@ Además, por página: la primera `<img>` recibe `fetchpriority="high"` y las dem
 | `routesDir` | `"src/routes"` | Carpeta con los archivos de rutas |
 | `inlineCssLimit` | `20000` | Las hojas de estilo de hasta estos bytes se incrustan completas |
 | `criticalCss` | `true` | Por encima del límite: incrusta solo el CSS que usa la página y carga el resto sin bloquear (usa `beasties`; añade un pequeño atributo `onload` y un respaldo `<noscript>`) |
+| `prefetch` | `false` | `true`, `"conservative"`, `"moderate"` o `"eager"`: el navegador descarga la página siguiente antes del clic (speculation rules, sin ejecutar JavaScript) |
+| `viewTransitions` | `false` | Navegación animada entre páginas con una regla CSS |
 | `budget` | ninguno | `{ maxJsPerRoute, maxCssPerRoute, maxHtmlPerRoute, maxImageWeight }` en bytes o como texto, por ejemplo `"10kb"`. Si una página o archivo lo supera, el build falla y lo nombra. El JavaScript y el CSS se miden comprimidos con gzip, a partir de las etiquetas script, los módulos precargados y los enlaces a hojas de estilo de la página |
 | `images` | apagado | `true` o `{ formats, quality }`: convierte JPEG/PNG locales a AVIF y WebP con el paquete opcional `sharp` y envuelve `<img>` en `<picture>` |
 

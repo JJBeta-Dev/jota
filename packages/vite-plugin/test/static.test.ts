@@ -8,7 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import sharp from "sharp";
 import { build, createLogger } from "vite";
 import jota from "../src/index.js";
-import jotaStatic, { parseSize } from "../src/static.js";
+import jotaStatic, { navigationHints, parseSize } from "../src/static.js";
 
 const site = fileURLToPath(new URL("./site", import.meta.url));
 const core = (file: string) => fileURLToPath(new URL(`../../core/src/${file}`, import.meta.url));
@@ -253,4 +253,23 @@ describe("performance budget", () => {
   it("fails on HTML that is too large", async () => {
     await expect(buildWith({ maxHtmlPerRoute: "10b" })).rejects.toThrow(/HTML is/);
   }, 60_000);
+});
+
+describe("navigationHints", () => {
+  it("adds nothing by default", () => {
+    expect(navigationHints({})).toBe("");
+  });
+
+  it("writes speculation rules for prefetch, on hover by default", () => {
+    const html = navigationHints({ prefetch: true });
+    const json = JSON.parse(html.replace('<script type="speculationrules">', "").replace("</script>", "")) as {
+      prefetch: Array<{ where: { href_matches: string }; eagerness: string }>;
+    };
+    expect(json.prefetch[0]).toEqual({ where: { href_matches: "/*" }, eagerness: "moderate" });
+    expect(navigationHints({ prefetch: "eager" }, "/docs")).toContain('"href_matches":"/docs/*"');
+  });
+
+  it("adds the view transition rule as CSS, not JavaScript", () => {
+    expect(navigationHints({ viewTransitions: true })).toBe("<style>@view-transition{navigation:auto}</style>");
+  });
 });
