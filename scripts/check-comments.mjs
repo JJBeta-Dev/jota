@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Repository rule: source files use JSDoc blocks only. Line comments (`//`), plain block comments
- * (`/* ... *\/`) and JSX comments (`{/* ... *\/}`) fail this check. Run: `node scripts/check-comments.mjs`.
+ * Repository rule: source files use JSDoc blocks only. Line comments, plain block comments and
+ * JSX comments fail this check. Run: `node scripts/check-comments.mjs`.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
