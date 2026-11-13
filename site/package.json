@@ -21,7 +21,7 @@
     "jota-guard": "workspace:*",
     "path-browserify": "^1.0.1",
     "puppeteer-core": "^24.0.0",
-    "typescript": "^5.6.3",
+    "typescript": "^7.0.2",
     "vite": "^5.4.11",
     "vite-plugin-jota": "workspace:*",
     "vitest": "^2.1.5"
