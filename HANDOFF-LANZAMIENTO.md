@@ -58,9 +58,9 @@ npm abre el navegador y pide el PIN de Windows Hello una vez por paquete (son cu
 
 ## 6. Qué decir y qué no
 
-Sí: el build falla ante HTML inaccesible o pesado; el bundle es el más pequeño de la comparación (3.4 kB gzip frente a 69.8 kB de React); cero JavaScript por defecto.
+Sí: el build falla ante HTML inaccesible o pesado; el bundle es el más pequeño de la comparación (3.7 kB gzip frente a 5.6 de Solid, 13.6 de Svelte, 25.4 de Vue, 37.7 de Angular y 68.5 de React); cero JavaScript por defecto.
 
-No: "el más rápido". Los números propios muestran que está en el rango de Solid y que crear nodos reactivos es 3 a 4 veces más lento que Preact Signals. Decirlo de frente da más credibilidad que esconderlo.
+No: "el más rápido". Los números propios (siete frameworks, `bench/browser/RESULTS.md`) muestran que Solid, Svelte y Angular son más rápidos, que Jota es entre 20 y 30 % más lento que Solid al crear filas, y que crear nodos reactivos es 3 a 4 veces más lento que Preact Signals. Decirlo de frente da más credibilidad que esconderlo.
 
 ## 7. Decisiones que te esperan
 

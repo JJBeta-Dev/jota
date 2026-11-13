@@ -12,6 +12,9 @@ import os from "node:os";
 import { build } from "vite";
 import solid from "vite-plugin-solid";
 import jota from "vite-plugin-jota";
+import vue from "@vitejs/plugin-vue";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
+import angular from "@analogjs/vite-plugin-angular";
 import puppeteer from "puppeteer-core";
 
 const here = resolve(fileURLToPath(new URL(".", import.meta.url)));
@@ -33,6 +36,9 @@ const APPS = [
   { key: "solid", name: "Solid", plugin: () => solid() },
   { key: "preact", name: "Preact", esbuild: { jsx: "automatic", jsxImportSource: "preact" } },
   { key: "react", name: "React", esbuild: { jsx: "automatic", jsxImportSource: "react" } },
+  { key: "vue", name: "Vue", plugin: () => vue() },
+  { key: "svelte", name: "Svelte", plugin: () => svelte({ configFile: false }) },
+  { key: "angular", name: "Angular", plugin: () => angular({ tsconfig: join(here, "apps", "angular", "tsconfig.json") }) },
 ];
 
 /** 1. Build the apps and measure their JavaScript. */
@@ -75,15 +81,15 @@ const origin = `http://127.0.0.1:${server.address().port}`;
 
 /** 3. Operations. `before` puts the page in the state the operation needs; `run` is the timed part. */
 const OPERATIONS = [
-  { name: "create 1,000 rows", before: "bench.clear()", run: "bench.run(1000)" },
-  { name: "replace 1,000 rows", before: "bench.clear(); bench.run(1000)", run: "bench.run(1000)" },
-  { name: "update every 10th row (1,000 rows)", before: "bench.clear(); bench.run(1000)", run: "bench.updateEveryTenth()" },
-  { name: "select a row (1,000 rows)", before: "bench.clear(); bench.run(1000)", run: "bench.select(500)" },
-  { name: "swap two rows (1,000 rows)", before: "bench.clear(); bench.run(1000)", run: "bench.swap()" },
-  { name: "remove a row (1,000 rows)", before: "bench.clear(); bench.run(1000)", run: "bench.remove(500)" },
-  { name: "create 10,000 rows", before: "bench.clear()", run: "bench.run(10000)" },
-  { name: "append 1,000 rows to 1,000", before: "bench.clear(); bench.run(1000)", run: "bench.add(1000)" },
-  { name: "clear 1,000 rows", before: "bench.clear(); bench.run(1000)", run: "bench.clear()" },
+  { name: "create 1,000 rows", before: "await bench.clear()", run: "bench.run(1000)" },
+  { name: "replace 1,000 rows", before: "await bench.clear(); await bench.run(1000)", run: "bench.run(1000)" },
+  { name: "update every 10th row (1,000 rows)", before: "await bench.clear(); await bench.run(1000)", run: "bench.updateEveryTenth()" },
+  { name: "select a row (1,000 rows)", before: "await bench.clear(); await bench.run(1000)", run: "bench.select(500)" },
+  { name: "swap two rows (1,000 rows)", before: "await bench.clear(); await bench.run(1000)", run: "bench.swap()" },
+  { name: "remove a row (1,000 rows)", before: "await bench.clear(); await bench.run(1000)", run: "bench.remove(500)" },
+  { name: "create 10,000 rows", before: "await bench.clear()", run: "bench.run(10000)" },
+  { name: "append 1,000 rows to 1,000", before: "await bench.clear(); await bench.run(1000)", run: "bench.add(1000)" },
+  { name: "clear 1,000 rows", before: "await bench.clear(); await bench.run(1000)", run: "bench.clear()" },
 ];
 const RUNS = 11;
 
@@ -96,7 +102,7 @@ try {
     await page.goto(`${origin}/${app.key}/`);
     await page.waitForFunction("typeof window.bench === 'object'");
     /** Warm up the JIT with the same operations. */
-    await page.evaluate(`(async () => { for (let i = 0; i < 3; i++) { bench.clear(); bench.run(1000); bench.updateEveryTenth(); bench.swap(); bench.clear(); } })()`);
+    await page.evaluate(`(async () => { for (let i = 0; i < 3; i++) { await bench.clear(); await bench.run(1000); await bench.updateEveryTenth(); await bench.swap(); await bench.clear(); } })()`);
 
     for (const operation of OPERATIONS) {
       const times = await page.evaluate(
@@ -107,7 +113,7 @@ try {
             ${operation.before};
             await frame();
             const start = performance.now();
-            ${operation.run};
+            await ${operation.run};
             document.body.getBoundingClientRect();
             times.push(performance.now() - start);
             await frame();

@@ -16,7 +16,7 @@ Hi HN. I'm a designer and front-end developer from Colombia. Jota is a small Typ
 - **No JavaScript by default.** Pages are static HTML. Interactive parts are islands that hydrate on load, idle or when visible. Markdown content is checked too: an image without alt text stops the build.
 - **Fine-grained reactivity, no virtual DOM.** Signals, and JSX compiled to direct DOM updates (the compiler builds on dom-expressions, the same base as Solid).
 
-Honest numbers, measured with scripts in the repo: the benchmark table app is 3.4 kB gzip in Jota, 4.7 in Solid, 8.5 in Preact and 69.8 in React. In speed nobody wins clearly at 1,000 rows on my machine; Jota is in the same range as Solid and is not the fastest. Creating reactive nodes is 3 to 4 times slower than Preact Signals in a micro-benchmark, and I say why in the notes.
+Honest numbers, measured with scripts in the repo: the benchmark table app is 3.7 kB gzip in Jota, 5.6 in Solid, 8.4 in Preact, 13.6 in Svelte, 25.4 in Vue, 37.7 in Angular and 68.5 in React. In speed Jota is not the fastest: on my machine Solid leads, Svelte and Angular follow, and Jota is 20 to 30% slower than Solid at creating rows. Creating reactive nodes is 3 to 4 times slower than Preact Signals in a micro-benchmark, and I say why in the notes.
 
 What it does not have: an ecosystem, streaming server rendering, devtools. It is one person's work and it is young.
 
@@ -35,7 +35,7 @@ Same body as above, shorter: keep the four bullets, the size table and the "what
 
 Jota: a small JSX framework where the build fails if you ship a `<div onClick>` without a role, an image without alt, or a page over its JavaScript budget.
 
-Static HTML by default, islands when you need them, signals instead of a virtual DOM. 3.4 kB gzip for a full table app.
+Static HTML by default, islands when you need them, signals instead of a virtual DOM. 3.7 kB gzip for a full table app.
 
 github.com/JJBeta-Dev/jota
 
@@ -50,6 +50,6 @@ Soy diseñador y desarrollador front-end en Colombia. Jota parte de una idea: lo
 - **Cero JavaScript por defecto:** HTML estático, islas para lo interactivo y Markdown revisado.
 - **Reactividad fina sin DOM virtual.**
 
-Números medidos con scripts del repositorio: la app de prueba pesa 3.4 kB gzip en Jota, 4.7 en Solid, 8.5 en Preact y 69.8 en React. En velocidad está en el rango de Solid y no es el más rápido. Lo que no tiene: ecosistema, streaming en servidor ni devtools.
+Números medidos con scripts del repositorio: la app de prueba pesa 3.7 kB gzip en Jota, 5.6 en Solid, 8.4 en Preact, 13.6 en Svelte, 25.4 en Vue, 37.7 en Angular y 68.5 en React. En velocidad no es el más rápido: Solid va primero, Svelte y Angular lo siguen, y Jota es entre 20 y 30 % más lento que Solid al crear filas. Lo que no tiene: ecosistema, streaming en servidor ni devtools.
 
 Repositorio: https://github.com/JJBeta-Dev/jota
