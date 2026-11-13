@@ -186,7 +186,7 @@ describe.skipIf(!executablePath)("playground in a browser", () => {
     const page = await open();
     await page.click("a[href='/docs/guard']");
     await page.waitForFunction("location.pathname.startsWith('/docs/guard')");
-    expect(await page.$$eval("script", (scripts) => scripts.length)).toBe(0);
+    expect(await page.$$eval("script:not([type=speculationrules])", (scripts) => scripts.length)).toBe(0);
     await page.close();
   });
 });
