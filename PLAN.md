@@ -74,11 +74,12 @@ Principio: no competir en todo. Ganar donde Jota ya es fuerte y cerrar solo las 
 - [x] Lighthouse CI como puerta (95+ / 100 / 100 / 100) en el sitio de docs
 - [x] Guard: `--fix` (3 reglas seguras), `--format sarif` y `--format github`
 - [x] Markdown como contenido con chequeo de `alt` y encabezados en el build
+- [x] `jota-js/testing` con axe-core sobre el DOM renderizado
 - [x] Prefetch (speculation rules) y transiciones de vista sin JavaScript
 - [x] Benchmark de navegador con React y Preact (Jota: bundle más pequeño; velocidad en el rango de los demás, no la más alta)
 - [x] CONTRIBUTING, SECURITY, plantillas, Dependabot, borradores de lanzamiento y `HANDOFF-LANZAMIENTO.md`
 - [x] Versión 1.2.0 preparada y tarballs verificados (falta publicar: lo hace el dueño)
-- [ ] Extensión de VS Code, axe en tests (`jota-js/testing`), js-framework-benchmark, MDX y colecciones tipadas, streaming, devtools, formularios/datos/i18n/UI, docs completas en español
+- [ ] Extensión de VS Code, js-framework-benchmark, MDX y colecciones tipadas, streaming, devtools, formularios/datos/i18n/UI, docs completas en español
 
 ### Estado real (verificado 2026-11-13)
 - npm: `jota-js` 1.1.0; `jota-guard`, `create-jota-js`, `vite-plugin-jota` 1.0.0 (la 1.2.0 está preparada en `release/`, sin publicar). Repo `JJBeta-Dev/jota` público, 0 estrellas.

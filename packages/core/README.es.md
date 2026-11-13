@@ -93,6 +93,25 @@ response.end(shell.replace("<!--app-->", app));
 
 El HTML lleva las marcas que el navegador necesita para hidratarlo (`hydrate: "page"` por defecto; `"islands"` o `false` lo cambian). En el navegador, `hydrate(() => <Page data={data} />, element)` conserva esos elementos y les conecta el comportamiento, y devuelve `null` si el HTML no coincide, para que puedas volver a `render`. Un servidor y un cliente completos están en [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). Medido en una máquina con una página de 50 elementos de lista: unos 12.000 renders por segundo por núcleo con el DOM por defecto, unos 1.000 con `dom: "happy-dom"`. No incluye: streaming, ni render que espere datos dentro de los componentes (cárgalos antes).
 
+## Pruebas
+
+`jota-js/testing` renderiza un componente para una prueba y audita el resultado con [axe-core](https://github.com/dequelabs/axe-core) (`npm install -D axe-core`).
+
+```tsx
+import { afterEach, expect, it } from "vitest";
+import { cleanup, expectAccessible, render } from "jota-js/testing";
+import { Newsletter } from "./Newsletter";
+
+afterEach(cleanup);
+
+it("is accessible once rendered", async () => {
+  const { container } = render(() => <Newsletter />);
+  await expectAccessible(container);
+});
+```
+
+Jota Guard lee tu código; `expectAccessible` lee el DOM ya renderizado, así que también detecta problemas que solo existen al ejecutar. `checkAccessibility(element)` devuelve la lista en vez de fallar. El contraste de color viene desactivado porque el DOM de pruebas no calcula el diseño de la página.
+
 ## TypeScript
 
 Pon `"jsx": "preserve"` y `"jsxImportSource": "jota-js"` en `tsconfig.json`. Todos los elementos HTML estándar y los SVG comunes están tipados: atributos, `class`/`classList`/`style`, `ref` y manejadores de eventos con `currentTarget` tipado. Los atributos `data-*` y `aria-*` siempre se permiten y los elementos con guion en el nombre (elementos personalizados) aceptan cualquier atributo.

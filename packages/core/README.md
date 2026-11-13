@@ -93,6 +93,25 @@ response.end(shell.replace("<!--app-->", app));
 
 The HTML carries the marks the browser needs to hydrate it (`hydrate: "page"` by default; `"islands"` or `false` change that). In the browser, `hydrate(() => <Page data={data} />, element)` keeps those elements and attaches behaviour, and returns `null` if the HTML does not match, so you can fall back to `render`. A complete server and client are in [`examples/server`](https://github.com/JJBeta-Dev/jota/tree/main/examples/server). Measured on one machine with a page of 50 list items: about 12,000 renders per second per core with the default DOM, about 1,000 with `dom: "happy-dom"`. Not included: streaming, and rendering that waits for data inside components (load it before).
 
+## Testing
+
+`jota-js/testing` renders a component for a test and audits the result with [axe-core](https://github.com/dequelabs/axe-core) (`npm install -D axe-core`).
+
+```tsx
+import { afterEach, expect, it } from "vitest";
+import { cleanup, expectAccessible, render } from "jota-js/testing";
+import { Newsletter } from "./Newsletter";
+
+afterEach(cleanup);
+
+it("is accessible once rendered", async () => {
+  const { container } = render(() => <Newsletter />);
+  await expectAccessible(container);
+});
+```
+
+Jota Guard reads your source; `expectAccessible` reads the rendered DOM, so it also catches problems that only exist at run time. `checkAccessibility(element)` returns the list instead of failing. Color contrast is off by default because test DOMs do not lay out pages.
+
 ## TypeScript
 
 Set `"jsx": "preserve"` and `"jsxImportSource": "jota-js"` in `tsconfig.json`. Every standard HTML element and the common SVG elements are typed: attributes, `class`/`classList`/`style`, `ref`, and event handlers with a typed `currentTarget`. `data-*` and `aria-*` attributes are always allowed, and elements with a hyphen in the name (custom elements) accept any attribute.

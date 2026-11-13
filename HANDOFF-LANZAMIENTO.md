@@ -10,6 +10,8 @@ Actualizado el 2026-11-13. Todo lo de abajo ya está preparado; solo faltan paso
 | Guard: `--fix`, `--format sarif`, `--format github` (372 tests) | `pnpm --filter jota-guard test` |
 | Lighthouse CI: 95+ rendimiento, 100 accesibilidad, SEO y buenas prácticas | pestaña Actions, flujo "Lighthouse" |
 | Markdown como contenido, con chequeo de `alt` y encabezados en el build | `examples/blog/src/content/` y `pnpm --filter blog-jota test` |
+| `jota-js/testing`: render para pruebas y auditoría con axe del DOM renderizado | `packages/core/test/testing.test.tsx` |
+| Prefetch y transiciones de vista sin JavaScript (activos en el sitio de docs) | `jotaStatic({ prefetch: true, viewTransitions: true })` |
 | Benchmark en navegador real con React y Preact | `bench/browser/RESULTS.md` |
 | Guía para contribuir, política de seguridad, plantillas, Dependabot | `CONTRIBUTING.md`, `SECURITY.md`, `.github/` |
 | Borradores de lanzamiento (EN y ES) | `docs/launch/show-hn.md` |
@@ -58,9 +60,9 @@ No: "el más rápido". Los números propios muestran que está en el rango de So
 
 ## 7. Lo que sigue pendiente (por orden de impacto)
 
-1. Extensión de VS Code para Guard y auditoría con axe en los tests (`jota-js/testing`).
+1. Extensión de VS Code para Guard.
 2. Enviar Jota a js-framework-benchmark (números de terceros).
-3. Prefetch de enlaces y transiciones de vista.
+3. Revisar los pull requests de Dependabot: los primeros fallan porque sharp 0.35 y los tipos nuevos de Vite piden cambios de código.
 4. Página de docs para Markdown en el sitio y traducción completa al español.
 5. Formularios accesibles, caché de datos, i18n y componentes sin estilo.
 6. Decidir el nombre (similitud con Jotai) antes de una versión 2.0.

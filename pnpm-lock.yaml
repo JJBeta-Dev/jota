@@ -211,6 +211,9 @@ importers:
       '@types/node':
         specifier: ^22.9.0
         version: 22.20.5
+      axe-core:
+        specifier: ^4.10.0
+        version: 4.14.0
       happy-dom:
         specifier: ^20.0.0
         version: 20.14.6
@@ -1063,6 +1066,10 @@ packages:
 
   ast-types@0.13.4:
     resolution: {integrity: sha512-x1FCFnFifvYDDzTaLII71vG5uvDwgtmDTEVWAxrgeiR8VjMONcCXJx7E+USjDtHlwFmt9MysbqgF9b9Vjr6w+w==}
+    engines: {node: '>=4'}
+
+  axe-core@4.14.0:
+    resolution: {integrity: sha512-9WTZxEjsZ7b13TH8JPmbV2z8CHbl80/2hm3XPEG4JgNdQLK81IBRXmSxHfMAOkSqQeRxT/0dwNDz2GOm3zzpcQ==}
     engines: {node: '>=4'}
 
   b4a@1.9.0:
@@ -2736,6 +2743,8 @@ snapshots:
   ast-types@0.13.4:
     dependencies:
       tslib: 2.9.1
+
+  axe-core@4.14.0: {}
 
   b4a@1.9.0: {}
 
